@@ -1,0 +1,47 @@
+---
+import Section from '../ui/Section.astro';
+import PricingCard from './PricingCard.astro';
+
+interface Tier {
+  name: string;
+  price: string;
+  timeline?: string;
+  features: string[];
+  accentColor: 'bronze' | 'silver' | 'gold';
+}
+
+interface Props {
+  headline?: string;
+  tiers: Tier[];
+  disclaimer?: string;
+  class?: string;
+}
+
+const {
+  headline,
+  tiers,
+  disclaimer = "These are approximate ranges. We'll provide a detailed proposal after discussing your specific project.",
+  class: className,
+} = Astro.props;
+---
+
+<Section class:list={[className]}>
+  {headline && <h2 class="text-h2 mb-8">{headline}</h2>}
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" data-animate="stagger">
+    {tiers.map((tier) => (
+      <PricingCard
+        name={tier.name}
+        price={tier.price}
+        timeline={tier.timeline}
+        features={tier.features}
+        accentColor={tier.accentColor}
+      />
+    ))}
+  </div>
+
+  {disclaimer && (
+    <p class="text-zinc-400 text-sm text-center mt-12">
+      {disclaimer}
+    </p>
+  )}
+</Section>

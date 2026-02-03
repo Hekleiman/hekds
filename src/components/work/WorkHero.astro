@@ -1,0 +1,23 @@
+---
+import Section from '../ui/Section.astro';
+
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<Section class:list={[className]}>
+  <div class="flex flex-col items-start" data-animate="fade-up">
+    <!-- Headline -->
+    <h1 class="text-h1 mb-6">
+      Our Work
+    </h1>
+
+    <!-- Subheadline -->
+    <p class="text-body-lg text-text-secondary max-w-[600px]">
+      A selection of projects that demonstrate our approach to design and development. Each one built with attention to detail, performance, and user experience.
+    </p>
+  </div>
+</Section>

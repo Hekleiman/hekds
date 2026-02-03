@@ -1,0 +1,57 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Section from '../components/ui/Section.astro';
+import ContactHero from '../components/contact/ContactHero.astro';
+import ContactForm from '../components/contact/ContactForm.astro';
+import ContactInfo from '../components/contact/ContactInfo.astro';
+import { getContactPageContent, getSiteSettings, type ContactPageContent, type SiteSettings } from '../lib/sanity';
+
+// Fetch CMS content
+let content: ContactPageContent | null = null;
+let siteSettings: SiteSettings | null = null;
+
+try {
+  content = await getContactPageContent();
+  siteSettings = await getSiteSettings();
+} catch (error) {
+  console.error('Failed to fetch contact page from Sanity:', error);
+}
+---
+
+<Layout
+  title="Contact | HEK Design Studio"
+  description="Get in touch with HEK Design Studio. Let's discuss your web design or development project."
+  canonicalPath="/contact"
+>
+  <ContactHero
+    headline={content?.heroHeadline}
+    subtext={content?.heroSubtext}
+  />
+
+  <Section>
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-12 items-start">
+      <!-- Form Column (wider) -->
+      <div class="lg:col-span-3">
+        <ContactForm
+          successHeadline={content?.formSuccessHeadline}
+          successMessage={content?.formSuccessMessage}
+          errorMessage={content?.formErrorMessage}
+        />
+      </div>
+
+      <!-- Info Column (narrower) -->
+      <div class="lg:col-span-2">
+        <ContactInfo
+          email={content?.email || siteSettings?.contactEmail}
+          emailLabel={content?.emailLabel}
+          responseTime={content?.responseTime}
+          responseTimeLabel={content?.responseTimeLabel}
+          location={content?.location || siteSettings?.location}
+          locationLabel={content?.locationLabel}
+          socialLabel={content?.socialLabel}
+          socialLinks={siteSettings?.socialLinks}
+        />
+      </div>
+    </div>
+  </Section>
+</Layout>

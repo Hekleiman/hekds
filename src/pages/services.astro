@@ -1,0 +1,108 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ServicesHero from '../components/services/ServicesHero.astro';
+import ServiceBlock from '../components/services/ServiceBlock.astro';
+import CtaSection from '../components/home/CtaSection.astro';
+import { getServicesPageContent, type ServicesPageContent, type ServiceItem } from '../lib/sanity';
+
+// Fallback service data
+const defaultServices: ServiceItem[] = [
+  {
+    title: 'Strategy & UX Design',
+    slug: 'strategy-ux-design',
+    icon: 'pen',
+    description:
+      'We start every project with clear thinking. User research, information architecture, and wireframing lay the groundwork for success.',
+    features: [
+      'User research and interviews',
+      'Information architecture',
+      'User flow mapping',
+      'Wireframing and prototyping',
+      'Usability testing',
+    ],
+  },
+  {
+    title: 'Visual Design & Systems',
+    slug: 'visual-design-systems',
+    icon: 'palette',
+    description:
+      'From initial concepts to comprehensive design systems, we create cohesive visual languages that scale with your product.',
+    features: [
+      'Brand identity and guidelines',
+      'UI design and mockups',
+      'Design system development',
+      'Component libraries',
+      'Usability testing',
+    ],
+  },
+  {
+    title: 'Development & Launch',
+    slug: 'development-launch',
+    icon: 'code',
+    description:
+      'Clean, performant code that brings designs to life. We build with modern frameworks and prioritize accessibility.',
+    features: [
+      'React and modern JavaScript',
+      'Responsive implementation',
+      'Performance optimization',
+      'Accessibility standards',
+      'Testing and QA',
+    ],
+  },
+  {
+    title: 'Optimization & Support',
+    slug: 'optimization-support',
+    icon: 'code',
+    description:
+      'We continue optimizing your site after launch to improve performance and usability.',
+    features: [
+      'Performance monitoring and optimization',
+      'Ongoing UX and UI refinements',
+      'Accessibility audits and updates',
+      'Feature and content improvements',
+      'Testing, QA, and technical support',
+    ],
+  },
+];
+
+// Fetch CMS content
+let content: ServicesPageContent | null = null;
+
+try {
+  content = await getServicesPageContent();
+} catch (error) {
+  console.error('Failed to fetch services page from Sanity:', error);
+}
+
+// Use CMS services or fall back to defaults
+const services = content?.services?.length ? content.services : defaultServices;
+---
+
+<Layout
+  title="Services | HEK Design Studio"
+  description="Strategy, UX design, visual design systems, and development. Full-service web design and development from HEK Design Studio."
+  canonicalPath="/services"
+>
+  <ServicesHero
+    headline={content?.heroHeadline}
+    subtext={content?.heroSubtext}
+  />
+
+  <div class="space-y-12 md:space-y-16 pb-16">
+    {services.map((service) => (
+      <ServiceBlock
+        title={service.title}
+        slug={service.slug}
+        description={service.description}
+        features={service.features}
+        icon={service.icon}
+      />
+    ))}
+  </div>
+
+  <CtaSection
+    headline={content?.ctaHeadline || 'Not sure which service you need?'}
+    subtext={content?.ctaSubtext || "Let's talk about your project and figure out the best approach together. Most clients benefit from a combination of our services."}
+    primaryCta={content?.ctaPrimaryCta || { text: 'Get in Touch', href: '/contact' }}
+  />
+</Layout>

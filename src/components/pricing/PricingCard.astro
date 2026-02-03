@@ -1,0 +1,63 @@
+---
+interface Props {
+  name: string;
+  price: string;
+  timeline?: string;
+  features: string[];
+  accentColor: 'bronze' | 'silver' | 'gold';
+  class?: string;
+}
+
+const {
+  name,
+  price,
+  timeline,
+  features,
+  accentColor,
+  class: className,
+} = Astro.props;
+
+const circleColors = {
+  bronze: 'bg-amber-700',
+  silver: 'bg-zinc-400',
+  gold: 'bg-yellow-600',
+};
+---
+
+<div class:list={[
+  'flex flex-col p-6 rounded-xl border border-zinc-800/50',
+  className,
+]}>
+  <!-- Colored Circle Icon -->
+  <div class:list={[
+    'w-8 h-8 rounded-full mb-4',
+    circleColors[accentColor]
+  ]}></div>
+
+  <!-- Tier Name -->
+  <span class="text-base font-bold text-white mb-3">
+    {name}
+  </span>
+
+  <!-- Price -->
+  <span class="text-2xl font-bold text-white mb-1">
+    {price}
+  </span>
+
+  <!-- Timeline -->
+  {timeline && (
+    <span class="text-sm text-zinc-400 mb-6">
+      {timeline}
+    </span>
+  )}
+
+  <!-- Features List -->
+  <ul class="flex flex-col gap-3 flex-1">
+    {features.map((feature) => (
+      <li class="flex items-start gap-3 text-sm text-zinc-400">
+        <span class="text-zinc-400 flex-shrink-0">✓</span>
+        <span>{feature}</span>
+      </li>
+    ))}
+  </ul>
+</div>

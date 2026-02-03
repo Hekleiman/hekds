@@ -1,17 +1,53 @@
 ---
+import Layout from '../layouts/Layout.astro';
+import Hero from '../components/home/Hero.astro';
+import ServicesIntro from '../components/home/ServicesIntro.astro';
+import HowWeWork from '../components/home/HowWeWork.astro';
+import WhyUs from '../components/home/WhyUs.astro';
+import CtaSection from '../components/home/CtaSection.astro';
+import { getHomepageContent, type HomepageContent } from '../lib/sanity';
 
+// Fetch CMS content with fallback
+let content: HomepageContent | null = null;
+
+try {
+  content = await getHomepageContent();
+} catch (error) {
+  console.error('Failed to fetch homepage from Sanity:', error);
+}
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout
+  title="HEK Design Studio — Brand & Web Design"
+  description="HEK Design Studio — Designing and building modern websites with clarity and intention."
+  canonicalPath="/"
+>
+  <Hero
+    headlineLine1={content?.heroHeadlineLine1}
+    headlineLine2={content?.heroHeadlineLine2}
+    headlineLine3={content?.heroHeadlineLine3}
+    subtext={content?.heroSubtext}
+    primaryCta={content?.heroPrimaryCta}
+    secondaryCta={content?.heroSecondaryCta}
+  />
+  <ServicesIntro
+    headline={content?.servicesHeadline}
+    description={content?.servicesDescription}
+    services={content?.servicesCards}
+  />
+  <HowWeWork
+    headline={content?.processHeadline}
+    description={content?.processDescription}
+    steps={content?.processSteps}
+  />
+  <WhyUs
+    headline={content?.whyUsHeadline}
+    description={content?.whyUsDescription}
+    cards={content?.whyUsCards}
+  />
+  <CtaSection
+    headline={content?.ctaHeadline}
+    subtext={content?.ctaSubtext}
+    primaryCta={content?.ctaPrimaryCta}
+  />
+</Layout>

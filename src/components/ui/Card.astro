@@ -1,0 +1,32 @@
+---
+interface Props {
+  glow?: boolean;
+  padding?: 'default' | 'none';
+  class?: string;
+}
+
+const {
+  glow = false,
+  padding = 'default',
+  class: className,
+  ...rest
+} = Astro.props;
+
+const baseStyles = 'bg-background-secondary border border-border-primary rounded-card';
+
+const paddingStyles = {
+  default: 'p-8',
+  none: '',
+};
+
+const classes = [
+  baseStyles,
+  paddingStyles[padding],
+  glow ? 'shadow-card' : '',
+  className,
+].filter(Boolean).join(' ');
+---
+
+<div class={classes} {...rest}>
+  <slot />
+</div>

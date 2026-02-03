@@ -1,0 +1,19 @@
+---
+import Section from '../ui/Section.astro';
+
+interface Props {
+  headline?: string;
+  class?: string;
+}
+
+const {
+  headline = 'Who are we?',
+  class: className,
+} = Astro.props;
+---
+
+<Section class:list={[className]}>
+  <h1 class="text-h1" data-animate="fade-up">
+    {headline}
+  </h1>
+</Section>

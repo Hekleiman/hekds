@@ -1,0 +1,120 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Section from '../components/ui/Section.astro';
+import PricingHero from '../components/pricing/PricingHero.astro';
+import PricingGrid from '../components/pricing/PricingGrid.astro';
+import CtaSection from '../components/home/CtaSection.astro';
+import { getPricingPageContent, type PricingPageContent, type PricingFactor, type PricingTier } from '../lib/sanity';
+
+// Default pricing factors (fallback)
+const defaultFactors: PricingFactor[] = [
+  {
+    title: 'Project Scope',
+    description: 'The size and complexity of the project. A simple marketing site requires less time than a full web application.',
+  },
+  {
+    title: 'Design Complexity',
+    description: 'Custom illustrations, animations, and advanced interactions add to the design phase.',
+  },
+  {
+    title: 'Technical Requirements',
+    description: 'API integrations, custom functionality, and backend development all impact timeline and cost.',
+  },
+  {
+    title: 'Timeline',
+    description: 'Rush projects require rearranging schedules and may come with expedited pricing.',
+  },
+];
+
+// Default tiers (fallback)
+const defaultTiers: PricingTier[] = [
+  {
+    name: 'Bronze Tier',
+    price: '$500 – $1,000',
+    timeline: '1–2 weeks',
+    accentColor: 'bronze',
+    features: [
+      '1–3 page website',
+      'Custom visual design',
+      'Responsive build',
+      'Basic CMS setup',
+      'SEO-ready structure',
+    ],
+  },
+  {
+    name: 'Silver Tier',
+    price: '$1,500 – $3,000',
+    timeline: '2–3 weeks',
+    accentColor: 'silver',
+    features: [
+      'Full website design',
+      'Interactive Prototype',
+      'Responsive implementation',
+      'Basic design system foundations',
+      'Analytics setup',
+    ],
+  },
+  {
+    name: 'Gold Tier',
+    price: 'Starting at $3,000',
+    timeline: '3–5 weeks',
+    accentColor: 'gold',
+    features: [
+      'Custom UX and UI design',
+      'Front-end development',
+      'Simple authentication flows',
+      'Basic data handling',
+      'Post-launch support',
+    ],
+  },
+];
+
+// Fetch CMS content
+let content: PricingPageContent | null = null;
+
+try {
+  content = await getPricingPageContent();
+} catch (error) {
+  console.error('Failed to fetch pricing page from Sanity:', error);
+}
+
+// Use CMS content or fall back to defaults
+const factors = content?.factors?.length ? content.factors : defaultFactors;
+const tiers = content?.tiers?.length ? content.tiers : defaultTiers;
+---
+
+<Layout
+  title="Pricing | HEK Design Studio"
+  description="Transparent, project-based pricing for web design and development. See typical investment ranges for HEK Design Studio projects."
+  canonicalPath="/pricing"
+>
+  <PricingHero
+    headline={content?.heroHeadline || 'Pricing'}
+    subtext={content?.heroSubtext || "Every project is unique, so we don't offer fixed-price packages. Instead, we provide transparent, project-based pricing tailored to your specific needs and goals. Below are typical ranges to give you a sense of investment levels. The actual cost depends on scope, complexity, and timeline."}
+  />
+
+  <!-- What Affects Pricing Section -->
+  <Section>
+    <h2 class="text-h2 mb-8">{content?.factorsHeadline || 'What Affects Pricing'}</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6" data-animate="stagger">
+      {factors.map((factor) => (
+        <div class="border border-zinc-800/50 rounded-xl p-6">
+          <h3 class="font-bold text-white mb-2">{factor.title}</h3>
+          <p class="text-zinc-400">{factor.description}</p>
+        </div>
+      ))}
+    </div>
+  </Section>
+
+  <PricingGrid
+    headline={content?.tiersHeadline}
+    tiers={tiers}
+    disclaimer={content?.tiersNote}
+  />
+
+  <CtaSection
+    headline={content?.ctaHeadline || "Let's Discuss Your Project"}
+    subtext={content?.ctaSubtext || "The best way to get accurate pricing is to have a conversation. We'll ask about your goals, timeline, and requirements, then provide a detailed proposal."}
+    primaryCta={content?.ctaPrimaryCta || { text: 'Get in Touch →', href: '/contact' }}
+  />
+</Layout>

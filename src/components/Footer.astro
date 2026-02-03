@@ -1,0 +1,129 @@
+---
+interface Props {
+  siteName?: string;
+  tagline?: string;
+  contactEmail?: string;
+  copyright?: string;
+  socialLinks?: {
+    email?: string;
+    twitter?: string;
+    linkedin?: string;
+    dribbble?: string;
+    instagram?: string;
+  };
+  class?: string;
+}
+
+const {
+  siteName = 'HEK Design Studio',
+  tagline = 'Design and development for modern web.',
+  contactEmail = 'hello@hekdesign.studio',
+  copyright = '© 2026 HEK Design Studio. All rights reserved.',
+  socialLinks,
+  class: className,
+} = Astro.props;
+
+const pageLinks = [
+  { href: '/', label: 'Home' },
+  { href: '/work', label: 'Work' },
+  { href: '/services', label: 'Services' },
+  { href: '/about', label: 'About' },
+];
+
+const contactLinks = [
+  { href: '/pricing', label: 'Pricing' },
+  { href: '/contact', label: 'Get in Touch' },
+];
+
+const connectLinks = [
+  { href: `mailto:${socialLinks?.email || contactEmail}`, label: 'Email' },
+  ...(socialLinks?.twitter ? [{ href: socialLinks.twitter, label: 'Twitter' }] : [{ href: 'https://twitter.com/', label: 'Twitter' }]),
+  ...(socialLinks?.linkedin ? [{ href: socialLinks.linkedin, label: 'LinkedIn' }] : [{ href: 'https://linkedin.com/', label: 'LinkedIn' }]),
+];
+---
+
+<footer class:list={['bg-background-primary border-t border-border-primary', className]}>
+  <div class="max-w-[1280px] mx-auto px-6 md:px-12 lg:px-[100px] py-12 lg:py-16">
+    <!-- Main Grid: 4 columns on desktop, 2 on tablet, 1 on mobile -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-8">
+      <!-- Column 1: Brand -->
+      <div class="space-y-4 sm:col-span-2 lg:col-span-1">
+        <p class="text-lg font-bold text-white">
+          {siteName}
+        </p>
+        <p class="text-zinc-400">
+          {tagline}
+        </p>
+      </div>
+
+      <!-- Column 2: Pages -->
+      <div>
+        <h3 class="text-sm text-zinc-400 uppercase tracking-wider mb-4">
+          Pages
+        </h3>
+        <ul class="space-y-1">
+          {pageLinks.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                class="inline-block py-2 text-zinc-400 hover:text-white transition-colors duration-150"
+              >
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Column 3: Contact -->
+      <div>
+        <h3 class="text-sm text-zinc-400 uppercase tracking-wider mb-4">
+          Contact
+        </h3>
+        <ul class="space-y-1">
+          {contactLinks.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                class="inline-block py-2 text-zinc-400 hover:text-white transition-colors duration-150"
+              >
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Column 4: Connect -->
+      <div>
+        <h3 class="text-sm text-zinc-400 uppercase tracking-wider mb-4">
+          Connect
+        </h3>
+        <ul class="space-y-1">
+          {connectLinks.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                class="inline-block py-2 text-zinc-400 hover:text-white transition-colors duration-150"
+              >
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="mt-10 lg:mt-12 pt-6 border-t border-zinc-800">
+      <div class="flex flex-col sm:flex-row sm:justify-between gap-4 text-sm text-zinc-400 text-center sm:text-left">
+        <p>{copyright}</p>
+        <div class="flex justify-center sm:justify-start gap-1">
+          <a href="/privacy" class="py-1 hover:text-white transition-colors duration-150">Privacy</a>
+          <span class="py-1">&middot;</span>
+          <a href="/terms" class="py-1 hover:text-white transition-colors duration-150">Terms</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>

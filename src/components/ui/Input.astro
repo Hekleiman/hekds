@@ -1,0 +1,73 @@
+---
+interface Props {
+  type?: 'text' | 'email' | 'textarea' | 'select';
+  name: string;
+  label?: string;
+  placeholder?: string;
+  required?: boolean;
+  options?: { value: string; label: string; disabled?: boolean }[];
+  rows?: number;
+  class?: string;
+}
+
+const {
+  type = 'text',
+  name,
+  label,
+  placeholder,
+  required = false,
+  options = [],
+  rows = 4,
+  class: className,
+  ...rest
+} = Astro.props;
+
+const inputStyles = 'w-full bg-background-secondary border border-border-primary rounded-input px-4 text-text-primary placeholder:text-text-placeholder focus:border-border-secondary focus:outline-none transition-colors duration-150';
+const inputHeight = 'h-[50px]';
+const textareaStyles = 'py-3 min-h-[120px] resize-y';
+---
+
+<div class:list={['flex flex-col gap-2', className]} {...rest}>
+  {label && (
+    <label for={name} class="text-sm font-medium text-text-secondary">
+      {label}
+    </label>
+  )}
+
+  {type === 'textarea' ? (
+    <textarea
+      id={name}
+      name={name}
+      placeholder={placeholder}
+      required={required}
+      rows={rows}
+      class:list={[inputStyles, textareaStyles]}
+    />
+  ) : type === 'select' ? (
+    <select
+      id={name}
+      name={name}
+      required={required}
+      class:list={[inputStyles, inputHeight, 'appearance-none cursor-pointer']}
+    >
+      {options.map((option) => (
+        <option
+          value={option.value}
+          disabled={option.disabled || option.value === ''}
+          selected={option.value === ''}
+        >
+          {option.label}
+        </option>
+      ))}
+    </select>
+  ) : (
+    <input
+      type={type}
+      id={name}
+      name={name}
+      placeholder={placeholder}
+      required={required}
+      class:list={[inputStyles, inputHeight]}
+    />
+  )}
+</div>

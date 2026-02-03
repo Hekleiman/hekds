@@ -1,0 +1,73 @@
+---
+import Layout from '../layouts/Layout.astro';
+import WorkHero from '../components/work/WorkHero.astro';
+import ProjectGrid from '../components/work/ProjectGrid.astro';
+import { getAllProjects } from '../lib/sanity';
+
+// Default project data for the Work page
+const defaultProjects = [
+  {
+    title: 'Jewmanity',
+    slug: 'jewmanity',
+    category: 'Web Design & Development',
+    year: '2025',
+    description: 'A streamlined shopping experience with custom checkout flow and integrated inventory management. Built for scale with React and Node.js.',
+    tags: ['E-Commerce', 'React', 'Node.js'],
+  },
+  {
+    title: 'Virufy',
+    slug: 'virufy',
+    category: 'Web Design & Development',
+    year: '2025',
+    description: 'A streamlined shopping experience with custom checkout flow and integrated inventory management. Built for scale with React and Node.js.',
+    tags: ['E-Commerce', 'React', 'Node.js'],
+  },
+  {
+    title: 'Trade Up',
+    slug: 'trade-up',
+    category: 'Web Design & Development',
+    year: '2025',
+    description: 'A streamlined shopping experience with custom checkout flow and integrated inventory management. Built for scale with React and Node.js.',
+    tags: ['E-Commerce', 'React', 'Node.js'],
+  },
+];
+
+// Fetch projects from Sanity
+let projects = [];
+let useFallback = false;
+
+try {
+  const sanityProjects = await getAllProjects();
+  if (sanityProjects && sanityProjects.length > 0) {
+    // Transform Sanity data to match component interface
+    projects = sanityProjects.map((p) => ({
+      title: p.title,
+      slug: p.slug.current,
+      category: p.category,
+      year: p.year,
+      description: p.description,
+      tags: p.services || [],
+      thumbnail: p.thumbnail,
+    }));
+  } else {
+    useFallback = true;
+  }
+} catch (error) {
+  console.error('Failed to fetch from Sanity:', error);
+  useFallback = true;
+}
+
+// Fallback to default data if Sanity fails or is empty
+if (useFallback) {
+  projects = defaultProjects;
+}
+---
+
+<Layout
+  title="Work | HEK Design Studio"
+  description="Selected projects from HEK Design Studio. Web design and development case studies showcasing our process and results."
+  canonicalPath="/work"
+>
+  <WorkHero />
+  <ProjectGrid projects={projects} />
+</Layout>

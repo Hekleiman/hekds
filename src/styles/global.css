@@ -1,0 +1,270 @@
+@import "tailwindcss";
+
+/* ============================================
+   Self-hosted Inter Font
+   ============================================ */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/inter-latin-400.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/inter-latin-500.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/inter-latin-600.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/inter-latin-700.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* ============================================
+   HEK Design Studio - Design System
+   Based on Figma specifications
+   ============================================ */
+
+/* CSS Custom Properties for runtime access */
+:root {
+  /* Background Colors */
+  --color-background-primary: #09090b;
+  --color-background-secondary: #18181b;
+  --color-background-nav: rgba(24, 24, 27, 0.7);
+
+  /* Border Colors */
+  --color-border-primary: #27272a;
+  --color-border-secondary: #3f3f46;
+
+  /* Text Colors */
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #9f9fa9;
+  --color-text-muted: #71717b;
+  --color-text-placeholder: #52525c;
+
+  /* Accent Colors */
+  --color-accent-bronze: #cd7f32;
+  --color-accent-silver: #c0c0c0;
+  --color-accent-gold: #ffd700;
+
+  /* Spacing */
+  --spacing-section: 100px;
+  --spacing-container: 100px;
+  --spacing-card: 32px;
+  --spacing-gap-xl: 48px;
+  --spacing-gap-lg: 32px;
+  --spacing-gap-md: 24px;
+  --spacing-gap-sm: 16px;
+  --spacing-gap-xs: 8px;
+
+  /* Container */
+  --container-max: 1341px;
+  --container-content: 1141px;
+
+  /* Border Radius */
+  --radius-card: 24px;
+  --radius-input: 14px;
+  --radius-icon: 16px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-card: 0px 16px 32px rgba(255, 255, 255, 0.1), 0px 4px 4px rgba(255, 255, 255, 0.05);
+  --shadow-nav: 0px 10px 15px rgba(0, 0, 0, 0.1), 0px 4px 6px rgba(0, 0, 0, 0.1);
+
+  /* Typography */
+  --font-family: "Inter", system-ui, -apple-system, sans-serif;
+}
+
+/* Tailwind v4 Theme Configuration */
+@theme {
+  /* Colors */
+  --color-background-primary: #09090b;
+  --color-background-secondary: #18181b;
+  --color-background-nav: rgba(24, 24, 27, 0.7);
+
+  --color-border-primary: #27272a;
+  --color-border-secondary: #3f3f46;
+
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #9f9fa9;
+  --color-text-muted: #71717b;
+  --color-text-placeholder: #52525c;
+
+  --color-accent-bronze: #cd7f32;
+  --color-accent-silver: #c0c0c0;
+  --color-accent-gold: #ffd700;
+
+  /* Font Family */
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+
+  /* Font Sizes with line heights */
+  --text-h1: 72px;
+  --text-h1--line-height: 96px;
+  --text-h1--letter-spacing: -2.4px;
+
+  --text-h2: 48px;
+  --text-h2--line-height: 56px;
+
+  --text-h3: 24px;
+  --text-h3--line-height: 32px;
+
+  --text-h3-lg: 28px;
+  --text-h3-lg--line-height: 36px;
+
+  --text-body-lg: 20px;
+  --text-body-lg--line-height: 28px;
+
+  --text-body: 16px;
+  --text-body--line-height: 24px;
+
+  --text-caption: 14px;
+  --text-caption--line-height: 20px;
+
+  /* Spacing */
+  --spacing-section: 100px;
+  --spacing-container: 100px;
+  --spacing-card: 32px;
+  --spacing-gap-xl: 48px;
+  --spacing-gap-lg: 32px;
+  --spacing-gap-md: 24px;
+  --spacing-gap-sm: 16px;
+  --spacing-gap-xs: 8px;
+
+  /* Container */
+  --container-max: 1341px;
+  --container-content: 1141px;
+
+  /* Border Radius */
+  --radius-card: 24px;
+  --radius-input: 14px;
+  --radius-icon: 16px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-card: 0px 16px 32px rgba(255, 255, 255, 0.1), 0px 4px 4px rgba(255, 255, 255, 0.05);
+  --shadow-nav: 0px 10px 15px rgba(0, 0, 0, 0.1), 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Base Styles */
+html {
+  font-family: var(--font-family);
+  background-color: var(--color-background-primary);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+/* Typography Utilities */
+.text-h1 {
+  font-size: 72px;
+  line-height: 96px;
+  font-weight: 500;
+  letter-spacing: -2.4px;
+}
+
+.text-h2 {
+  font-size: 48px;
+  line-height: 56px;
+  font-weight: 500;
+}
+
+.text-h3 {
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 500;
+}
+
+.text-h3-lg {
+  font-size: 28px;
+  line-height: 36px;
+  font-weight: 500;
+}
+
+.text-body-lg {
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 400;
+}
+
+.text-body {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+}
+
+.text-caption {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+}
+
+/* Container utility */
+.container-main {
+  max-width: var(--container-max);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--spacing-container);
+  padding-right: var(--spacing-container);
+}
+
+/* Section spacing */
+.section-padding {
+  padding-top: var(--spacing-section);
+  padding-bottom: var(--spacing-section);
+}
+
+/* Card styles */
+.card {
+  background-color: var(--color-background-secondary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--radius-card);
+  padding: var(--spacing-card);
+}
+
+.card-glow {
+  box-shadow: var(--shadow-card);
+}
+
+/* Nav blur effect */
+.nav-blur {
+  background-color: var(--color-background-nav);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Focus styles for accessibility */
+:focus-visible {
+  outline: 2px solid var(--color-text-secondary);
+  outline-offset: 2px;
+}
+
+/* Selection styles */
+::selection {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: var(--color-text-primary);
+}

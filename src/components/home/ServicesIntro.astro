@@ -1,0 +1,196 @@
+---
+interface ServiceCard {
+  _key?: string;
+  title: string;
+  description: string;
+  icon?: string;
+}
+
+interface Props {
+  headline?: string;
+  description?: string;
+  services?: ServiceCard[];
+  class?: string;
+}
+
+const defaultServices: ServiceCard[] = [
+  {
+    title: 'Strategy & UX Design',
+    description: 'Clear thinking that guides every decision. We map user journeys, define information architecture, and create wireframes that solve real problems.',
+    icon: 'strategy',
+  },
+  {
+    title: 'Visual Design & Systems',
+    description: 'Cohesive visual language built for scale. From initial concepts to comprehensive design systems, we create interfaces that feel intuitive and refined.',
+    icon: 'design',
+  },
+  {
+    title: 'Development & Launch',
+    description: 'Clean, performant code that brings designs to life. We build responsive, accessible websites with modern frameworks and best practices.',
+    icon: 'code',
+  },
+  {
+    title: 'Optimization & Support',
+    description: "Launch isn't the finish line. We monitor, refine, and optimize over time, improving performance, usability, and conversion through real-world insights.",
+    icon: 'settings',
+  },
+];
+
+const {
+  headline = 'What We Do',
+  description = 'End-to-end design and development. No handoffs, no miscommunication. Just seamless collaboration from concept to launch.',
+  services = defaultServices,
+  class: className,
+} = Astro.props;
+
+// Add reversed flag based on index for alternating layout
+const servicesWithLayout = services.map((service, index) => ({
+  ...service,
+  reversed: index % 2 === 1,
+}));
+---
+
+<section class:list={['py-section-y', className]}>
+  <div class="container-main">
+    <!-- Section Header -->
+    <div class="mb-16" data-animate="fade-up">
+      <h2 class="text-h2 mb-4">{headline}</h2>
+      <p class="text-body-lg text-text-secondary max-w-[700px]">
+        {description}
+      </p>
+    </div>
+
+    <!-- Service Blocks with Connecting Lines -->
+    <div class="relative">
+      <!-- Connecting Lines SVG -->
+      <div class="connecting-lines absolute inset-0 pointer-events-none hidden lg:block" aria-hidden="true">
+        <svg class="w-full h-full" preserveAspectRatio="none">
+          <!-- Line 1: Block 1 → Block 2 (right to left diagonal) -->
+          <line
+            x1="75%" y1="20%"
+            x2="25%" y2="32%"
+            stroke="var(--color-border-primary)"
+            stroke-width="1.5"
+            stroke-dasharray="4 4"
+          />
+          <!-- Line 2: Block 2 → Block 3 (left to right diagonal) -->
+          <line
+            x1="25%" y1="45%"
+            x2="75%" y2="57%"
+            stroke="var(--color-border-primary)"
+            stroke-width="1.5"
+            stroke-dasharray="4 4"
+          />
+          <!-- Line 3: Block 3 → Block 4 (right to left diagonal) -->
+          <line
+            x1="75%" y1="70%"
+            x2="25%" y2="82%"
+            stroke="var(--color-border-primary)"
+            stroke-width="1.5"
+            stroke-dasharray="4 4"
+          />
+        </svg>
+      </div>
+
+      <!-- Service Blocks -->
+      <div class="space-y-24 lg:space-y-32 relative z-10">
+        {servicesWithLayout.map((service) => (
+          <div
+            class:list={[
+              'grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center',
+              service.reversed && 'lg:[direction:rtl]',
+            ]}
+            data-animate="fade-up"
+          >
+            <!-- Text Column -->
+            <div class:list={['lg:[direction:ltr]']}>
+              <!-- Icon -->
+              <div class="w-12 h-12 rounded-full bg-background-secondary border border-border-primary flex items-center justify-center mb-6">
+                {service.icon === 'strategy' && (
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-text-secondary">
+                    <path d="M9 5H7C5.89543 5 5 5.89543 5 7V19C5 20.1046 5.89543 21 7 21H17C18.1046 21 19 20.1046 19 19V7C19 5.89543 18.1046 5 17 5H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5C15 6.10457 14.1046 7 13 7H11C9.89543 7 9 6.10457 9 5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M9 12H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    <path d="M9 16H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  </svg>
+                )}
+                {service.icon === 'design' && (
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-text-secondary">
+                    <path d="M12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22C12.926 22 13.648 21.212 13.648 20.286C13.648 19.858 13.482 19.474 13.21 19.178C12.948 18.892 12.786 18.516 12.786 18.094C12.786 17.168 13.508 16.38 14.434 16.38H16.5C19.538 16.38 22 13.918 22 10.88C22 5.976 17.522 2 12 2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="7.5" cy="11.5" r="1.5" fill="currentColor"/>
+                    <circle cx="10.5" cy="7.5" r="1.5" fill="currentColor"/>
+                    <circle cx="15.5" cy="7.5" r="1.5" fill="currentColor"/>
+                    <circle cx="17.5" cy="11.5" r="1.5" fill="currentColor"/>
+                  </svg>
+                )}
+                {service.icon === 'code' && (
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-text-secondary">
+                    <path d="M16 18L22 12L16 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M8 6L2 12L8 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                )}
+                {service.icon === 'settings' && (
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-text-secondary">
+                    <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/>
+                    <path d="M12 2V4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    <path d="M12 20V22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    <path d="M4.93 4.93L6.34 6.34" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    <path d="M17.66 17.66L19.07 19.07" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    <path d="M2 12H4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    <path d="M20 12H22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    <path d="M4.93 19.07L6.34 17.66" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    <path d="M17.66 6.34L19.07 4.93" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  </svg>
+                )}
+              </div>
+
+              <!-- Title -->
+              <h3 class="text-[28px] leading-[36px] font-medium text-white mb-4">
+                {service.title}
+              </h3>
+
+              <!-- Description -->
+              <p class="text-body-lg text-text-secondary">
+                {service.description}
+              </p>
+            </div>
+
+            <!-- Image Column -->
+            <div class:list={['lg:[direction:ltr]']}>
+              <div class="aspect-[4/3] rounded-[24px] bg-zinc-800 border border-zinc-700/50 flex items-center justify-center overflow-hidden">
+                <!-- Placeholder UI Pattern -->
+                <div class="w-full h-full p-6 flex flex-col">
+                  <!-- Placeholder header bar -->
+                  <div class="flex items-center gap-2 mb-4">
+                    <div class="w-3 h-3 rounded-full bg-zinc-600"></div>
+                    <div class="w-3 h-3 rounded-full bg-zinc-600"></div>
+                    <div class="w-3 h-3 rounded-full bg-zinc-600"></div>
+                    <div class="flex-1 h-3 bg-zinc-700 rounded ml-4"></div>
+                  </div>
+                  <!-- Placeholder content lines -->
+                  <div class="flex-1 flex flex-col gap-3">
+                    <div class="h-4 bg-zinc-700/50 rounded w-3/4"></div>
+                    <div class="h-4 bg-zinc-700/50 rounded w-1/2"></div>
+                    <div class="h-4 bg-zinc-700/50 rounded w-5/6"></div>
+                    <div class="h-4 bg-zinc-700/50 rounded w-2/3"></div>
+                    <div class="mt-auto flex gap-3">
+                      <div class="h-8 bg-zinc-700/30 rounded flex-1"></div>
+                      <div class="h-8 bg-zinc-700/30 rounded flex-1"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .py-section-y {
+    padding-top: var(--spacing-section);
+    padding-bottom: var(--spacing-section);
+  }
+</style>

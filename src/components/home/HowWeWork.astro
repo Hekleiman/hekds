@@ -1,0 +1,83 @@
+---
+import Section from '../ui/Section.astro';
+
+interface ProcessStep {
+  _key?: string;
+  number?: string;
+  title: string;
+  description: string;
+}
+
+interface Props {
+  headline?: string;
+  description?: string;
+  steps?: ProcessStep[];
+  class?: string;
+}
+
+const defaultSteps: ProcessStep[] = [
+  {
+    title: 'Discover',
+    description: 'We start by understanding your goals, audience, and challenges. This phase sets the foundation for everything that follows.',
+  },
+  {
+    title: 'Design',
+    description: 'From wireframes to high-fidelity mockups, we iterate quickly and refine the experience until every detail feels right.',
+  },
+  {
+    title: 'Build',
+    description: 'Clean, performant code that matches the design pixel-for-pixel. We build with accessibility and scalability in mind.',
+  },
+  {
+    title: 'Iterate',
+    description: 'Launch is just the beginning. We test, learn, and refine based on real-user feedback and data.',
+  },
+];
+
+const {
+  headline = 'How We Work',
+  description = 'A straightforward process built for collaboration and clarity.',
+  steps = defaultSteps,
+  class: className,
+} = Astro.props;
+
+// Generate step numbers (01, 02, 03, 04) - use CMS number if provided, else generate
+const stepsWithNumbers = steps.map((step, index) => ({
+  ...step,
+  number: step.number || String(index + 1).padStart(2, '0'),
+}));
+---
+
+<Section class={className}>
+  <!-- Header Area -->
+  <div class="mb-12" data-animate="fade-up">
+    <h2 class="text-h2 mb-4">
+      {headline}
+    </h2>
+    <p class="text-body-lg text-text-secondary max-w-[600px]">
+      {description}
+    </p>
+  </div>
+
+  <!-- Steps Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-12" data-animate="stagger">
+    {stepsWithNumbers.map((step) => (
+      <div class="flex flex-col">
+        <!-- Step Number -->
+        <span class="text-5xl font-medium text-text-muted mb-4">
+          {step.number}
+        </span>
+
+        <!-- Step Title -->
+        <h3 class="text-lg font-medium text-white mb-2">
+          {step.title}
+        </h3>
+
+        <!-- Step Description -->
+        <p class="text-sm text-text-secondary">
+          {step.description}
+        </p>
+      </div>
+    ))}
+  </div>
+</Section>

@@ -1,0 +1,69 @@
+---
+interface Props {
+  name: string;
+  role: string;
+  bio?: string;
+  areasOfFocus?: string[];
+  image?: string;
+  class?: string;
+}
+
+const { name, role, bio, areasOfFocus = [], image, class: className } = Astro.props;
+---
+
+<div class:list={['border border-zinc-800/50 rounded-2xl overflow-hidden', className]}>
+  <!-- Photo Area -->
+  <div class="aspect-[4/3] bg-zinc-800/50">
+    {image ? (
+      <img
+        src={image}
+        alt={name}
+        class="w-full h-full object-cover"
+      />
+    ) : (
+      <div class="w-full h-full flex items-center justify-center">
+        <!-- Placeholder avatar icon -->
+        <div class="w-20 h-20 bg-zinc-700/50 border border-zinc-700 rounded-full flex items-center justify-center">
+          <div class="w-8 h-8 bg-zinc-600 rounded-full" />
+        </div>
+      </div>
+    )}
+  </div>
+
+  <!-- Content -->
+  <div class="p-6 space-y-4">
+    <!-- Name & Role -->
+    <div>
+      <h3 class="text-xl font-bold text-white">
+        {name}
+      </h3>
+      <p class="text-sm text-zinc-400">
+        {role}
+      </p>
+    </div>
+
+    <!-- Bio -->
+    {bio && (
+      <p class="text-zinc-400 text-sm leading-relaxed">
+        {bio}
+      </p>
+    )}
+
+    <!-- Areas of Focus -->
+    {areasOfFocus.length > 0 && (
+      <div class="pt-2">
+        <p class="text-xs text-zinc-400 uppercase tracking-wider mb-3">
+          Areas of Focus
+        </p>
+        <ul class="space-y-1.5">
+          {areasOfFocus.map((area) => (
+            <li class="text-zinc-400 text-sm flex items-center gap-2">
+              <span class="text-zinc-400">•</span>
+              {area}
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+  </div>
+</div>

@@ -1,0 +1,27 @@
+---
+import Section from '../ui/Section.astro';
+
+interface Props {
+  headline?: string;
+  subtext?: string;
+  class?: string;
+}
+
+const {
+  headline = "Let's start a conversation",
+  subtext = "Have a project in mind? We'd love to hear about it. Fill out the form below or reach out directly.",
+  class: className,
+} = Astro.props;
+---
+
+<Section class:list={[className]}>
+  <div class="flex flex-col items-start" data-animate="fade-up">
+    <h1 class="text-h1 mb-6">
+      {headline}
+    </h1>
+
+    <p class="text-body-lg text-text-secondary max-w-[600px]">
+      {subtext}
+    </p>
+  </div>
+</Section>

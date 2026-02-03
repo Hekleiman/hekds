@@ -1,0 +1,228 @@
+---
+import Input from '../ui/Input.astro';
+import Button from '../ui/Button.astro';
+
+interface Props {
+  successHeadline?: string;
+  successMessage?: string;
+  errorMessage?: string;
+  class?: string;
+}
+
+const {
+  successHeadline = 'Message sent!',
+  successMessage = "Thanks for reaching out. We'll review your project details and get back to you within 24 hours.",
+  errorMessage = 'Something went wrong. Please try again or email us directly.',
+  class: className,
+} = Astro.props;
+
+const projectTypeOptions = [
+  { value: '', label: 'Select a service...' },
+  { value: 'brand-identity', label: 'Brand Identity' },
+  { value: 'web-design', label: 'Web Design' },
+  { value: 'development', label: 'Development' },
+  { value: 'creative-direction', label: 'Creative Direction' },
+  { value: 'other', label: 'Other / Not Sure' },
+];
+
+const budgetOptions = [
+  { value: '', label: 'Select budget range...' },
+  { value: 'under-2500', label: 'Under $2,500' },
+  { value: '2500-5000', label: '$2,500 - $5,000' },
+  { value: '5000-10000', label: '$5,000 - $10,000' },
+  { value: 'over-10000', label: '$10,000+' },
+];
+
+const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xkozljaq';
+---
+
+<div class:list={['relative', className]} data-animate="fade-up">
+  <!-- Contact Form -->
+  <div id="form-container" class="bg-background-secondary border border-border-primary rounded-card p-8">
+    <!-- Error Message -->
+    <div
+      id="form-error"
+      class="hidden mb-6 p-4 border-l-4 border-red-500 bg-red-500/10 rounded-r-lg"
+      role="alert"
+      aria-live="polite"
+      data-error-message={errorMessage}
+    >
+      <p class="text-red-400 text-sm">
+        {errorMessage} <a href="mailto:hello@hekdesign.studio" class="underline hover:text-red-300">hello@hekdesign.studio</a>
+      </p>
+    </div>
+
+    <form
+      id="contact-form"
+      action={FORMSPREE_ENDPOINT}
+      method="POST"
+      class="flex flex-col gap-6"
+      data-contact-form
+    >
+      <!-- Hidden Formspree fields -->
+      <input type="hidden" name="_subject" value="New inquiry from HEK website" />
+      <!-- Honeypot spam protection - must stay hidden -->
+      <input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off" />
+
+      <!-- Name + Email Row -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Input
+          type="text"
+          name="name"
+          label="Your Name"
+          placeholder="John Doe"
+          required
+        />
+        <Input
+          type="email"
+          name="email"
+          label="Email Address"
+          placeholder="john@example.com"
+          required
+        />
+      </div>
+
+      <!-- Company + Project Type Row -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Input
+          type="text"
+          name="company"
+          label="Company"
+          placeholder="Acme Inc."
+        />
+        <Input
+          type="select"
+          name="project-type"
+          label="What do you need?"
+          options={projectTypeOptions}
+          required
+        />
+      </div>
+
+      <!-- Budget -->
+      <Input
+        type="select"
+        name="budget"
+        label="Budget Range"
+        options={budgetOptions}
+      />
+
+      <!-- Message -->
+      <Input
+        type="textarea"
+        name="message"
+        label="Tell us about your project"
+        placeholder="Describe your project, goals, and timeline..."
+        rows={6}
+        required
+      />
+
+      <!-- Submit Button -->
+      <Button type="submit" variant="primary" class="w-full md:w-auto">
+        Send Message
+      </Button>
+    </form>
+  </div>
+
+  <!-- Success Message -->
+  <div
+    id="form-success"
+    class="hidden bg-background-secondary border border-border-primary rounded-card p-8"
+    role="alert"
+    aria-live="polite"
+    data-success-headline={successHeadline}
+    data-success-message={successMessage}
+  >
+    <div class="flex flex-col items-center text-center py-8">
+      <!-- Success Icon -->
+      <div class="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center mb-6">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M5 13l4 4L19 7" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </div>
+
+      <h3 class="text-h3 text-white mb-3">{successHeadline}</h3>
+      <p class="text-text-secondary mb-8 max-w-md">
+        {successMessage}
+      </p>
+
+      <Button type="button" id="reset-form" variant="secondary">
+        Send another message
+      </Button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function initContactForm() {
+    const form = document.getElementById('contact-form') as HTMLFormElement | null;
+    const formContainer = document.getElementById('form-container');
+    const submitBtn = form?.querySelector('button[type="submit"]') as HTMLButtonElement | null;
+    const successDiv = document.getElementById('form-success');
+    const errorDiv = document.getElementById('form-error');
+    const resetBtn = document.getElementById('reset-form');
+
+    if (!form || !submitBtn) return;
+
+    const originalBtnText = submitBtn.textContent || 'Send Message';
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Hide previous error
+      errorDiv?.classList.add('hidden');
+
+      // Set loading state
+      submitBtn.textContent = 'Sending...';
+      submitBtn.setAttribute('disabled', 'true');
+      submitBtn.classList.add('opacity-70', 'cursor-not-allowed');
+
+      try {
+        const formData = new FormData(form);
+        const response = await fetch(form.action, {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'Accept': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          // Success - hide form, show success message
+          formContainer?.classList.add('hidden');
+          successDiv?.classList.remove('hidden');
+          form.reset();
+        } else {
+          // Server returned an error
+          const data = await response.json().catch(() => ({}));
+          throw new Error(data.error || 'Form submission failed');
+        }
+      } catch (error) {
+        // Show error message
+        errorDiv?.classList.remove('hidden');
+        // Scroll error into view
+        errorDiv?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      } finally {
+        // Reset button state
+        submitBtn.textContent = originalBtnText;
+        submitBtn.removeAttribute('disabled');
+        submitBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+      }
+    });
+
+    // Reset form handler
+    resetBtn?.addEventListener('click', () => {
+      successDiv?.classList.add('hidden');
+      formContainer?.classList.remove('hidden');
+      // Focus first input for better UX
+      const firstInput = form.querySelector('input:not([type="hidden"])') as HTMLInputElement | null;
+      firstInput?.focus();
+    });
+  }
+
+  // Initialize on page load
+  initContactForm();
+
+  // Re-initialize on Astro page transitions (View Transitions)
+  document.addEventListener('astro:page-load', initContactForm);
+</script>

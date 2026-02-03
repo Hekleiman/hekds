@@ -1,0 +1,55 @@
+---
+import Section from '../ui/Section.astro';
+
+interface Props {
+  whatMakesUsDifferentHeadline?: string;
+  whatMakesUsDifferentText?: string;
+  howWeWorkHeadline?: string;
+  howWeWorkParagraphs?: string[];
+  class?: string;
+}
+
+const defaultHowWeWorkParagraphs = [
+  'We believe the best digital products come from close collaboration between design and development. When these disciplines work together from the start, you get better solutions, faster iterations, and fewer surprises.',
+  'We keep our studio intentionally small. This allows us to stay involved in every project, maintain high standards, and build lasting relationships with our clients.',
+  'Every project is different, so we adapt our process to fit your needs. But our core principles remain the same: clear communication, thoughtful work, and a focus on outcomes over outputs.',
+];
+
+const {
+  whatMakesUsDifferentHeadline = 'What makes us different?',
+  whatMakesUsDifferentText = 'HEK Design Studio was founded on a simple idea: design and development should work together, not in silos. We\'re a boutique studio that handles everything from strategy and design to development and launch. Small team, focused attention, no handoffs. This approach allows us to move quickly, iterate efficiently, and maintain quality throughout the entire process.',
+  howWeWorkHeadline = 'How We Work',
+  howWeWorkParagraphs = defaultHowWeWorkParagraphs,
+  class: className,
+} = Astro.props;
+---
+
+<div class:list={['space-y-24', className]}>
+  <!-- What makes us different? -->
+  <Section>
+    <div class="border-t border-zinc-800 pt-16" data-animate="fade-up">
+      <h2 class="text-h2 mb-6">
+        {whatMakesUsDifferentHeadline}
+      </h2>
+      <p class="text-body-lg text-text-secondary max-w-[800px]">
+        {whatMakesUsDifferentText}
+      </p>
+    </div>
+  </Section>
+
+  <!-- How We Work -->
+  <Section>
+    <div class="border-t border-zinc-800 pt-16" data-animate="fade-up">
+      <h2 class="text-h2 mb-6">
+        {howWeWorkHeadline}
+      </h2>
+      <div class="space-y-6 max-w-[800px]">
+        {howWeWorkParagraphs.map((paragraph) => (
+          <p class="text-body-lg text-text-secondary">
+            {paragraph}
+          </p>
+        ))}
+      </div>
+    </div>
+  </Section>
+</div>

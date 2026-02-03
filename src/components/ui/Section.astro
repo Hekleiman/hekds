@@ -1,0 +1,27 @@
+---
+interface Props {
+  class?: string;
+  containerClass?: string;
+  fullWidth?: boolean;
+}
+
+const {
+  class: className,
+  containerClass,
+  fullWidth = false,
+  ...rest
+} = Astro.props;
+
+const sectionClasses = ['section-padding', className].filter(Boolean).join(' ');
+const containerClasses = ['container-main', containerClass].filter(Boolean).join(' ');
+---
+
+<section class={sectionClasses} {...rest}>
+  {fullWidth ? (
+    <slot />
+  ) : (
+    <div class={containerClasses}>
+      <slot />
+    </div>
+  )}
+</section>

@@ -1,0 +1,61 @@
+---
+import Section from '../ui/Section.astro';
+import TeamMember from './TeamMember.astro';
+
+interface TeamMemberData {
+  name: string;
+  role: string;
+  bio?: string;
+  areasOfFocus?: string[];
+  image?: string;
+}
+
+interface Props {
+  members?: TeamMemberData[];
+  class?: string;
+}
+
+const defaultMembers: TeamMemberData[] = [
+  {
+    name: 'Harrison Kipper',
+    role: 'Design Lead',
+    bio: 'Harrison brings over 8 years of experience in digital design, specializing in user experience and visual systems. He believes great design is invisible—it just works. His approach combines strategic thinking with meticulous attention to detail.',
+    areasOfFocus: [
+      'User experience design',
+      'Visual design systems',
+      'Brand identity',
+      'Design strategy',
+    ],
+  },
+  {
+    name: 'Erik Kleiman',
+    role: 'Development Lead',
+    bio: 'Erik has been building for the web for over a decade. He is passionate about clean code, performance, and accessibility. His development philosophy centers on creating maintainable, scalable solutions that last.',
+    areasOfFocus: [
+      'Frontend development',
+      'System architecture',
+      'Performance optimization',
+      'Accessibility',
+    ],
+  },
+];
+
+const {
+  members = defaultMembers,
+  class: className,
+} = Astro.props;
+---
+
+<Section class={className}>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8" data-animate="stagger">
+    {members.map((member) => (
+      <TeamMember
+        name={member.name}
+        role={member.role}
+        bio={member.bio}
+        areasOfFocus={member.areasOfFocus}
+        image={member.image}
+      />
+    ))}
+  </div>
+</Section>

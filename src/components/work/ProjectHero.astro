@@ -1,0 +1,38 @@
+---
+import Section from '../ui/Section.astro';
+import Tag from '../ui/Tag.astro';
+
+interface Props {
+  title: string;
+  category: string;
+  year: string;
+  client?: string;
+  class?: string;
+}
+
+const { title, category, year, client, class: className } = Astro.props;
+---
+
+<Section class:list={['pt-32 pb-16', className]} data-animate="fade-up">
+  <!-- Back Link -->
+  <a
+    href="/work"
+    class="inline-flex items-center gap-2 text-text-muted hover:text-white transition-colors duration-150 mb-8"
+  >
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+    Back to Work
+  </a>
+
+  <!-- Category Tag -->
+  <Tag class="mb-4">{category}</Tag>
+
+  <!-- Title -->
+  <h1 class="text-h1 text-white mb-4">{title}</h1>
+
+  <!-- Meta -->
+  <p class="text-body-lg text-text-secondary">
+    {client && <span>Client: {client} · </span>}{year}
+  </p>
+</Section>

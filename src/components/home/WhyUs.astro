@@ -1,0 +1,94 @@
+---
+import Section from '../ui/Section.astro';
+import Card from '../ui/Card.astro';
+
+interface WhyUsCard {
+  _key?: string;
+  title: string;
+  description: string;
+  icon?: string;
+}
+
+interface Props {
+  headline?: string;
+  description?: string;
+  cards?: WhyUsCard[];
+  class?: string;
+}
+
+const defaultCards: WhyUsCard[] = [
+  {
+    title: 'Direct Collaboration',
+    description: 'Work directly with the people designing and building your project. No account managers, no middlemen.',
+    icon: 'collaboration',
+  },
+  {
+    title: 'No Handoffs',
+    description: 'Design and development happen in tandem. This means faster iterations, fewer miscommunications, and better results.',
+    icon: 'sync',
+  },
+  {
+    title: 'Thoughtful, Hands-On Work',
+    description: 'We care about every detail. Small studio, focused attention, consistent quality across every project.',
+    icon: 'heart',
+  },
+];
+
+const {
+  headline = 'Why Us?',
+  description = 'Working with a small, focused studio has its advantages.',
+  cards = defaultCards,
+  class: className,
+} = Astro.props;
+---
+
+<Section class={className}>
+  <!-- Header Area -->
+  <div class="mb-12 text-center" data-animate="fade-up">
+    <h2 class="text-h2 mb-4">
+      {headline}
+    </h2>
+    <p class="text-body-lg text-text-secondary max-w-[600px] mx-auto">
+      {description}
+    </p>
+  </div>
+
+  <!-- Features Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8" data-animate="stagger">
+    {cards.map((card) => (
+      <Card glow class="text-center">
+        <!-- Icon -->
+        <div class="w-16 h-16 bg-background-primary border border-border-primary rounded-full flex items-center justify-center mb-4 mx-auto">
+          {card.icon === 'collaboration' && (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white">
+              <circle cx="9" cy="7" r="4" />
+              <path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" />
+              <circle cx="17" cy="7" r="3" />
+              <path d="M21 21v-2a3 3 0 0 0-3-3h-1" />
+            </svg>
+          )}
+          {card.icon === 'sync' && (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white">
+              <path d="M21 12a9 9 0 0 1-9 9m9-9a9 9 0 0 0-9-9m9 9h-4m-5 9a9 9 0 0 1-9-9m9 9v-4m-9-5a9 9 0 0 1 9-9m-9 9h4m5-9v4" />
+            </svg>
+          )}
+          {card.icon === 'heart' && (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+            </svg>
+          )}
+        </div>
+
+        <!-- Feature Title -->
+        <h3 class="text-xl font-medium mb-2">
+          {card.title}
+        </h3>
+
+        <!-- Description -->
+        <p class="text-body text-text-secondary">
+          {card.description}
+        </p>
+      </Card>
+    ))}
+  </div>
+</Section>

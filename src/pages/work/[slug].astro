@@ -1,0 +1,127 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ProjectHero from '../../components/work/ProjectHero.astro';
+import ProjectContent from '../../components/work/ProjectContent.astro';
+import Section from '../../components/ui/Section.astro';
+import Button from '../../components/ui/Button.astro';
+import {
+  getProjectBySlug as getSanityProject,
+  getAllProjectSlugs as getSanitySlugs,
+  getNextProject as getSanityNextProject,
+} from '../../lib/sanity';
+import {
+  getProjectBySlug as getStaticProject,
+  getAllProjectSlugs as getStaticSlugs,
+} from '../../data/projects';
+
+export async function getStaticPaths() {
+  let slugs: string[] = [];
+
+  try {
+    slugs = await getSanitySlugs();
+  } catch (error) {
+    console.error('Failed to fetch slugs from Sanity:', error);
+  }
+
+  // Fallback: also include static slugs
+  const staticSlugs = getStaticSlugs();
+  const allSlugs = [...new Set([...slugs, ...staticSlugs])];
+
+  return allSlugs.map((slug) => ({
+    params: { slug },
+  }));
+}
+
+const { slug } = Astro.params;
+
+// Try Sanity first, fall back to static
+let project = null;
+let nextProject = null;
+let useStatic = false;
+
+try {
+  const sanityProject = await getSanityProject(slug as string);
+  if (sanityProject) {
+    // Transform Sanity data to match component interface
+    project = {
+      title: sanityProject.title,
+      slug: sanityProject.slug.current,
+      category: sanityProject.category,
+      year: sanityProject.year,
+      client: sanityProject.client,
+      description: sanityProject.description,
+      fullDescription: sanityProject.fullDescription,
+      services: sanityProject.services,
+      thumbnail: sanityProject.thumbnail,
+      images: sanityProject.images,
+      testimonial: sanityProject.testimonial,
+    };
+
+    // Get next project from Sanity
+    const sanityNext = await getSanityNextProject(sanityProject.order);
+    if (sanityNext) {
+      nextProject = {
+        title: sanityNext.title,
+        slug: sanityNext.slug.current,
+      };
+    }
+  } else {
+    useStatic = true;
+  }
+} catch (error) {
+  console.error('Failed to fetch project from Sanity:', error);
+  useStatic = true;
+}
+
+// Fallback to static data
+if (useStatic) {
+  const staticProject = getStaticProject(slug as string);
+  if (staticProject) {
+    project = staticProject;
+    // Find next static project
+    if (staticProject.nextProject) {
+      const staticNext = getStaticProject(staticProject.nextProject);
+      if (staticNext) {
+        nextProject = {
+          title: staticNext.title,
+          slug: staticNext.slug,
+        };
+      }
+    }
+  }
+}
+
+if (!project) {
+  return Astro.redirect('/work');
+}
+---
+
+<Layout
+  title={`${project.title} | HEK Design Studio`}
+  description={project.description || project.fullDescription?.substring(0, 155)}
+  canonicalPath={`/work/${project.slug}`}
+>
+  <ProjectHero
+    title={project.title}
+    category={project.category}
+    year={project.year}
+    client={project.client}
+  />
+
+  <ProjectContent project={project} />
+
+  <!-- Next Project CTA -->
+  {
+    nextProject && (
+      <Section class="border-t border-border-primary">
+        <div class="text-center">
+          <p class="text-text-muted mb-2">Next Project</p>
+          <h3 class="text-h3 text-white mb-6">{nextProject.title}</h3>
+          <Button href={`/work/${nextProject.slug}`} variant="secondary">
+            View Project
+          </Button>
+        </div>
+      </Section>
+    )
+  }
+</Layout>

@@ -1,0 +1,119 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  features: string[];
+  slug?: string;
+  icon?: string;
+  image?: string;
+  class?: string;
+}
+
+const {
+  title,
+  description,
+  features,
+  slug,
+  icon,
+  image,
+  class: className,
+} = Astro.props;
+
+// Normalize icon to valid key, default to 'pen'
+const validIcons = ['pen', 'palette', 'code'] as const;
+type IconKey = typeof validIcons[number];
+const iconKey: IconKey = validIcons.includes(icon as IconKey) ? (icon as IconKey) : 'pen';
+
+// Icon SVG paths
+const icons = {
+  pen: `<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>`,
+  palette: `<path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.563-2.512 5.563-5.563C22 6.052 17.5 2 12 2z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="7.5" cy="11.5" r="1.5" fill="currentColor"/><circle cx="12" cy="7.5" r="1.5" fill="currentColor"/><circle cx="16.5" cy="11.5" r="1.5" fill="currentColor"/>`,
+  code: `<path d="M16 18l6-6-6-6M8 6l-6 6 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>`,
+};
+---
+
+<section
+  id={slug}
+  class:list={[
+    'py-8 md:py-10',
+    className,
+  ]}
+  data-animate="fade-up"
+>
+  <div class="container-main">
+    <div class="border border-zinc-800/50 rounded-2xl overflow-hidden">
+      <div class="grid grid-cols-1 lg:grid-cols-2">
+        <!-- Content Column (always left) -->
+        <div class="p-8 md:p-10 flex flex-col justify-center">
+          <!-- Icon -->
+          <div class="w-12 h-12 rounded-full border border-zinc-700 flex items-center justify-center mb-6">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              class="text-white"
+              set:html={icons[iconKey]}
+            />
+          </div>
+
+          <h2 class="text-[32px] md:text-[36px] leading-[40px] md:leading-[44px] font-medium mb-4">
+            {title}
+          </h2>
+
+          <p class="text-body text-text-secondary mb-8">
+            {description}
+          </p>
+
+          <!-- Bullet list (simple dots, no header) -->
+          <ul class="space-y-3">
+            {features.map((feature) => (
+              <li class="flex items-start gap-3 text-sm text-zinc-400">
+                <span class="text-zinc-400 mt-0.5">•</span>
+                {feature}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <!-- Visual Column (always right) -->
+        <div class="bg-zinc-800/30 min-h-[300px] lg:min-h-0 flex items-center justify-center">
+          {image ? (
+            <img src={image} alt={title} class="w-full h-full object-cover" />
+          ) : (
+            <div class="w-full h-full flex items-center justify-center p-8">
+              <!-- Subtle wireframe UI placeholder -->
+              <svg
+                width="200"
+                height="160"
+                viewBox="0 0 200 160"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                class="text-zinc-700 opacity-50"
+              >
+                <!-- Browser window frame -->
+                <rect x="10" y="10" width="180" height="140" rx="8" stroke="currentColor" stroke-width="1"/>
+                <!-- Title bar -->
+                <line x1="10" y1="30" x2="190" y2="30" stroke="currentColor" stroke-width="1"/>
+                <!-- Window buttons -->
+                <circle cx="24" cy="20" r="3" stroke="currentColor" stroke-width="1"/>
+                <circle cx="36" cy="20" r="3" stroke="currentColor" stroke-width="1"/>
+                <circle cx="48" cy="20" r="3" stroke="currentColor" stroke-width="1"/>
+                <!-- Content placeholders -->
+                <rect x="24" y="44" width="60" height="8" rx="2" stroke="currentColor" stroke-width="1"/>
+                <rect x="24" y="60" width="152" height="4" rx="1" stroke="currentColor" stroke-width="1"/>
+                <rect x="24" y="70" width="140" height="4" rx="1" stroke="currentColor" stroke-width="1"/>
+                <rect x="24" y="80" width="100" height="4" rx="1" stroke="currentColor" stroke-width="1"/>
+                <!-- Card placeholders -->
+                <rect x="24" y="100" width="48" height="36" rx="4" stroke="currentColor" stroke-width="1"/>
+                <rect x="80" y="100" width="48" height="36" rx="4" stroke="currentColor" stroke-width="1"/>
+                <rect x="136" y="100" width="40" height="36" rx="4" stroke="currentColor" stroke-width="1"/>
+              </svg>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

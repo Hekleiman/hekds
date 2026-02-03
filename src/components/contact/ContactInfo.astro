@@ -1,0 +1,122 @@
+---
+interface SocialLinks {
+  twitter?: string;
+  linkedin?: string;
+  dribbble?: string;
+  instagram?: string;
+}
+
+interface Props {
+  email?: string;
+  emailLabel?: string;
+  responseTime?: string;
+  responseTimeLabel?: string;
+  location?: string;
+  locationLabel?: string;
+  socialLabel?: string;
+  socialLinks?: SocialLinks;
+  class?: string;
+}
+
+const {
+  email = 'hello@hekdesign.studio',
+  emailLabel = 'Email us',
+  responseTime = 'Within 24 hours',
+  responseTimeLabel = 'Response time',
+  location = 'Remote / Worldwide',
+  locationLabel = 'Based in',
+  socialLabel = 'Follow us',
+  socialLinks,
+  class: className,
+} = Astro.props;
+
+// Build social links array from object
+const socials: Array<{ name: string; url: string }> = [];
+if (socialLinks?.twitter) socials.push({ name: 'Twitter', url: socialLinks.twitter });
+if (socialLinks?.linkedin) socials.push({ name: 'LinkedIn', url: socialLinks.linkedin });
+if (socialLinks?.dribbble) socials.push({ name: 'Dribbble', url: socialLinks.dribbble });
+if (socialLinks?.instagram) socials.push({ name: 'Instagram', url: socialLinks.instagram });
+
+// Default social links if none provided (overridden by Sanity CMS data)
+const defaultSocials = [
+  { name: 'Twitter', url: 'https://twitter.com/' },
+  { name: 'LinkedIn', url: 'https://linkedin.com/' },
+];
+
+const displaySocials = socials.length > 0 ? socials : defaultSocials;
+---
+
+<div class:list={['flex flex-col gap-6', className]} data-animate="fade-up">
+  <!-- Email -->
+  <div class="flex items-start gap-4 p-6 bg-background-secondary border border-border-primary rounded-card">
+    <div class="w-10 h-10 rounded-full bg-background-primary border border-border-primary flex items-center justify-center flex-shrink-0">
+      <svg class="w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+      </svg>
+    </div>
+    <div class="flex flex-col gap-1">
+      <span class="text-sm text-text-muted">{emailLabel}</span>
+      <a
+        href={`mailto:${email}`}
+        class="text-text-primary hover:text-text-secondary transition-colors duration-150"
+      >
+        {email}
+      </a>
+    </div>
+  </div>
+
+  <!-- Response Time -->
+  <div class="flex items-start gap-4 p-6 bg-background-secondary border border-border-primary rounded-card">
+    <div class="w-10 h-10 rounded-full bg-background-primary border border-border-primary flex items-center justify-center flex-shrink-0">
+      <svg class="w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    </div>
+    <div class="flex flex-col gap-1">
+      <span class="text-sm text-text-muted">{responseTimeLabel}</span>
+      <span class="text-text-primary">{responseTime}</span>
+    </div>
+  </div>
+
+  <!-- Location -->
+  <div class="flex items-start gap-4 p-6 bg-background-secondary border border-border-primary rounded-card">
+    <div class="w-10 h-10 rounded-full bg-background-primary border border-border-primary flex items-center justify-center flex-shrink-0">
+      <svg class="w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+      </svg>
+    </div>
+    <div class="flex flex-col gap-1">
+      <span class="text-sm text-text-muted">{locationLabel}</span>
+      <span class="text-text-primary">{location}</span>
+    </div>
+  </div>
+
+  <!-- Social Links -->
+  <div class="flex items-start gap-4 p-6 bg-background-secondary border border-border-primary rounded-card">
+    <div class="w-10 h-10 rounded-full bg-background-primary border border-border-primary flex items-center justify-center flex-shrink-0">
+      <svg class="w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+      </svg>
+    </div>
+    <div class="flex flex-col gap-1">
+      <span class="text-sm text-text-muted">{socialLabel}</span>
+      <div class="flex items-center gap-2">
+        {displaySocials.map((link, index) => (
+          <>
+            <a
+              href={link.url}
+              class="text-text-muted hover:text-text-primary transition-colors duration-150"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {link.name}
+            </a>
+            {index < displaySocials.length - 1 && (
+              <span class="text-text-muted">·</span>
+            )}
+          </>
+        ))}
+      </div>
+    </div>
+  </div>
+</div>

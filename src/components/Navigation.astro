@@ -1,0 +1,75 @@
+---
+import Button from './ui/Button.astro';
+import MobileMenu from './MobileMenu.astro';
+
+interface Props {
+  currentPath?: string;
+  class?: string;
+}
+
+const { currentPath, class: className } = Astro.props;
+
+// Normalize path by removing trailing slash for comparison
+const normalizedPath = currentPath?.replace(/\/$/, '') || '';
+const isContactPage = normalizedPath === '/contact';
+
+const navLinks = [
+  { href: '/work', label: 'Work' },
+  { href: '/services', label: 'Services' },
+  { href: '/about', label: 'About' },
+  { href: '/pricing', label: 'Pricing' },
+  { href: '/contact', label: 'Contact' },
+];
+---
+
+<div class:list={['fixed top-5 left-0 right-0 z-50 px-5', className]}>
+  <nav
+    class="max-w-[1280px] mx-auto grid grid-cols-[auto_1fr_auto] md:grid-cols-3 items-center px-6 py-3 bg-zinc-900/80 backdrop-blur-sm border border-border-primary rounded-full"
+  >
+    <!-- Logo (Left) -->
+    <a href="/" class="text-lg font-medium text-white transition-opacity duration-150 hover:opacity-80">
+      HEK
+    </a>
+
+    <!-- Desktop Nav Links (Center) -->
+    <div class="hidden md:flex items-center justify-center gap-1">
+      {navLinks.map((link) => (
+        <a
+          href={link.href}
+          class:list={[
+            'px-4 py-2 text-sm transition-colors duration-150',
+            normalizedPath === link.href ? 'text-white font-medium' : 'text-text-muted hover:text-white',
+          ]}
+        >
+          {link.label}
+        </a>
+      ))}
+    </div>
+
+    <!-- Spacer for mobile -->
+    <div class="flex-1 md:hidden" />
+
+    <!-- Right side container -->
+    <div class="flex items-center justify-end gap-2">
+      <!-- Mobile Hamburger -->
+      <button
+        id="mobile-menu-toggle"
+        type="button"
+        class="md:hidden flex items-center justify-center w-10 h-10 text-text-muted hover:text-white transition-colors duration-150"
+        aria-label="Open menu"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+      >
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 5H17M3 10H17M3 15H17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+        </svg>
+      </button>
+
+      <!-- CTA Button -->
+      <Button href="/contact" size="small" variant={isContactPage ? 'secondary' : 'primary'} class="whitespace-nowrap">Start a Project</Button>
+    </div>
+  </nav>
+</div>
+
+<!-- Mobile Menu Overlay -->
+<MobileMenu currentPath={currentPath} />

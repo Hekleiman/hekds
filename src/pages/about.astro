@@ -1,0 +1,44 @@
+---
+import Layout from '../layouts/Layout.astro';
+import AboutHero from '../components/about/AboutHero.astro';
+import TeamGrid from '../components/about/TeamGrid.astro';
+import Values from '../components/about/Values.astro';
+import CtaSection from '../components/home/CtaSection.astro';
+import { getAboutPageContent, getTeamMembers, type AboutPageContent, type TeamMember } from '../lib/sanity';
+
+// Fetch CMS content
+let content: AboutPageContent | null = null;
+let teamMembers: TeamMember[] = [];
+
+try {
+  content = await getAboutPageContent();
+  teamMembers = await getTeamMembers();
+} catch (error) {
+  console.error('Failed to fetch about page from Sanity:', error);
+}
+---
+
+<Layout
+  title="About | HEK Design Studio"
+  description="Meet the team behind HEK Design Studio. We craft thoughtful digital experiences with strategy, design, and clean code."
+  canonicalPath="/about"
+>
+  <AboutHero
+    headline={content?.heroHeadline}
+  />
+  <TeamGrid
+    members={teamMembers.length > 0 ? teamMembers : undefined}
+  />
+  <Values
+    whatMakesUsDifferentHeadline={content?.whatMakesUsDifferentHeadline}
+    whatMakesUsDifferentText={content?.whatMakesUsDifferentText}
+    howWeWorkHeadline={content?.howWeWorkHeadline}
+    howWeWorkParagraphs={content?.howWeWorkParagraphs}
+  />
+  <CtaSection
+    headline={content?.ctaHeadline}
+    subtext={content?.ctaSubtext}
+    primaryCta={content?.ctaPrimaryCta}
+    showSecondaryButton={false}
+  />
+</Layout>

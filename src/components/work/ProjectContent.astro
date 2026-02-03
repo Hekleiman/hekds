@@ -1,0 +1,99 @@
+---
+import Section from '../ui/Section.astro';
+import type { Project } from '../../data/projects';
+
+interface Props {
+  project: Project;
+  class?: string;
+}
+
+const { project, class: className } = Astro.props;
+---
+
+<Section class:list={['pt-0', className]}>
+  <div class="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-16" data-animate="fade-up">
+    <!-- Main Content (3/5 width on desktop) -->
+    <div class="lg:col-span-3 space-y-8">
+      <!-- Full Description -->
+      <p class="text-body-lg text-text-secondary leading-relaxed">
+        {project.fullDescription}
+      </p>
+
+      <!-- Image Gallery Placeholders -->
+      <div class="space-y-8">
+        {[1, 2, 3].map((i) => (
+          <div class="aspect-video bg-background-secondary border border-border-primary rounded-card flex items-center justify-center">
+            <div class="text-center">
+              <svg
+                width="48"
+                height="48"
+                viewBox="0 0 48 48"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                class="text-text-placeholder opacity-50 mx-auto mb-3"
+              >
+                <rect
+                  x="6"
+                  y="10"
+                  width="36"
+                  height="28"
+                  rx="2"
+                  stroke="currentColor"
+                  stroke-width="2"
+                />
+                <circle cx="16" cy="20" r="3" stroke="currentColor" stroke-width="2" />
+                <path
+                  d="M6 32L16 24L24 30L34 22L42 28"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              <p class="text-text-muted text-sm">Project imagery coming soon</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Sidebar (2/5 width on desktop) -->
+    <div class="lg:col-span-2 space-y-10">
+      <!-- Services -->
+      <div>
+        <h3 class="text-sm uppercase tracking-wider text-text-muted mb-4">Services</h3>
+        <ul class="space-y-2">
+          {project.services.map((service) => (
+            <li class="text-text-secondary">{service}</li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Testimonial -->
+      {project.testimonial && (
+        <div class="bg-background-secondary border border-border-primary rounded-card p-6 relative">
+          <!-- Quote Mark -->
+          <div class="absolute top-4 left-6 text-6xl text-border-secondary font-serif leading-none select-none" aria-hidden="true">
+            "
+          </div>
+
+          <blockquote class="relative pt-8">
+            <p class="text-body-lg text-text-secondary italic mb-6">
+              "{project.testimonial.quote}"
+            </p>
+            <footer>
+              <p class="font-medium text-white">{project.testimonial.author}</p>
+              <p class="text-text-muted text-sm">{project.testimonial.role}</p>
+            </footer>
+          </blockquote>
+        </div>
+      )}
+    </div>
+  </div>
+</Section>
+
+<style>
+  .rounded-card {
+    border-radius: var(--radius-card);
+  }
+</style>

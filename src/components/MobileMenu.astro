@@ -1,0 +1,155 @@
+---
+import Button from './ui/Button.astro';
+
+interface Props {
+  currentPath?: string;
+  class?: string;
+}
+
+const { currentPath, class: className } = Astro.props;
+
+// Normalize path by removing trailing slash for comparison
+const normalizedPath = currentPath?.replace(/\/$/, '') || '';
+
+const navLinks = [
+  { href: '/', label: 'Home' },
+  { href: '/work', label: 'Work' },
+  { href: '/services', label: 'Services' },
+  { href: '/about', label: 'About' },
+  { href: '/pricing', label: 'Pricing' },
+];
+---
+
+<!-- Mobile Menu Overlay -->
+<div
+  id="mobile-menu"
+  class:list={[
+    'fixed inset-0 z-[60] md:hidden',
+    'invisible opacity-0',
+    'transition-[visibility,opacity] duration-300 ease-out',
+    className,
+  ]}
+>
+  <!-- Backdrop -->
+  <div
+    id="mobile-menu-backdrop"
+    class="absolute inset-0 bg-black/80 backdrop-blur-sm"
+  />
+
+  <!-- Menu Panel (slide-in from right) -->
+  <div
+    id="mobile-menu-panel"
+    class:list={[
+      'absolute top-0 right-0 h-full w-[300px] max-w-[85vw]',
+      'bg-background-secondary border-l border-border-primary',
+      'transform translate-x-full transition-transform duration-300 ease-out',
+      'flex flex-col p-8',
+    ]}
+  >
+    <!-- Close Button -->
+    <button
+      id="mobile-menu-close"
+      type="button"
+      class="self-end flex items-center justify-center w-12 h-12 -mr-2 -mt-2 text-text-muted hover:text-white transition-colors duration-150"
+      aria-label="Close menu"
+    >
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M6 6L18 18M6 18L18 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+      </svg>
+    </button>
+
+    <!-- Navigation Links -->
+    <nav class="flex flex-col gap-6 mt-8 flex-1">
+      {navLinks.map((link) => {
+        const isActive = normalizedPath === link.href || (link.href === '/' && normalizedPath === '');
+        return (
+          <a
+            href={link.href}
+            class:list={[
+              'text-2xl font-medium py-2 transition-colors duration-150',
+              'min-h-[48px] flex items-center',
+              isActive ? 'text-white' : 'text-text-secondary hover:text-white',
+            ]}
+          >
+            {link.label}
+          </a>
+        );
+      })}
+    </nav>
+
+    <!-- Contact CTA -->
+    <div class="mt-auto pt-8">
+      <Button href="/contact" variant="primary" class="w-full justify-center">
+        Contact
+      </Button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Mobile Menu Toggle Script
+  function initMobileMenu() {
+    const toggle = document.getElementById('mobile-menu-toggle');
+    const menu = document.getElementById('mobile-menu');
+    const closeBtn = document.getElementById('mobile-menu-close');
+    const backdrop = document.getElementById('mobile-menu-backdrop');
+    const panel = document.getElementById('mobile-menu-panel');
+    const menuLinks = menu?.querySelectorAll('a');
+
+    let isOpen = false;
+
+    function openMenu() {
+      if (!menu || !panel || !toggle) return;
+
+      isOpen = true;
+      menu.classList.remove('invisible', 'opacity-0');
+      menu.classList.add('visible', 'opacity-100');
+      panel.classList.remove('translate-x-full');
+      panel.classList.add('translate-x-0');
+      toggle.setAttribute('aria-expanded', 'true');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeMenu() {
+      if (!menu || !panel || !toggle) return;
+
+      isOpen = false;
+      menu.classList.add('invisible', 'opacity-0');
+      menu.classList.remove('visible', 'opacity-100');
+      panel.classList.add('translate-x-full');
+      panel.classList.remove('translate-x-0');
+      toggle.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    }
+
+    // Event listeners
+    toggle?.addEventListener('click', () => {
+      if (isOpen) {
+        closeMenu();
+      } else {
+        openMenu();
+      }
+    });
+
+    closeBtn?.addEventListener('click', closeMenu);
+    backdrop?.addEventListener('click', closeMenu);
+
+    // Close on link click
+    menuLinks?.forEach(link => {
+      link.addEventListener('click', closeMenu);
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && isOpen) {
+        closeMenu();
+      }
+    });
+  }
+
+  // Initialize on page load
+  initMobileMenu();
+
+  // Re-initialize on Astro page transitions (View Transitions)
+  document.addEventListener('astro:page-load', initMobileMenu);
+</script>

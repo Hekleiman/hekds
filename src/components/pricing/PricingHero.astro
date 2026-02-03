@@ -1,0 +1,27 @@
+---
+import Section from '../ui/Section.astro';
+
+interface Props {
+  headline?: string;
+  subtext?: string;
+  class?: string;
+}
+
+const {
+  headline = 'Pricing',
+  subtext = "Every project is unique, so we don't offer fixed-price packages. Instead, we provide transparent, project-based pricing tailored to your specific needs and goals. Below are typical ranges to give you a sense of investment levels. The actual cost depends on scope, complexity, and timeline.",
+  class: className,
+} = Astro.props;
+---
+
+<Section class:list={[className]}>
+  <div class="flex flex-col items-start" data-animate="fade-up">
+    <h1 class="text-h1 mb-6">
+      {headline}
+    </h1>
+
+    <p class="text-body-lg text-text-secondary max-w-[800px]">
+      {subtext}
+    </p>
+  </div>
+</Section>

@@ -1,0 +1,38 @@
+---
+import Section from '../ui/Section.astro';
+import ProjectBlock from './ProjectBlock.astro';
+
+interface Project {
+  title: string;
+  slug: string;
+  category: string;
+  year: string;
+  description: string;
+  tags: string[];
+  thumbnail?: string;
+}
+
+interface Props {
+  projects: Project[];
+  class?: string;
+}
+
+const { projects, class: className } = Astro.props;
+---
+
+<Section class:list={['pt-0', className]}>
+  <div class="space-y-24 md:space-y-32" data-animate="stagger">
+    {projects.map((project, index) => (
+      <ProjectBlock
+        title={project.title}
+        slug={project.slug}
+        category={project.category}
+        year={project.year}
+        description={project.description}
+        tags={project.tags}
+        thumbnail={project.thumbnail}
+        imageLeft={index % 2 === 0}
+      />
+    ))}
+  </div>
+</Section>

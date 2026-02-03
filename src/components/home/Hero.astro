@@ -1,0 +1,46 @@
+---
+import Section from '../ui/Section.astro';
+import Button from '../ui/Button.astro';
+
+interface Props {
+  headlineLine1?: string;
+  headlineLine2?: string;
+  headlineLine3?: string;
+  subtext?: string;
+  primaryCta?: { text: string; href: string };
+  secondaryCta?: { text: string; href: string };
+  class?: string;
+}
+
+const {
+  headlineLine1 = 'Designing and building',
+  headlineLine2 = 'modern websites',
+  headlineLine3 = 'with clarity and intention.',
+  subtext = 'A design and development partnership focused on creating exceptional digital experiences. Direct collaboration, thoughtful execution, no handoffs.',
+  primaryCta = { text: 'Start a Project →', href: '/contact' },
+  secondaryCta = { text: '⊕ View Our Work', href: '/work' },
+  class: className,
+} = Astro.props;
+---
+
+<Section class:list={['min-h-screen flex items-center pb-0', className]} data-animate="hero">
+  <div class="w-full flex flex-col items-center text-center">
+    <!-- Headline -->
+    <h1 class="text-h1 max-w-[900px] mb-6" data-hero="headline">
+      <span class="block text-white">{headlineLine1}</span>
+      <span class="block text-zinc-400">{headlineLine2}</span>
+      <span class="block text-white">{headlineLine3}</span>
+    </h1>
+
+    <!-- Subheadline -->
+    <p class="text-body-lg text-text-muted max-w-[700px] mb-10" data-hero="subtext">
+      {subtext}
+    </p>
+
+    <!-- CTA Group -->
+    <div class="flex flex-col sm:flex-row gap-4" data-hero="cta">
+      <Button href={primaryCta.href}>{primaryCta.text}</Button>
+      <Button href={secondaryCta.href} variant="secondary">{secondaryCta.text}</Button>
+    </div>
+  </div>
+</Section>
