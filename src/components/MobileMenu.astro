@@ -25,8 +25,8 @@ const navLinks = [
   id="mobile-menu"
   class:list={[
     'fixed inset-0 z-[60] md:hidden',
-    'invisible opacity-0',
-    'transition-[visibility,opacity] duration-300 ease-out',
+    'hidden opacity-0',
+    'transition-opacity duration-300 ease-out',
     className,
   ]}
 >
@@ -102,8 +102,13 @@ const navLinks = [
       if (!menu || !panel || !toggle) return;
 
       isOpen = true;
-      menu.classList.remove('invisible', 'opacity-0');
-      menu.classList.add('visible', 'opacity-100');
+      // Remove hidden first so element is in DOM
+      menu.classList.remove('hidden');
+      // Force reflow to ensure transition works
+      void menu.offsetHeight;
+      // Add visible state classes
+      menu.classList.remove('opacity-0');
+      menu.classList.add('opacity-100');
       panel.classList.remove('translate-x-full');
       panel.classList.add('translate-x-0');
       toggle.setAttribute('aria-expanded', 'true');
@@ -114,12 +119,19 @@ const navLinks = [
       if (!menu || !panel || !toggle) return;
 
       isOpen = false;
-      menu.classList.add('invisible', 'opacity-0');
-      menu.classList.remove('visible', 'opacity-100');
+      // Start transition out
+      menu.classList.add('opacity-0');
+      menu.classList.remove('opacity-100');
       panel.classList.add('translate-x-full');
       panel.classList.remove('translate-x-0');
       toggle.setAttribute('aria-expanded', 'false');
       document.body.style.overflow = '';
+      // Hide after transition completes (300ms)
+      setTimeout(() => {
+        if (!isOpen) {
+          menu.classList.add('hidden');
+        }
+      }, 300);
     }
 
     // Event listeners

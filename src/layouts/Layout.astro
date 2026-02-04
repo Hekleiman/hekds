@@ -9,6 +9,7 @@ interface Props {
   description?: string;
   ogImage?: string;
   canonicalPath?: string;
+  backgroundImage?: string;
 }
 
 const {
@@ -16,6 +17,7 @@ const {
   description = 'HEK Design Studio — Designing and building modern websites with clarity and intention.',
   ogImage = '/og-default.png',
   canonicalPath = Astro.url.pathname,
+  backgroundImage,
 } = Astro.props;
 
 const settings = await getSiteSettings();
@@ -53,6 +55,18 @@ const siteName = settings?.siteName || 'HEK Design Studio';
     <title>{title} | {siteName}</title>
   </head>
   <body class="min-h-screen flex flex-col">
+    {backgroundImage && (
+      <div class="fixed inset-0 -z-10 pointer-events-none" aria-hidden="true">
+        <img
+          src={backgroundImage}
+          alt=""
+          width="1920"
+          height="1080"
+          class="w-full h-full object-cover opacity-20"
+          loading="eager"
+        />
+      </div>
+    )}
     <a
       href="#main-content"
       class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-white focus:text-black focus:rounded focus:text-sm"

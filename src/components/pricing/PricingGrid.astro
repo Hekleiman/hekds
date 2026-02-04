@@ -8,6 +8,7 @@ interface Tier {
   timeline?: string;
   features: string[];
   accentColor: 'bronze' | 'silver' | 'gold';
+  icon?: string;
 }
 
 interface Props {
@@ -16,6 +17,13 @@ interface Props {
   disclaimer?: string;
   class?: string;
 }
+
+// Icon mapping based on accent color
+const tierIcons: Record<string, string> = {
+  bronze: '/images/pricing/Bronze_Circle.png',
+  silver: '/images/pricing/Silver_Circle.png',
+  gold: '/images/pricing/Gold_Circle.png',
+};
 
 const {
   headline,
@@ -35,6 +43,7 @@ const {
         timeline={tier.timeline}
         features={tier.features}
         accentColor={tier.accentColor}
+        icon={tier.icon || tierIcons[tier.accentColor]}
       />
     ))}
   </div>

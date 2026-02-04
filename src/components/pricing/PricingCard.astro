@@ -5,6 +5,7 @@ interface Props {
   timeline?: string;
   features: string[];
   accentColor: 'bronze' | 'silver' | 'gold';
+  icon?: string;
   class?: string;
 }
 
@@ -14,6 +15,7 @@ const {
   timeline,
   features,
   accentColor,
+  icon,
   class: className,
 } = Astro.props;
 
@@ -28,11 +30,22 @@ const circleColors = {
   'flex flex-col p-6 rounded-xl border border-zinc-800/50',
   className,
 ]}>
-  <!-- Colored Circle Icon -->
-  <div class:list={[
-    'w-8 h-8 rounded-full mb-4',
-    circleColors[accentColor]
-  ]}></div>
+  <!-- Tier Icon -->
+  {icon ? (
+    <img
+      src={icon}
+      alt={`${name} icon`}
+      width="48"
+      height="48"
+      class="w-12 h-12 mb-4"
+      loading="lazy"
+    />
+  ) : (
+    <div class:list={[
+      'w-8 h-8 rounded-full mb-4',
+      circleColors[accentColor]
+    ]}></div>
+  )}
 
   <!-- Tier Name -->
   <span class="text-base font-bold text-white mb-3">

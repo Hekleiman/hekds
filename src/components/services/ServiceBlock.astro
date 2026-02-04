@@ -80,7 +80,14 @@ const icons = {
         <!-- Visual Column (always right) -->
         <div class="bg-zinc-800/30 min-h-[300px] lg:min-h-0 flex items-center justify-center">
           {image ? (
-            <img src={image} alt={title} class="w-full h-full object-cover" />
+            <img
+              src={image}
+              alt={`${title} illustration`}
+              width="600"
+              height="450"
+              class="w-full h-full object-cover"
+              loading="lazy"
+            />
           ) : (
             <div class="w-full h-full flex items-center justify-center p-8">
               <!-- Subtle wireframe UI placeholder -->

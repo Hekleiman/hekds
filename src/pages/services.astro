@@ -76,12 +76,21 @@ try {
 
 // Use CMS services or fall back to defaults
 const services = content?.services?.length ? content.services : defaultServices;
+
+// Service tile image mapping based on slug
+const serviceImages: Record<string, string> = {
+  'strategy-ux-design': '/images/services/Strategy__UX_Design_Tile.png',
+  'visual-design-systems': '/images/services/Visual_Design_Systems_Tile.png',
+  'development-launch': '/images/services/Development__Launch_Tile.png',
+  'optimization-support': '/images/services/Optimization__Support_Tile.png',
+};
 ---
 
 <Layout
   title="Services | HEK Design Studio"
   description="Strategy, UX design, visual design systems, and development. Full-service web design and development from HEK Design Studio."
   canonicalPath="/services"
+  backgroundImage="/images/backgrounds/HEK_Services_Background.png"
 >
   <ServicesHero
     headline={content?.heroHeadline}
@@ -96,6 +105,7 @@ const services = content?.services?.length ? content.services : defaultServices;
         description={service.description}
         features={service.features}
         icon={service.icon}
+        image={service.slug ? serviceImages[service.slug] : undefined}
       />
     ))}
   </div>

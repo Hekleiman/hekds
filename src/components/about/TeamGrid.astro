@@ -8,6 +8,7 @@ interface TeamMemberData {
   bio?: string;
   areasOfFocus?: string[];
   image?: string;
+  photoPosition?: string;
 }
 
 interface Props {
@@ -26,6 +27,7 @@ const defaultMembers: TeamMemberData[] = [
       'Brand identity',
       'Design strategy',
     ],
+    image: '/images/team/Harry_Headshot.jpg',
   },
   {
     name: 'Erik Kleiman',
@@ -37,6 +39,8 @@ const defaultMembers: TeamMemberData[] = [
       'Performance optimization',
       'Accessibility',
     ],
+    image: '/images/team/Erik_Headshot.jpg',
+    photoPosition: 'object-[center_30%]',
   },
 ];
 
@@ -55,6 +59,7 @@ const {
         bio={member.bio}
         areasOfFocus={member.areasOfFocus}
         image={member.image}
+        photoPosition={member.photoPosition}
       />
     ))}
   </div>
