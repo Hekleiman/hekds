@@ -1,3 +1,43 @@
+# HEK Design Studio — robots.txt
+# Updated: March 2026
+
+# Traditional search engines
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# AI search/retrieval crawlers — ALLOW (these power AI search results)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+# Default
 User-agent: *
 Allow: /
-Sitemap: https://hekdesign.studio/sitemap-index.xml
+
+Sitemap: https://www.hekdesigns.com/sitemap-index.xml

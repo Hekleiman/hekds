@@ -88,10 +88,57 @@ const serviceImages: Record<string, string> = {
 
 <Layout
   title="Services | HEK Design Studio"
-  description="Strategy, UX design, visual design systems, and development. Full-service web design and development from HEK Design Studio."
+  description="Full-service web design and development from HEK Design Studio. Strategy and UX design, visual design systems, front-end development, and post-launch optimization for small businesses and nonprofits."
   canonicalPath="/services"
   backgroundImage="/images/backgrounds/HEK_Services_Background.png"
 >
+  <script is:inline type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "provider": { "@id": "https://www.hekdesigns.com/#organization" },
+    "name": "Web Design and Development Services",
+    "description": "Full-service web design and development including strategy, UX design, visual design systems, front-end development, and ongoing optimization.",
+    "serviceType": "Web Design and Development",
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Design and Development Services",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Strategy & UX Design",
+            "description": "User research, information architecture, user flow mapping, wireframing and prototyping, and usability testing."
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Visual Design & Systems",
+            "description": "Brand identity and guidelines, UI design and mockups, design system development, and component libraries."
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Development & Launch",
+            "description": "React and modern JavaScript, responsive implementation, performance optimization, accessibility standards, and testing."
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Optimization & Support",
+            "description": "Performance monitoring, ongoing UX and UI refinements, accessibility audits, feature improvements, and technical support."
+          }
+        }
+      ]
+    }
+  }</script>
+
   <ServicesHero
     headline={content?.heroHeadline}
     subtext={content?.heroSubtext}

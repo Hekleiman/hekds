@@ -19,10 +19,20 @@ try {
 
 <Layout
   title="HEK Design Studio — Brand & Web Design"
-  description="HEK Design Studio — Designing and building modern websites with clarity and intention."
+  description="HEK Design Studio is a boutique web design and development partnership serving small businesses and nonprofits. End-to-end design and development from $500 to $3,000+. Direct collaboration, no handoffs."
   canonicalPath="/"
   backgroundImage="/images/backgrounds/HEK_Homepage_Background.png"
 >
+  <script is:inline type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "HEK Design Studio — Web Design and Development",
+    "description": "HEK Design Studio is a boutique web design and development studio offering end-to-end services for small businesses and nonprofits, with pricing from $500 to $3,000+.",
+    "url": "https://www.hekdesigns.com/",
+    "isPartOf": { "@id": "https://www.hekdesigns.com/#website" },
+    "about": { "@id": "https://www.hekdesigns.com/#organization" }
+  }</script>
+
   <Hero
     headlineLine1={content?.heroHeadlineLine1}
     headlineLine2={content?.heroHeadlineLine2}
@@ -31,6 +41,13 @@ try {
     primaryCta={content?.heroPrimaryCta}
     secondaryCta={content?.heroSecondaryCta}
   />
+
+  <div class="text-center max-w-2xl mx-auto px-6 -mt-8 mb-16">
+    <p class="text-sm text-zinc-400">
+      HEK Design Studio is a two-person web design and development partnership. We build modern, performant websites for small businesses and nonprofits, with project-based pricing starting at $500.
+    </p>
+  </div>
+
   <ServicesIntro
     headline={content?.servicesHeadline}
     description={content?.servicesDescription}

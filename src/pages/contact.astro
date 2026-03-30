@@ -20,10 +20,20 @@ try {
 
 <Layout
   title="Contact | HEK Design Studio"
-  description="Get in touch with HEK Design Studio. Let's discuss your web design or development project."
+  description="Start a project with HEK Design Studio. Get in touch to discuss your web design and development needs. Email: hello@hekdesign.studio."
   canonicalPath="/contact"
   backgroundImage="/images/backgrounds/HEK_Contact_Background.png"
 >
+  <script is:inline type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    "name": "Contact — HEK Design Studio",
+    "description": "Get in touch with HEK Design Studio. Let's discuss your web design or development project.",
+    "url": "https://www.hekdesigns.com/contact",
+    "isPartOf": { "@id": "https://www.hekdesigns.com/#website" },
+    "about": { "@id": "https://www.hekdesigns.com/#organization" }
+  }</script>
+
   <ContactHero
     headline={content?.heroHeadline}
     subtext={content?.heroSubtext}

@@ -20,10 +20,24 @@ try {
 
 <Layout
   title="About | HEK Design Studio"
-  description="Meet the team behind HEK Design Studio. We craft thoughtful digital experiences with strategy, design, and clean code."
+  description="Meet the team behind HEK Design Studio. Harrison Kipper (Design Lead, 8+ years) and Erik Kleiman (Development Lead, 10+ years) — a boutique partnership focused on web design and development."
   canonicalPath="/about"
   backgroundImage="/images/backgrounds/HEK_About_Background.png"
 >
+  <script is:inline type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    "name": "About — HEK Design Studio",
+    "description": "Meet the team behind HEK Design Studio. We craft thoughtful digital experiences with strategy, design, and clean code.",
+    "url": "https://www.hekdesigns.com/about",
+    "isPartOf": { "@id": "https://www.hekdesigns.com/#website" },
+    "about": { "@id": "https://www.hekdesigns.com/#organization" },
+    "mentions": [
+      { "@id": "https://www.hekdesigns.com/#harrison-kipper" },
+      { "@id": "https://www.hekdesigns.com/#erik-kleiman" }
+    ]
+  }</script>
+
   <AboutHero
     headline={content?.heroHeadline}
   />

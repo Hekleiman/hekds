@@ -85,10 +85,86 @@ const tiers = content?.tiers?.length ? content.tiers : defaultTiers;
 
 <Layout
   title="Pricing | HEK Design Studio"
-  description="Transparent, project-based pricing for web design and development. See typical investment ranges for HEK Design Studio projects."
+  description="Transparent, project-based web design pricing from HEK Design Studio. Bronze tier ($500–$1,000), Silver ($1,500–$3,000), and Gold (starting at $3,000). Custom proposals based on scope and timeline."
   canonicalPath="/pricing"
   backgroundImage="/images/backgrounds/HEK_Pricing_Background.png"
 >
+  <script is:inline type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "provider": { "@id": "https://www.hekdesigns.com/#organization" },
+    "name": "Web Design and Development",
+    "description": "End-to-end web design and development services for small businesses and nonprofits.",
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Web Design Packages",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "name": "Bronze Tier",
+          "description": "1-3 page website with custom visual design, responsive build, basic CMS setup, and SEO-ready structure.",
+          "priceSpecification": {
+            "@type": "PriceSpecification",
+            "price": "500",
+            "maxPrice": "1000",
+            "priceCurrency": "USD"
+          }
+        },
+        {
+          "@type": "Offer",
+          "name": "Silver Tier",
+          "description": "Full website design with interactive prototype, responsive implementation, basic design system foundations, and analytics setup.",
+          "priceSpecification": {
+            "@type": "PriceSpecification",
+            "price": "1500",
+            "maxPrice": "3000",
+            "priceCurrency": "USD"
+          }
+        },
+        {
+          "@type": "Offer",
+          "name": "Gold Tier",
+          "description": "Custom UX and UI design with front-end development, simple authentication flows, basic data handling, and post-launch support.",
+          "priceSpecification": {
+            "@type": "PriceSpecification",
+            "price": "3000",
+            "priceCurrency": "USD"
+          }
+        }
+      ]
+    }
+  }</script>
+  <script is:inline type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How much does a website cost at HEK Design Studio?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "HEK Design Studio offers three pricing tiers: Bronze ($500–$1,000) for 1–3 page websites, Silver ($1,500–$3,000) for full website designs with prototypes and design systems, and Gold (starting at $3,000) for custom UX/UI design with front-end development. Final pricing depends on project scope, design complexity, technical requirements, and timeline."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Does HEK Design Studio offer fixed-price packages?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No, HEK Design Studio provides transparent, project-based pricing tailored to each client's specific needs and goals rather than fixed-price packages. The typical price ranges give a sense of investment levels, with actual cost depending on scope, complexity, and timeline."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is included in HEK Design Studio's web design services?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Services include strategy and UX design, visual design systems, front-end development, responsive implementation, CMS setup, SEO-ready structure, analytics setup, and post-launch support. Design and development happen in tandem with direct collaboration — no handoffs or middlemen."
+        }
+      }
+    ]
+  }</script>
+
   <PricingHero
     headline={content?.heroHeadline || 'Pricing'}
     subtext={content?.heroSubtext || "Every project is unique, so we don't offer fixed-price packages. Instead, we provide transparent, project-based pricing tailored to your specific needs and goals. Below are typical ranges to give you a sense of investment levels. The actual cost depends on scope, complexity, and timeline."}
@@ -112,6 +188,25 @@ const tiers = content?.tiers?.length ? content.tiers : defaultTiers;
     tiers={tiers}
     disclaimer={content?.tiersNote}
   />
+
+  <!-- FAQ Section -->
+  <Section>
+    <h2 class="text-h2 mb-10">Frequently Asked Questions</h2>
+    <div class="space-y-8 max-w-3xl" data-animate="stagger">
+      <div>
+        <h3 class="font-bold text-white mb-2">How much does a website cost?</h3>
+        <p class="text-zinc-400">Our projects typically range from $500 to $3,000+, depending on scope, design complexity, technical requirements, and timeline. We provide a detailed proposal after an initial conversation.</p>
+      </div>
+      <div>
+        <h3 class="font-bold text-white mb-2">Do you offer fixed-price packages?</h3>
+        <p class="text-zinc-400">We don't offer fixed packages. Every project gets transparent, tailored pricing based on your specific needs and goals.</p>
+      </div>
+      <div>
+        <h3 class="font-bold text-white mb-2">What's included in each tier?</h3>
+        <p class="text-zinc-400">Bronze ($500–$1K) covers 1–3 page websites with custom design, responsive build, and basic CMS. Silver ($1.5K–$3K) adds interactive prototypes, design system foundations, and analytics. Gold ($3K+) includes custom UX/UI design, front-end development, and post-launch support.</p>
+      </div>
+    </div>
+  </Section>
 
   <CtaSection
     headline={content?.ctaHeadline || "Let's Discuss Your Project"}

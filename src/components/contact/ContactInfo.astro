@@ -1,9 +1,8 @@
 ---
 interface SocialLinks {
-  twitter?: string;
   linkedin?: string;
-  dribbble?: string;
   instagram?: string;
+  tiktok?: string;
 }
 
 interface Props {
@@ -32,15 +31,15 @@ const {
 
 // Build social links array from object
 const socials: Array<{ name: string; url: string }> = [];
-if (socialLinks?.twitter) socials.push({ name: 'Twitter', url: socialLinks.twitter });
-if (socialLinks?.linkedin) socials.push({ name: 'LinkedIn', url: socialLinks.linkedin });
-if (socialLinks?.dribbble) socials.push({ name: 'Dribbble', url: socialLinks.dribbble });
 if (socialLinks?.instagram) socials.push({ name: 'Instagram', url: socialLinks.instagram });
+if (socialLinks?.linkedin) socials.push({ name: 'LinkedIn', url: socialLinks.linkedin });
+if (socialLinks?.tiktok) socials.push({ name: 'TikTok', url: socialLinks.tiktok });
 
 // Default social links if none provided (overridden by Sanity CMS data)
 const defaultSocials = [
-  { name: 'Twitter', url: 'https://twitter.com/' },
-  { name: 'LinkedIn', url: 'https://linkedin.com/' },
+  { name: 'Instagram', url: 'https://www.instagram.com/hekdesignstudio' },
+  { name: 'LinkedIn', url: 'https://www.linkedin.com/company/hekdesigns' },
+  { name: 'TikTok', url: 'https://www.tiktok.com/@hekdesignstudio' },
 ];
 
 const displaySocials = socials.length > 0 ? socials : defaultSocials;

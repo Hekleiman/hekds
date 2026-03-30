@@ -8,8 +8,12 @@ interface Props {
   title: string;
   description?: string;
   ogImage?: string;
+  ogDescription?: string;
   canonicalPath?: string;
   backgroundImage?: string;
+  pageType?: string;
+  pageDescription?: string;
+  pageName?: string;
 }
 
 const {
@@ -18,15 +22,76 @@ const {
   ogImage = '/og-default.png',
   canonicalPath = Astro.url.pathname,
   backgroundImage,
+  ogDescription,
+  pageType = 'WebPage',
+  pageDescription,
+  pageName,
 } = Astro.props;
 
 const settings = await getSiteSettings();
 
-const siteUrl = 'https://hekdesign.studio';
+const siteUrl = 'https://www.hekdesigns.com';
 const canonicalUrl = `${siteUrl}${canonicalPath}`;
-const ogImageUrl = `${siteUrl}${ogImage}`;
 const currentPath = Astro.url.pathname;
 const siteName = settings?.siteName || 'HEK Design Studio';
+
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${siteUrl}/#organization`,
+      "name": "HEK Design Studio",
+      "url": siteUrl,
+      "logo": `${siteUrl}/favicon.svg`,
+      "email": "hello@hekdesign.studio",
+      "description": "HEK Design Studio is a boutique web design and development studio serving small businesses and nonprofits. We offer end-to-end design and development from $500 to $3,000+.",
+      "founder": [
+        { "@id": `${siteUrl}/#harrison-kipper` },
+        { "@id": `${siteUrl}/#erik-kleiman` }
+      ],
+      "sameAs": [
+        "https://www.linkedin.com/company/hekdesigns",
+        "https://www.instagram.com/hekdesignstudio",
+        "https://www.tiktok.com/@hekdesignstudio"
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${siteUrl}/#website`,
+      "name": "HEK Design Studio",
+      "url": siteUrl,
+      "publisher": { "@id": `${siteUrl}/#organization` }
+    },
+    {
+      "@type": "Person",
+      "@id": `${siteUrl}/#harrison-kipper`,
+      "name": "Harrison Kipper",
+      "jobTitle": "Design Lead",
+      "worksFor": { "@id": `${siteUrl}/#organization` },
+      "description": "Design Lead at HEK Design Studio with over 8 years of experience in digital design, specializing in user experience and visual systems.",
+      "sameAs": []
+    },
+    {
+      "@type": "Person",
+      "@id": `${siteUrl}/#erik-kleiman`,
+      "name": "Erik Kleiman",
+      "jobTitle": "Development Lead",
+      "worksFor": { "@id": `${siteUrl}/#organization` },
+      "description": "Development Lead at HEK Design Studio with over a decade of web development experience, specializing in frontend development, performance optimization, and accessibility.",
+      "sameAs": []
+    }
+  ]
+};
+
+const pageSchema = {
+  "@context": "https://schema.org",
+  "@type": pageType,
+  "name": pageName || title,
+  "description": pageDescription || description,
+  "url": canonicalUrl,
+  "isPartOf": { "@id": `${siteUrl}/#website` }
+};
 ---
 
 <!doctype html>
@@ -41,18 +106,23 @@ const siteName = settings?.siteName || 'HEK Design Studio';
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:url" content={Astro.url.href} />
     <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:description" content={ogDescription || description} />
+    <meta property="og:image" content={new URL(ogImage || '/og-default.png', Astro.site).href} />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={ogImageUrl} />
+    <meta name="twitter:description" content={ogDescription || description} />
+    <meta name="twitter:image" content={new URL(ogImage || '/og-default.png', Astro.site).href} />
 
     <title>{title} | {siteName}</title>
+
+    <!-- JSON-LD: Organization graph -->
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
+    <!-- JSON-LD: Per-page schema -->
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(pageSchema)} />
   </head>
   <body class="min-h-screen flex flex-col">
     {backgroundImage && (

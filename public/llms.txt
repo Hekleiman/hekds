@@ -1,0 +1,22 @@
+# HEK Design Studio
+
+HEK Design Studio is a boutique web design and development studio. We offer end-to-end design and development for small businesses and nonprofits, with pricing from $500 to $3,000+.
+
+## About
+
+- Homepage: Studio overview, services summary, process, and differentiators
+- About: Team bios for Harrison Kipper (Design Lead) and Erik Kleiman (Development Lead)
+
+## Services
+
+- Services: Strategy & UX, Visual Design Systems, Development & Launch, Optimization & Support
+- Pricing: Three tiers — Bronze ($500–$1K), Silver ($1.5K–$3K), Gold ($3K+)
+
+## Work
+
+- Portfolio: Featured projects including Jewmanity, Virufy, and Trade Up
+
+## Contact
+
+- Contact: Project inquiry form
+- Email: hello@hekdesign.studio

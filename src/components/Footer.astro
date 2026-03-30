@@ -6,10 +6,9 @@ interface Props {
   copyright?: string;
   socialLinks?: {
     email?: string;
-    twitter?: string;
     linkedin?: string;
-    dribbble?: string;
     instagram?: string;
+    tiktok?: string;
   };
   class?: string;
 }
@@ -37,8 +36,9 @@ const contactLinks = [
 
 const connectLinks = [
   { href: `mailto:${socialLinks?.email || contactEmail}`, label: 'Email' },
-  ...(socialLinks?.twitter ? [{ href: socialLinks.twitter, label: 'Twitter' }] : [{ href: 'https://twitter.com/', label: 'Twitter' }]),
-  ...(socialLinks?.linkedin ? [{ href: socialLinks.linkedin, label: 'LinkedIn' }] : [{ href: 'https://linkedin.com/', label: 'LinkedIn' }]),
+  { href: socialLinks?.instagram || 'https://www.instagram.com/hekdesignstudio', label: 'Instagram', external: true },
+  { href: socialLinks?.linkedin || 'https://www.linkedin.com/company/hekdesigns', label: 'LinkedIn', external: true },
+  { href: socialLinks?.tiktok || 'https://www.tiktok.com/@hekdesignstudio', label: 'TikTok', external: true },
 ];
 ---
 
@@ -105,6 +105,7 @@ const connectLinks = [
               <a
                 href={link.href}
                 class="inline-block py-2 text-zinc-400 hover:text-white transition-colors duration-150"
+                {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
               >
                 {link.label}
               </a>

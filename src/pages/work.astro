@@ -65,9 +65,19 @@ if (useFallback) {
 
 <Layout
   title="Work | HEK Design Studio"
-  description="Selected projects from HEK Design Studio. Web design and development case studies showcasing our process and results."
+  description="Featured web design and development projects from HEK Design Studio, including work for nonprofits and small businesses. Built with modern frameworks, designed for performance."
   canonicalPath="/work"
 >
+  <script is:inline type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Portfolio — HEK Design Studio",
+    "description": "Selected projects from HEK Design Studio. Web design and development case studies showcasing our process and results.",
+    "url": "https://www.hekdesigns.com/work",
+    "isPartOf": { "@id": "https://www.hekdesigns.com/#website" },
+    "creator": { "@id": "https://www.hekdesigns.com/#organization" }
+  }</script>
+
   <WorkHero />
   <ProjectGrid projects={projects} />
 </Layout>
