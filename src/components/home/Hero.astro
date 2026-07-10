@@ -1,6 +1,7 @@
 ---
 import Section from '../ui/Section.astro';
 import Button from '../ui/Button.astro';
+import HeroVisual from './HeroVisual.astro';
 
 interface Props {
   headlineLine1?: string;
@@ -16,7 +17,7 @@ const {
   headlineLine1 = 'Designing and building',
   headlineLine2 = 'modern websites',
   headlineLine3 = 'with clarity and intention.',
-  subtext = 'A design and development partnership focused on creating exceptional digital experiences. Direct collaboration, thoughtful execution, no handoffs.',
+  subtext = 'Direct collaboration, thoughtful execution — no handoffs.',
   primaryCta = { text: 'Start a Project →', href: '/contact' },
   secondaryCta = { text: '⊕ View Our Work', href: '/work' },
   class: className,
@@ -24,17 +25,16 @@ const {
 ---
 
 <Section
-  class:list={['relative min-h-screen flex items-center overflow-hidden pb-0', className]}
+  class:list={['relative flex flex-col items-center overflow-hidden pb-20 sm:pb-28', className]}
   data-animate="hero"
   data-spotlight
 >
   <!-- Depth glows -->
   <div class="aura w-[520px] h-[520px] -top-24 left-1/2 -translate-x-1/2 bg-accent-bronze/10"></div>
-  <div class="aura w-[380px] h-[380px] bottom-0 right-[8%] bg-white/[0.03]"></div>
 
   <!-- Living-blueprint contour layer (draws in, parallaxes gently) -->
   <div
-    class="absolute inset-0 pointer-events-none opacity-[0.55]"
+    class="absolute inset-0 pointer-events-none opacity-[0.5]"
     aria-hidden="true"
     data-parallax
     data-parallax-speed="-0.12"
@@ -76,86 +76,51 @@ const {
   >
   </div>
 
-  <div class="relative z-10 w-full flex flex-col items-center text-center">
+  <div class="relative z-10 w-full flex flex-col items-center text-center justify-center min-h-[calc(100svh-11rem)]">
     <!-- Eyebrow -->
     <div
-      class="inline-flex items-start gap-2 mb-8 px-4 py-1.5 rounded-full border border-border-primary bg-background-secondary/60 backdrop-blur-sm"
+      class="inline-flex items-start gap-2 mb-7 px-4 py-1.5 rounded-full border border-border-primary bg-background-secondary/60 backdrop-blur-sm"
       data-hero="tag"
     >
       <span class="w-1.5 h-1.5 mt-[7px] shrink-0 rounded-full bg-accent-bronze-bright"></span>
-      <span class="text-caption text-text-secondary tracking-wide">A two-person design &amp; development studio</span>
+      <span class="text-caption text-text-secondary tracking-wide">A two-person studio for small businesses &amp; nonprofits</span>
     </div>
 
     <!-- Headline -->
-    <h1 class="hero-headline max-w-[16ch] mb-7" data-hero="headline">
+    <h1 class="hero-headline max-w-[920px] mb-6" data-hero="headline">
       <span class="block text-white">{headlineLine1}</span>
       <span class="block text-metallic metallic-shimmer">{headlineLine2}</span>
       <span class="block text-white">{headlineLine3}</span>
     </h1>
 
-    <!-- Subheadline -->
-    <p class="text-body-lg text-text-secondary max-w-[620px] mb-8" data-hero="subtext">
+    <!-- Subheadline (concise) -->
+    <p class="text-body-lg text-text-secondary max-w-[520px] mb-8" data-hero="subtext">
       {subtext}
     </p>
 
-    <!-- Meta row (absorbs the old floating paragraph, refined) -->
-    <div
-      class="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-caption text-text-muted mb-10"
-      data-hero="meta"
-    >
-      <span>Websites for small businesses &amp; nonprofits</span>
-      <span class="w-1 h-1 rounded-full bg-border-secondary"></span>
-      <span class="text-text-secondary">Project pricing from <span class="text-accent-bronze-bright font-medium">$500</span></span>
-    </div>
-
     <!-- CTA Group -->
-    <div class="flex flex-col sm:flex-row gap-4" data-hero="cta">
+    <div class="flex flex-col sm:flex-row items-center gap-4 mb-4" data-hero="cta">
       <Button href={primaryCta.href}>{primaryCta.text}</Button>
       <Button href={secondaryCta.href} variant="secondary">{secondaryCta.text}</Button>
     </div>
+
+    <!-- Pricing note -->
+    <p class="text-caption text-text-muted" data-hero="meta">
+      Project pricing from <span class="text-accent-bronze-bright font-medium">$500</span>
+    </p>
   </div>
 
-  <!-- Scroll cue -->
-  <a
-    href="#what-we-do"
-    class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-text-muted hover:text-text-secondary transition-colors duration-300"
-    data-hero="scroll"
-    aria-label="Scroll to what we do"
-  >
-    <span class="text-caption tracking-widest uppercase text-[11px]">Scroll</span>
-    <span class="scroll-cue block w-5 h-8 rounded-full border border-border-secondary relative">
-      <span class="scroll-dot"></span>
-    </span>
-  </a>
+  <!-- Showcase visual (sits just below the fold — a scroll tease) -->
+  <div class="relative z-10 w-full max-w-[880px] mt-4 sm:mt-6 px-2" data-hero="visual">
+    <HeroVisual />
+  </div>
 </Section>
 
 <style>
   .hero-headline {
     font-weight: 600;
-    font-size: clamp(2.75rem, 7.5vw, 5.25rem);
-    line-height: 1.03;
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    line-height: 1.05;
     letter-spacing: -0.035em;
-  }
-
-  /* Animated dot inside the scroll cue */
-  .scroll-dot {
-    position: absolute;
-    top: 6px;
-    left: 50%;
-    width: 3px;
-    height: 6px;
-    margin-left: -1.5px;
-    border-radius: 9999px;
-    background: var(--color-accent-bronze-bright);
-    animation: scroll-bob 1.8s var(--ease-out-soft) infinite;
-  }
-  @keyframes scroll-bob {
-    0% { opacity: 0; transform: translateY(0); }
-    30% { opacity: 1; }
-    70% { opacity: 1; transform: translateY(8px); }
-    100% { opacity: 0; transform: translateY(10px); }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .scroll-dot { animation: none; top: 12px; opacity: 1; }
   }
 </style>

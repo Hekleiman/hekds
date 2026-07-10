@@ -40,11 +40,11 @@ function initHeroAnimations() {
   const tag = hero.querySelector('[data-hero="tag"]');
   const headline = hero.querySelector('[data-hero="headline"]');
   const subtext = hero.querySelector('[data-hero="subtext"]');
-  const meta = hero.querySelector('[data-hero="meta"]');
   const cta = hero.querySelector('[data-hero="cta"]');
-  const scroll = hero.querySelector('[data-hero="scroll"]');
+  const meta = hero.querySelector('[data-hero="meta"]');
+  const visual = hero.querySelector('[data-hero="visual"]');
 
-  const elements = [tag, headline, subtext, meta, cta, scroll].filter(Boolean);
+  const elements = [tag, headline, subtext, cta, meta, visual].filter(Boolean);
 
   // Set initial state
   gsap.set(elements, { opacity: 0, y: 30 });
@@ -54,9 +54,9 @@ function initHeroAnimations() {
   if (tag) tl.to(tag, { opacity: 1, y: 0, duration: 0.6 }, 0.1);
   if (headline) tl.to(headline, { opacity: 1, y: 0, duration: 0.9 }, 0.3);
   if (subtext) tl.to(subtext, { opacity: 1, y: 0, duration: 0.6 }, 0.6);
-  if (meta) tl.to(meta, { opacity: 1, y: 0, duration: 0.6 }, 0.75);
-  if (cta) tl.to(cta, { opacity: 1, y: 0, duration: 0.6 }, 0.85);
-  if (scroll) tl.to(scroll, { opacity: 1, y: 0, duration: 0.6 }, 1.1);
+  if (cta) tl.to(cta, { opacity: 1, y: 0, duration: 0.6 }, 0.75);
+  if (meta) tl.to(meta, { opacity: 1, y: 0, duration: 0.6 }, 0.85);
+  if (visual) tl.to(visual, { opacity: 1, y: 0, duration: 1.0 }, 0.95);
 
   // Draw the hero contour lines in on load
   const contours = hero.querySelectorAll('[data-draw="hero"]');
