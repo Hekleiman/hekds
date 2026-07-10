@@ -159,11 +159,15 @@ const { icon = 'strategy', class: className } = Astro.props;
         <rect x="66" y="264" width="96" height="16" rx="4" class="bar-2" />
         <rect x="66" y="292" width="44" height="7" rx="3.5" class="accent-fill" />
 
-        <!-- semicircle gauge (centre 330,296  r 54  — endpoints lie on the circle) -->
-        <path d="M276 296 A54 54 0 0 0 384 296" fill="none" stroke="rgba(255,255,255,0.14)" stroke-width="6" stroke-linecap="round" />
-        <path d="M276 296 A54 54 0 0 0 361.74 252.31" fill="none" stroke="var(--color-accent-bronze-bright)" stroke-width="6" stroke-linecap="round" />
-        <circle cx="361.74" cy="252.31" r="4" class="accent-fill" />
-        <rect x="310" y="282" width="40" height="9" rx="4" class="bar-2" />
+        <!-- circular progress gauge (perfect circles — track + ~72% ring).
+             dasharray on a full circle avoids any arc-endpoint issues. -->
+        <circle cx="330" cy="268" r="42" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="8" />
+        <circle
+          cx="330" cy="268" r="42" fill="none"
+          stroke="var(--color-accent-bronze-bright)" stroke-width="8" stroke-linecap="round"
+          stroke-dasharray="190 264" transform="rotate(-90 330 268)"
+        />
+        <rect x="314" y="264" width="32" height="8" rx="4" class="bar-2" />
       </g>
     )}
   </svg>
