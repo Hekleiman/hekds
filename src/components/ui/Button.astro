@@ -16,16 +16,16 @@ const {
   ...rest
 } = Astro.props;
 
-const baseStyles = 'inline-flex items-center justify-center rounded-full font-medium text-sm transition-colors duration-150 ease-in-out';
+const baseStyles = 'btn inline-flex items-center justify-center rounded-full font-medium text-sm';
 
 const sizeStyles = {
-  default: 'h-14 px-6',
+  default: 'h-14 px-7',
   small: 'h-11 px-6',
 };
 
 const variantStyles = {
-  primary: 'bg-border-primary text-white hover:bg-border-secondary',
-  secondary: 'bg-transparent border border-border-secondary text-white hover:bg-background-secondary',
+  primary: 'btn-primary',
+  secondary: 'btn-secondary',
 };
 
 const classes = [

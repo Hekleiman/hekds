@@ -126,15 +126,24 @@ const pageSchema = {
   </head>
   <body class="min-h-screen flex flex-col">
     {backgroundImage && (
-      <div class="fixed inset-0 -z-10 pointer-events-none" aria-hidden="true">
+      <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none" aria-hidden="true">
         <img
           src={backgroundImage}
           alt=""
           width="1920"
           height="1080"
-          class="w-full h-full object-cover opacity-20"
+          class="w-full h-full object-cover opacity-25 scale-125"
+          style="transform-origin: center 30%;"
           loading="eager"
+          data-parallax
+          data-parallax-speed="0.08"
         />
+        <!-- Depth: darken edges, keep focus toward the center -->
+        <div
+          class="absolute inset-0"
+          style="background: radial-gradient(120% 90% at 50% 22%, transparent 0%, rgba(9,9,11,0.35) 55%, rgba(9,9,11,0.85) 100%);"
+        >
+        </div>
       </div>
     )}
     <a
