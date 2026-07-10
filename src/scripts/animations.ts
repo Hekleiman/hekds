@@ -72,7 +72,6 @@ function initHeroAnimations() {
 function initCarousel() {
   const carousel = document.querySelector<HTMLElement>('[data-carousel]');
   const track = document.querySelector<HTMLElement>('[data-carousel-track]');
-  const tilt = document.querySelector<HTMLElement>('[data-carousel-tilt]');
   if (!carousel || !track) return;
 
   // Seamless marquee: track holds two copies, so -50% is exactly one set.
@@ -92,23 +91,6 @@ function initCarousel() {
   carousel.addEventListener('pointerleave', () =>
     gsap.to(marquee, { timeScale: 1, duration: 0.8, overwrite: true })
   );
-
-  // Cursor-reactive tilt (pointer-fine only). Base angle set via GSAP so it
-  // composes cleanly with the pointer delta.
-  if (tilt && window.matchMedia('(pointer: fine)').matches) {
-    gsap.set(tilt, { transformPerspective: 1600, rotationX: 7, rotationZ: -3 });
-    const rotY = gsap.quickTo(tilt, 'rotationY', { duration: 0.8, ease: 'power3' });
-    const rotX = gsap.quickTo(tilt, 'rotationX', { duration: 0.8, ease: 'power3' });
-    const zone = tilt.closest('[data-spotlight]') || carousel;
-    zone.addEventListener('pointermove', (e) => {
-      const ev = e as PointerEvent;
-      const r = (zone as HTMLElement).getBoundingClientRect();
-      const px = (ev.clientX - r.left) / r.width - 0.5; // -0.5..0.5
-      const py = (ev.clientY - r.top) / r.height - 0.5;
-      rotY(px * 10);
-      rotX(7 - py * 5);
-    });
-  }
 }
 
 // Fade-up animation for elements with [data-animate="fade-up"]
