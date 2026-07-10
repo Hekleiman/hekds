@@ -1,7 +1,6 @@
 ---
-import Section from '../ui/Section.astro';
 import Button from '../ui/Button.astro';
-import HeroVisual from './HeroVisual.astro';
+import ProjectCarousel from './ProjectCarousel.astro';
 
 interface Props {
   headlineLine1?: string;
@@ -24,50 +23,30 @@ const {
 } = Astro.props;
 ---
 
-<Section
-  class:list={['relative flex flex-col items-center overflow-hidden pb-20 sm:pb-28', className]}
+<section
+  class:list={['hero relative min-h-screen flex flex-col overflow-hidden', className]}
   data-animate="hero"
   data-spotlight
 >
   <!-- Depth glows -->
-  <div class="aura w-[520px] h-[520px] -top-24 left-1/2 -translate-x-1/2 bg-accent-bronze/10"></div>
+  <div class="aura w-[560px] h-[560px] -top-32 -left-24 bg-accent-bronze/10"></div>
+  <div class="aura w-[420px] h-[420px] top-1/3 right-[-6%] bg-white/[0.03]"></div>
 
-  <!-- Living-blueprint contour layer (draws in, parallaxes gently) -->
+  <!-- Living-blueprint contour layer -->
   <div
     class="absolute inset-0 pointer-events-none opacity-[0.5]"
     aria-hidden="true"
     data-parallax
-    data-parallax-speed="-0.12"
+    data-parallax-speed="-0.1"
   >
-    <svg
-      class="w-full h-full"
-      viewBox="0 0 1440 900"
-      fill="none"
-      preserveAspectRatio="xMidYMid slice"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M-40 620 C 220 560, 380 700, 620 640 S 1080 520, 1500 600"
-        stroke="var(--color-border-secondary)"
-        stroke-width="1"
-        data-draw="hero"
-      />
-      <path
-        d="M-40 700 C 260 640, 420 780, 700 710 S 1140 600, 1500 680"
-        stroke="var(--color-border-primary)"
-        stroke-width="1"
-        data-draw="hero"
-      />
-      <path
-        d="M-40 540 C 200 500, 460 600, 720 540 S 1120 440, 1500 520"
-        stroke="var(--color-border-primary)"
-        stroke-width="1"
-        data-draw="hero"
-      />
+    <svg class="w-full h-full" viewBox="0 0 1440 900" fill="none" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <path d="M-40 300 C 260 240, 460 360, 720 300 S 1140 200, 1500 280" stroke="var(--color-border-secondary)" stroke-width="1" data-draw="hero" />
+      <path d="M-40 380 C 300 320, 500 440, 780 370 S 1180 260, 1500 350" stroke="var(--color-border-primary)" stroke-width="1" data-draw="hero" />
+      <path d="M-40 220 C 240 180, 520 280, 760 220 S 1120 120, 1500 200" stroke="var(--color-border-primary)" stroke-width="1" data-draw="hero" />
     </svg>
   </div>
 
-  <!-- Cursor spotlight: a light passing over the blueprint (pointer-fine only) -->
+  <!-- Cursor spotlight -->
   <div
     class="absolute w-[600px] h-[600px] rounded-full opacity-0 pointer-events-none mix-blend-screen -ml-[300px] -mt-[300px]"
     style="background: radial-gradient(circle, rgba(224,162,96,0.12) 0%, rgba(224,162,96,0.05) 35%, transparent 70%);"
@@ -76,51 +55,87 @@ const {
   >
   </div>
 
-  <div class="relative z-10 w-full flex flex-col items-center text-center justify-center min-h-[calc(100svh-11rem)]">
-    <!-- Eyebrow -->
-    <div
-      class="inline-flex items-start gap-2 mb-7 px-4 py-1.5 rounded-full border border-border-primary bg-background-secondary/60 backdrop-blur-sm"
-      data-hero="tag"
-    >
-      <span class="w-1.5 h-1.5 mt-[7px] shrink-0 rounded-full bg-accent-bronze-bright"></span>
-      <span class="text-caption text-text-secondary tracking-wide">A two-person studio for small businesses &amp; nonprofits</span>
-    </div>
-
-    <!-- Headline -->
-    <h1 class="hero-headline max-w-[920px] mb-6" data-hero="headline">
-      <span class="block text-white">{headlineLine1}</span>
-      <span class="block text-metallic metallic-shimmer">{headlineLine2}</span>
-      <span class="block text-white">{headlineLine3}</span>
-    </h1>
-
-    <!-- Subheadline (concise) -->
-    <p class="text-body-lg text-text-secondary max-w-[520px] mb-8" data-hero="subtext">
-      {subtext}
-    </p>
-
-    <!-- CTA Group -->
-    <div class="flex flex-col sm:flex-row items-center gap-4 mb-4" data-hero="cta">
-      <Button href={primaryCta.href}>{primaryCta.text}</Button>
-      <Button href={secondaryCta.href} variant="secondary">{secondaryCta.text}</Button>
-    </div>
-
-    <!-- Pricing note -->
-    <p class="text-caption text-text-muted" data-hero="meta">
-      Project pricing from <span class="text-accent-bronze-bright font-medium">$500</span>
-    </p>
+  <!-- Rotated edge label -->
+  <div
+    class="hidden lg:flex items-center gap-3 absolute left-6 top-1/2 -translate-y-1/2 z-10 text-text-muted"
+    style="writing-mode: vertical-rl; transform: translateY(-50%) rotate(180deg);"
+    data-hero="tag"
+    aria-hidden="true"
+  >
+    <span class="text-[11px] uppercase tracking-[0.35em]">Web &amp; App Design Studio</span>
+    <span class="w-px h-16 bg-gradient-to-b from-transparent via-border-secondary to-transparent"></span>
   </div>
 
-  <!-- Showcase visual (sits just below the fold — a scroll tease) -->
-  <div class="relative z-10 w-full max-w-[880px] mt-4 sm:mt-6 px-2" data-hero="visual">
-    <HeroVisual />
+  <!-- Content (asymmetric, left-anchored) -->
+  <div class="relative z-10 flex-1 flex items-center w-full">
+    <div class="container-main w-full pt-32 pb-6">
+      <div class="max-w-[62rem]">
+        <!-- Eyebrow -->
+        <div
+          class="inline-flex items-center gap-2 mb-8 px-4 py-1.5 rounded-full border border-border-primary bg-background-secondary/60 backdrop-blur-sm"
+          data-hero="eyebrow"
+        >
+          <span class="w-1.5 h-1.5 shrink-0 rounded-full bg-accent-bronze-bright"></span>
+          <span class="text-caption text-text-secondary tracking-wide whitespace-nowrap">
+            <span class="sm:hidden">A two-person design &amp; dev studio</span>
+            <span class="hidden sm:inline">A two-person studio for small businesses &amp; nonprofits</span>
+          </span>
+        </div>
+
+        <!-- Headline with clip-reveal lines -->
+        <h1 class="hero-headline mb-8" data-hero="headline">
+          <span class="line"><span class="line-inner text-white">{headlineLine1}</span></span>
+          <span class="line"><span class="line-inner text-metallic metallic-shimmer">{headlineLine2}</span></span>
+          <span class="line"><span class="line-inner text-white">{headlineLine3}</span></span>
+        </h1>
+
+        <div class="flex flex-col sm:flex-row sm:items-center gap-x-8 gap-y-6 max-w-[54rem]">
+          <!-- Subheadline -->
+          <p class="text-body-lg text-text-secondary max-w-[26rem]" data-hero="subtext">
+            {subtext}
+          </p>
+
+          <!-- CTAs + pricing -->
+          <div class="flex flex-col gap-3" data-hero="cta">
+            <div class="flex flex-col sm:flex-row gap-3">
+              <Button href={primaryCta.href}>{primaryCta.text}</Button>
+              <Button href={secondaryCta.href} variant="secondary">{secondaryCta.text}</Button>
+            </div>
+            <p class="text-caption text-text-muted">
+              Project pricing from <span class="text-accent-bronze-bright font-medium">$500</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-</Section>
+
+  <!-- Work-wall carousel (lower band) -->
+  <div class="relative z-10 w-full mt-auto pb-10" data-hero="visual">
+    <div class="container-main w-full flex items-end justify-between mb-1">
+      <span class="text-[11px] uppercase tracking-[0.25em] text-text-muted">Selected work</span>
+      <a href="/work" class="group inline-flex items-center gap-1.5 text-caption text-text-secondary hover:text-white transition-colors">
+        View all
+        <span class="transition-transform duration-300 group-hover:translate-x-1">→</span>
+      </a>
+    </div>
+    <ProjectCarousel />
+  </div>
+</section>
 
 <style>
   .hero-headline {
     font-weight: 600;
-    font-size: clamp(2.5rem, 6vw, 4.5rem);
-    line-height: 1.05;
-    letter-spacing: -0.035em;
+    font-size: clamp(2.6rem, 6.4vw, 5rem);
+    line-height: 1.02;
+    letter-spacing: -0.04em;
+  }
+  .hero-headline .line {
+    display: block;
+    overflow: hidden;
+    padding-bottom: 0.04em; /* room for descenders inside the clip */
+  }
+  .hero-headline .line-inner {
+    display: block;
   }
 </style>

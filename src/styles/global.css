@@ -74,7 +74,8 @@
   --color-accent-bronze-bright: #e0a260;
 
   /* Metallic gradients (deliberate hierarchy accents) */
-  --gradient-metallic: linear-gradient(120deg, #e0a260 0%, #f5e6c8 30%, #c0c0c0 55%, #e0a260 100%);
+  /* Warmer + lower-contrast than a bright gold/silver so it reads refined, not flashy */
+  --gradient-metallic: linear-gradient(120deg, #c98f52 0%, #e2c69c 34%, #b1a794 58%, #c98f52 100%);
   --gradient-bronze: linear-gradient(120deg, #cd7f32 0%, #e6b878 50%, #cd7f32 100%);
   --gradient-silver: linear-gradient(120deg, #a8a8a8 0%, #f0f0f0 50%, #a8a8a8 100%);
   --gradient-gold: linear-gradient(120deg, #c9a227 0%, #ffe89a 50%, #c9a227 100%);

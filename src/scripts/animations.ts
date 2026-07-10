@@ -30,6 +30,7 @@ export function initAnimations() {
   initParallax();
   initLineDraw();
   initSpotlight();
+  initCarousel();
 }
 
 // Hero-specific animations (no scroll trigger, immediate)
@@ -38,25 +39,25 @@ function initHeroAnimations() {
   if (!hero) return;
 
   const tag = hero.querySelector('[data-hero="tag"]');
-  const headline = hero.querySelector('[data-hero="headline"]');
+  const eyebrow = hero.querySelector('[data-hero="eyebrow"]');
   const subtext = hero.querySelector('[data-hero="subtext"]');
   const cta = hero.querySelector('[data-hero="cta"]');
-  const meta = hero.querySelector('[data-hero="meta"]');
   const visual = hero.querySelector('[data-hero="visual"]');
+  const lines = hero.querySelectorAll('[data-hero="headline"] .line-inner');
 
-  const elements = [tag, headline, subtext, cta, meta, visual].filter(Boolean);
-
-  // Set initial state
-  gsap.set(elements, { opacity: 0, y: 30 });
+  // Set initial state (tag keeps its own CSS rotate transform, so fade only)
+  gsap.set([eyebrow, subtext, cta, visual].filter(Boolean), { opacity: 0, y: 24 });
+  if (tag) gsap.set(tag, { opacity: 0 });
+  if (lines.length) gsap.set(lines, { yPercent: 118 });
 
   const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
-  if (tag) tl.to(tag, { opacity: 1, y: 0, duration: 0.6 }, 0.1);
-  if (headline) tl.to(headline, { opacity: 1, y: 0, duration: 0.9 }, 0.3);
-  if (subtext) tl.to(subtext, { opacity: 1, y: 0, duration: 0.6 }, 0.6);
-  if (cta) tl.to(cta, { opacity: 1, y: 0, duration: 0.6 }, 0.75);
-  if (meta) tl.to(meta, { opacity: 1, y: 0, duration: 0.6 }, 0.85);
-  if (visual) tl.to(visual, { opacity: 1, y: 0, duration: 1.0 }, 0.95);
+  if (eyebrow) tl.to(eyebrow, { opacity: 1, y: 0, duration: 0.6 }, 0.1);
+  if (lines.length) tl.to(lines, { yPercent: 0, duration: 0.95, stagger: 0.11, ease: 'power4.out' }, 0.22);
+  if (subtext) tl.to(subtext, { opacity: 1, y: 0, duration: 0.6 }, 0.7);
+  if (cta) tl.to(cta, { opacity: 1, y: 0, duration: 0.6 }, 0.8);
+  if (visual) tl.to(visual, { opacity: 1, y: 0, duration: 1.0 }, 0.75);
+  if (tag) tl.to(tag, { opacity: 1, duration: 0.8 }, 1.0);
 
   // Draw the hero contour lines in on load
   const contours = hero.querySelectorAll('[data-draw="hero"]');
@@ -65,6 +66,49 @@ function initHeroAnimations() {
     gsap.set(path, { strokeDasharray: len, strokeDashoffset: len, opacity: 1 });
     tl.to(path, { strokeDashoffset: 0, duration: 1.8, ease: 'power2.inOut' }, 0.4 + i * 0.15);
   });
+}
+
+// Infinite auto-drifting project carousel + cursor-reactive 3D tilt
+function initCarousel() {
+  const carousel = document.querySelector<HTMLElement>('[data-carousel]');
+  const track = document.querySelector<HTMLElement>('[data-carousel-track]');
+  const tilt = document.querySelector<HTMLElement>('[data-carousel-tilt]');
+  if (!carousel || !track) return;
+
+  // Seamless marquee: track holds two copies, so -50% is exactly one set.
+  const setWidth = track.scrollWidth / 2;
+  const speed = 55; // px per second
+  const marquee = gsap.to(track, {
+    xPercent: -50,
+    ease: 'none',
+    duration: setWidth / speed,
+    repeat: -1,
+  });
+
+  // Ease the drift down (not a hard stop) while hovering the wall
+  carousel.addEventListener('pointerenter', () =>
+    gsap.to(marquee, { timeScale: 0.15, duration: 0.6, overwrite: true })
+  );
+  carousel.addEventListener('pointerleave', () =>
+    gsap.to(marquee, { timeScale: 1, duration: 0.8, overwrite: true })
+  );
+
+  // Cursor-reactive tilt (pointer-fine only). Base angle set via GSAP so it
+  // composes cleanly with the pointer delta.
+  if (tilt && window.matchMedia('(pointer: fine)').matches) {
+    gsap.set(tilt, { transformPerspective: 1600, rotationX: 7, rotationZ: -3 });
+    const rotY = gsap.quickTo(tilt, 'rotationY', { duration: 0.8, ease: 'power3' });
+    const rotX = gsap.quickTo(tilt, 'rotationX', { duration: 0.8, ease: 'power3' });
+    const zone = tilt.closest('[data-spotlight]') || carousel;
+    zone.addEventListener('pointermove', (e) => {
+      const ev = e as PointerEvent;
+      const r = (zone as HTMLElement).getBoundingClientRect();
+      const px = (ev.clientX - r.left) / r.width - 0.5; // -0.5..0.5
+      const py = (ev.clientY - r.top) / r.height - 0.5;
+      rotY(px * 10);
+      rotX(7 - py * 5);
+    });
+  }
 }
 
 // Fade-up animation for elements with [data-animate="fade-up"]

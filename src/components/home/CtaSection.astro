@@ -15,6 +15,14 @@ const {
   primaryCta = { text: 'Start a Conversation →', href: '/contact' },
   class: className,
 } = Astro.props;
+
+// Apply the metallic accent to the final word of the CMS-provided headline
+// (trailing punctuation preserved). Falls back gracefully for one-word strings.
+const headlineText = (headline ?? '').trim() || "Let's build something together.";
+const match = headlineText.match(/^([\s\S]*\S)\s+(\S+?)([.!?…]*)$/);
+const headlineLead = match ? match[1] : '';
+const headlineAccent = match ? match[2] : headlineText;
+const headlinePunct = match ? match[3] : '';
 ---
 
 <Section class:list={['relative overflow-hidden border-t border-border-primary', className]}>
@@ -28,9 +36,9 @@ const {
   </div>
 
   <div class="relative z-10 flex flex-col items-center text-center" data-animate="fade-up">
-    <!-- Headline -->
+    <!-- Headline (CMS-editable; metallic accent on the final word) -->
     <h2 class="text-h2 mb-5 max-w-[16ch]">
-      Let's build something <span class="text-metallic metallic-shimmer">together</span>.
+      {headlineLead && <>{headlineLead}{' '}</>}<span class="text-metallic metallic-shimmer">{headlineAccent}</span>{headlinePunct}
     </h2>
 
     <!-- Subtext -->
