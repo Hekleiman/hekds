@@ -128,7 +128,7 @@ const liveUrl = mapped?.url;
                 alt={`${project.title} — ${item.label}`}
                 loading="lazy"
                 decoding="async"
-                class="w-full h-auto block"
+                class="device-strip w-full h-auto block"
               />
             )}
             {item.label && (
@@ -145,6 +145,15 @@ const liveUrl = mapped?.url;
 </Section>
 
 <style>
+  /* Device strip (transparent phone mockups): drop-shadow traces each phone's
+     alpha, so a soft ambient glow + depth shadow lift them off the dark page. */
+  .device-strip {
+    filter:
+      drop-shadow(0 18px 34px rgba(0, 0, 0, 0.55))
+      drop-shadow(0 0 26px rgba(224, 162, 96, 0.10))
+      drop-shadow(0 0 1px rgba(255, 255, 255, 0.35));
+  }
+
   .visit-label {
     background-image: linear-gradient(currentColor, currentColor);
     background-repeat: no-repeat;
