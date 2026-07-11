@@ -75,7 +75,10 @@ const {
   </div>
 
   <!-- Content (centered) -->
-  <div class="relative z-10 flex-1 flex flex-col items-center justify-center text-center w-full container-main pt-32 pb-4 sm:pt-20">
+  <div
+    class="relative z-10 flex flex-col items-center justify-center text-center w-full container-main pb-4"
+    style="padding-top: clamp(8rem, 7.6rem + 1.6vw, 9.5rem);"
+  >
     <!-- Eyebrow -->
     <div
       class="inline-flex items-center gap-2 mb-6 px-4 py-1.5 rounded-full border border-border-primary bg-background-secondary/60 backdrop-blur-sm"
@@ -88,11 +91,10 @@ const {
       </span>
     </div>
 
-    <!-- Headline with clip-reveal lines -->
+    <!-- Headline with clip-reveal lines. Stacks on mobile/tablet; collapses to a
+         single line on wide desktop (xl+) where it fits the container. -->
     <h1 class="hero-headline mb-5" data-hero="headline">
-      {headlineLine1 && <span class="line"><span class="line-inner text-white">{headlineLine1}</span></span>}
-      {headlineLine2 && <span class="line"><span class="line-inner text-metallic metallic-shimmer">{headlineLine2}</span></span>}
-      {headlineLine3 && <span class="line"><span class="line-inner text-white">{headlineLine3}</span></span>}
+      {headlineLine1 && <span class="line"><span class="line-inner text-white">{headlineLine1}</span></span>}{headlineLine2 && <span class="line"><span class="line-inner text-metallic metallic-shimmer">{headlineLine2}</span></span>}{headlineLine3 && <span class="line"><span class="line-inner text-white">{headlineLine3}</span></span>}
     </h1>
 
     <!-- Subheadline -->
@@ -112,8 +114,9 @@ const {
     </div>
   </div>
 
-  <!-- Work-wall carousel (above the fold) -->
-  <div class="relative z-10 w-full pt-2 pb-8" data-hero="visual">
+  <!-- Work-wall carousel (above the fold). On desktop it grows to fill the
+       space beneath the hero text and centers itself there. -->
+  <div class="relative z-10 w-full pb-8 pt-2 md:flex-1 md:flex md:items-center" data-hero="visual">
     <ProjectCarousel projects={featuredWork} />
   </div>
 </section>
@@ -132,5 +135,23 @@ const {
   }
   .hero-headline .line-inner {
     display: block;
+  }
+
+  /* Wide desktop: collapse the headline onto a single line. The two parts sit
+     inline with a normal word space; font is capped so the full string fits the
+     ~1141px content column without wrapping. */
+  @media (min-width: 1280px) {
+    .hero-headline {
+      font-size: clamp(2.75rem, 1.55rem + 1.9vw, 3.5rem);
+      white-space: nowrap;
+    }
+    .hero-headline .line {
+      display: inline-block;
+      vertical-align: top;
+      padding-bottom: 0.12em; /* descenders when clip runs horizontally inline */
+    }
+    .hero-headline .line + .line {
+      margin-left: 0.28em; /* word space between the two inline parts */
+    }
   }
 </style>

@@ -51,8 +51,11 @@ const navLinks = [
 
     <!-- Right side container (CTA, then hamburger on the far right) -->
     <div class="flex items-center justify-end gap-1.5 sm:gap-2">
-      <!-- CTA Button -->
-      <Button href="/contact" size="small" variant={isContactPage ? 'secondary' : 'primary'}>Start a Project</Button>
+      <!-- CTA Button — hidden on mobile to declutter the bar; the slide-out
+           menu carries the CTA there instead -->
+      <div class="hidden md:flex">
+        <Button href="/contact" size="small" variant={isContactPage ? 'secondary' : 'primary'}>Start a Project</Button>
+      </div>
 
       <!-- Mobile Hamburger (far right) -->
       <button
