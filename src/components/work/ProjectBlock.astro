@@ -32,6 +32,16 @@ const {
 const mapped = portfolioImageFor({ slug, title });
 const frameSrc = mapped?.src ?? thumbnail;
 const numeral = String(index + 1).padStart(2, '0');
+
+// Right-size via srcset (an 880px card covers the half-width card slot); the four
+// real projects have -card variants. The first row loads eagerly (LCP), rest lazy.
+const CARDS = new Set(['jewmanity', 'lisette', 'tradeup', 'yieldstone']);
+const frameBase = frameSrc?.split('/').pop()?.replace('.webp', '');
+const frameSrcset =
+  frameSrc && frameBase && CARDS.has(frameBase)
+    ? `${frameSrc.replace('.webp', '-card.webp')} 880w, ${frameSrc} 1600w`
+    : undefined;
+const eager = index === 0;
 ---
 
 <a
@@ -48,9 +58,12 @@ const numeral = String(index + 1).padStart(2, '0');
       <ProjectFrame
         variant={mapped?.variant ?? 'browser'}
         src={frameSrc}
+        srcset={frameSrcset}
         alt={`${title} — ${category}, built by HEK Design Studio`}
         url={mapped?.url}
         sizes="(min-width: 768px) 50vw, 100vw"
+        loading={eager ? 'eager' : 'lazy'}
+        fetchpriority={eager ? 'high' : undefined}
       />
     ) : (
       <div class="surface-elevated aspect-[16/10] flex items-center justify-center text-text-placeholder">

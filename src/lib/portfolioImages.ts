@@ -30,6 +30,9 @@ const MAP: Array<{ match: RegExp; img: PortfolioImage }> = [
       gallery: [
         { src: '/images/portfolio/lisette-gallery.webp', label: 'Gallery — the work, uninterrupted' },
         { src: '/images/portfolio/lisette-prints.webp', label: 'Prints & shop' },
+        { src: '/images/portfolio/lisette-about.webp', label: 'About' },
+        { src: '/images/portfolio/lisette-order.webp', label: 'Order a digital download' },
+        { src: '/images/portfolio/lisette-contact.webp', label: 'Contact' },
       ],
     },
   },
@@ -56,7 +59,9 @@ const MAP: Array<{ match: RegExp; img: PortfolioImage }> = [
       url: 'yieldstonesystems.com',
       gallery: [
         { src: '/images/portfolio/yieldstone-services.webp', label: 'Services — tiered engagement model' },
+        { src: '/images/portfolio/yieldstone-casestudies.webp', label: 'Case studies — past work & results' },
         { src: '/images/portfolio/yieldstone-about.webp', label: 'About the practice' },
+        { src: '/images/portfolio/yieldstone-contact.webp', label: 'Contact' },
       ],
     },
   },
@@ -68,7 +73,10 @@ const MAP: Array<{ match: RegExp; img: PortfolioImage }> = [
       url: 'jewmanity.com',
       gallery: [
         { src: '/images/portfolio/jewmanity-programs.webp', label: 'Programs — Heads Up' },
+        { src: '/images/portfolio/jewmanity-community.webp', label: 'Community — recipes & heritage' },
         { src: '/images/portfolio/jewmanity-shop.webp', label: 'Community shop' },
+        { src: '/images/portfolio/jewmanity-about.webp', label: 'About — Our Story' },
+        { src: '/images/portfolio/jewmanity-volunteer.webp', label: 'Get Involved — Volunteer' },
       ],
     },
   },

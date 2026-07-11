@@ -13,6 +13,7 @@ interface Props {
   width?: number;
   height?: number;
   loading?: 'lazy' | 'eager';
+  fetchpriority?: 'high' | 'low' | 'auto';
   class?: string;
 }
 
@@ -26,6 +27,7 @@ const {
   width = 800,
   height = 500,
   loading = 'lazy',
+  fetchpriority,
   class: className,
 } = Astro.props;
 ---
@@ -52,6 +54,7 @@ const {
         width={width}
         height={height}
         loading={loading}
+        fetchpriority={fetchpriority}
         decoding="async"
         class="pshot-img absolute inset-0 w-full h-full object-cover object-top"
       />

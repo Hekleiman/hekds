@@ -25,6 +25,15 @@ const gallery: GalleryShot[] =
 const isPhoneGallery = gallery.length > 0 && gallery.every((g) => g.type === 'phone');
 
 const liveUrl = mapped?.url;
+
+// Right-size the primary via srcset: an 880px card for small viewports, the full
+// 1600px for large. Only the four real projects have -card variants on disk.
+const PRIMARY_CARDS = new Set(['jewmanity', 'lisette', 'tradeup', 'yieldstone']);
+const primaryBase = primarySrc?.split('/').pop()?.replace('.webp', '');
+const primarySrcset =
+  primarySrc && primaryBase && PRIMARY_CARDS.has(primaryBase)
+    ? `${primarySrc.replace('.webp', '-card.webp')} 880w, ${primarySrc} 1600w`
+    : undefined;
 ---
 
 <Section class:list={['pt-0!', className]}>
@@ -36,11 +45,13 @@ const liveUrl = mapped?.url;
         <ProjectFrame
           variant={mapped?.variant ?? 'browser'}
           src={primarySrc}
+          srcset={primarySrcset}
           alt={`${project.title} — ${project.category}, built by HEK Design Studio`}
           url={mapped?.url}
           width={1600}
           height={1000}
           loading="eager"
+          fetchpriority="high"
           sizes="(min-width: 1024px) 980px, 100vw"
         />
       </div>
@@ -137,6 +148,8 @@ const liveUrl = mapped?.url;
                 <img
                   src={s.src}
                   alt={`${project.title} — ${s.label}`}
+                  width={447}
+                  height={944}
                   loading="lazy"
                   decoding="async"
                   class="device-phone h-auto block w-[248px] max-w-[74%] lg:w-full lg:max-w-none"
