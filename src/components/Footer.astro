@@ -43,11 +43,12 @@ const connectLinks = [
 ---
 
 <footer class:list={['bg-background-primary border-t border-border-primary', className]}>
-  <div class="max-w-[1280px] mx-auto px-6 md:px-12 lg:px-[100px] py-12 lg:py-16">
-    <!-- Main Grid: 4 columns on desktop, 2 on tablet, 1 on mobile -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-8">
-      <!-- Column 1: Brand -->
-      <div class="space-y-4 sm:col-span-2 lg:col-span-1">
+  <div class="max-w-[1280px] mx-auto px-6 md:px-12 lg:px-[100px] py-10 lg:py-16">
+    <!-- Main Grid: 4 columns on desktop; on mobile/tablet the brand sits full
+         width with the three link groups side by side (keeps the footer short). -->
+    <div class="grid grid-cols-3 gap-x-5 gap-y-8 lg:grid-cols-4 lg:gap-8">
+      <!-- Brand -->
+      <div class="space-y-3 col-span-3 lg:col-span-1">
         <p class="text-lg font-bold text-white">
           {siteName}
         </p>
@@ -56,17 +57,17 @@ const connectLinks = [
         </p>
       </div>
 
-      <!-- Column 2: Pages -->
+      <!-- Pages -->
       <div>
-        <h3 class="text-sm text-zinc-400 uppercase tracking-wider mb-4">
+        <h3 class="text-sm text-zinc-400 uppercase tracking-wider mb-3">
           Pages
         </h3>
-        <ul class="space-y-1">
+        <ul>
           {pageLinks.map((link) => (
             <li>
               <a
                 href={link.href}
-                class="inline-block py-2 text-zinc-400 hover:text-white transition-colors duration-150"
+                class="inline-block py-1.5 text-zinc-400 hover:text-white transition-colors duration-150"
               >
                 {link.label}
               </a>
@@ -75,17 +76,17 @@ const connectLinks = [
         </ul>
       </div>
 
-      <!-- Column 3: Contact -->
+      <!-- Contact -->
       <div>
-        <h3 class="text-sm text-zinc-400 uppercase tracking-wider mb-4">
+        <h3 class="text-sm text-zinc-400 uppercase tracking-wider mb-3">
           Contact
         </h3>
-        <ul class="space-y-1">
+        <ul>
           {contactLinks.map((link) => (
             <li>
               <a
                 href={link.href}
-                class="inline-block py-2 text-zinc-400 hover:text-white transition-colors duration-150"
+                class="inline-block py-1.5 text-zinc-400 hover:text-white transition-colors duration-150"
               >
                 {link.label}
               </a>
@@ -94,17 +95,17 @@ const connectLinks = [
         </ul>
       </div>
 
-      <!-- Column 4: Connect -->
+      <!-- Connect -->
       <div>
-        <h3 class="text-sm text-zinc-400 uppercase tracking-wider mb-4">
+        <h3 class="text-sm text-zinc-400 uppercase tracking-wider mb-3">
           Connect
         </h3>
-        <ul class="space-y-1">
+        <ul>
           {connectLinks.map((link) => (
             <li>
               <a
                 href={link.href}
-                class="inline-block py-2 text-zinc-400 hover:text-white transition-colors duration-150"
+                class="inline-block py-1.5 text-zinc-400 hover:text-white transition-colors duration-150"
                 {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
               >
                 {link.label}
