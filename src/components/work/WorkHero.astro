@@ -55,8 +55,10 @@ const {
   >
   </div>
 
-  <!-- Content -->
-  <div class="relative z-10 container-main pt-10 pb-6 sm:pt-16 flex flex-col items-center text-center">
+  <!-- Content. On mobile the global nav offset (main pt-36) leaves a large dead
+       band above the eyebrow; a negative top margin pulls the block up to match
+       the Home hero's rhythm. Reverts to normal flow on sm+. -->
+  <div class="relative z-10 container-main -mt-11 pt-4 pb-6 sm:mt-0 sm:pt-16 flex flex-col items-center text-center">
     <!-- Eyebrow pill -->
     <div
       class="inline-flex items-center gap-2 mb-8 px-4 py-1.5 rounded-full border border-border-primary bg-background-secondary/60 backdrop-blur-sm"

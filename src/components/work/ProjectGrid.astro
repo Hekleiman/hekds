@@ -21,17 +21,17 @@ const { projects, class: className } = Astro.props;
 ---
 
 <Section class:list={['pt-0', className]}>
-  <!-- Living-blueprint spine: a single line threaded down the page that "connects
-       the work", drawn as it scrolls into view (reuses data-draw="scroll"). Sits
-       on the left rail on mobile, centered between the columns on desktop. -->
+  <!-- Living-blueprint spine: a single line threaded down the center gutter that
+       "connects the work", drawn as it scrolls into view (reuses data-draw=scroll).
+       Desktop only (lg+), where the widened column gap gives it clearance. -->
   <div class="relative" data-draw-trigger>
     <div
-      class="absolute inset-y-0 left-[7px] md:left-1/2 md:-translate-x-1/2 pointer-events-none opacity-40 hidden sm:block"
+      class="absolute inset-y-0 left-1/2 -translate-x-1/2 pointer-events-none opacity-30 hidden lg:block"
       aria-hidden="true"
     >
       <svg class="h-full w-[44px] -ml-[22px]" viewBox="0 0 44 1200" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
         <path
-          d="M22 0 C 8 200, 36 400, 22 600 S 8 1000, 22 1200"
+          d="M22 0 C 17 200, 27 400, 22 600 S 17 1000, 22 1200"
           stroke="var(--color-border-secondary)"
           stroke-width="1"
           data-draw="scroll"
