@@ -51,8 +51,8 @@ const { title, category, year, client, class: className } = Astro.props;
       {category} <span class="text-text-muted">· {year}</span>
     </p>
 
-    <!-- Title -->
-    <h1 class="text-h1 text-white mb-4 max-w-[16ch]">{title}</h1>
+    <!-- Title — always one line; the size scales to fit the container width. -->
+    <h1 class="project-title text-white mb-4">{title}</h1>
 
     <!-- Meta (only when the client name adds information beyond the title) -->
     {client && client.trim().toLowerCase() !== title.trim().toLowerCase() && (
@@ -62,3 +62,15 @@ const { title, category, year, client, class: className } = Astro.props;
     )}
   </div>
 </section>
+
+<style>
+  /* Project title: never wraps — the fluid size is tuned so even the longest
+     project name fits the container on one line, down to ~320px. */
+  .project-title {
+    font-weight: 500;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    white-space: nowrap;
+    font-size: clamp(1.95rem, 1.05rem + 4.1vw, 4.5rem);
+  }
+</style>
