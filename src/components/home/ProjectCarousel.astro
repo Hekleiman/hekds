@@ -62,7 +62,7 @@ const loop = [...projects, ...projects];
             aria-hidden={i >= projects.length ? 'true' : undefined}
           >
             {p.variant === 'browser' ? (
-              <div class="cframe surface-elevated overflow-hidden w-[340px] sm:w-[400px]">
+              <div class="cframe surface-elevated overflow-hidden w-[400px] sm:w-[520px]">
                 <div class="flex items-center gap-1.5 h-8 px-3 border-b border-border-primary bg-background-secondary/70">
                   <span class="w-2 h-2 rounded-full bg-border-secondary"></span>
                   <span class="w-2 h-2 rounded-full bg-border-secondary"></span>
@@ -123,7 +123,7 @@ const loop = [...projects, ...projects];
   }
   .carousel-viewport {
     overflow: hidden;
-    padding: 20px 0 24px;
+    padding: 12px 0 24px;
     -webkit-mask-image: linear-gradient(to right, transparent, #000 7%, #000 93%, transparent);
     mask-image: linear-gradient(to right, transparent, #000 7%, #000 93%, transparent);
   }
