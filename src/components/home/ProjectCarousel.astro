@@ -5,6 +5,7 @@
 interface Project {
   variant: 'browser' | 'phone';
   src: string;
+  srcset?: string;
   alt: string;
   label: string;
   tag: string;
@@ -34,8 +35,8 @@ const defaultProjects: Project[] = [
     label: 'Images by Lisette',
     tag: 'Photography',
     url: 'imagesbylisette.com',
-    width: 1200,
-    height: 750,
+    width: 800,
+    height: 500,
   },
   {
     variant: 'browser',
@@ -44,8 +45,8 @@ const defaultProjects: Project[] = [
     label: 'Trade Up',
     tag: 'Product',
     url: 'tradeupmarket.com',
-    width: 1200,
-    height: 751,
+    width: 800,
+    height: 500,
   },
   {
     variant: 'browser',
@@ -54,8 +55,8 @@ const defaultProjects: Project[] = [
     label: 'Yieldstone',
     tag: 'B2B Systems',
     url: 'yieldstonesystems.com',
-    width: 1200,
-    height: 750,
+    width: 800,
+    height: 500,
   },
   {
     variant: 'browser',
@@ -64,8 +65,8 @@ const defaultProjects: Project[] = [
     label: 'Jewmanity',
     tag: 'Nonprofit',
     url: 'jewmanity.com',
-    width: 1200,
-    height: 750,
+    width: 800,
+    height: 500,
   },
   {
     variant: 'browser',
@@ -74,14 +75,20 @@ const defaultProjects: Project[] = [
     label: 'SBK MD',
     tag: 'Healthcare',
     url: 'stuartbkippermd.com',
-    width: 1200,
-    height: 750,
+    width: 800,
+    height: 500,
   },
 ];
 
-// Sanity CDN images get sizing params; local files are left as-is.
-const sized = (src: string) =>
-  src.includes('cdn.sanity.io') ? `${src}?w=1200&fit=max&auto=format` : src;
+// Sanity CDN images: request an appropriately-sized WebP/AVIF (auto=format) so a
+// phone doesn't decode a 1200px texture for a ~300px card — that was making the
+// marquee stutter on mobile. Two widths let the browser pick per device; 800px
+// keeps the 400px desktop card crisp at 2x. Local files are already 800px WebP.
+const isCdn = (src: string) => src.includes('cdn.sanity.io');
+const cdn = (src: string, w: number) => `${src}?w=${w}&q=80&fit=max&auto=format`;
+const srcFor = (src: string) => (isCdn(src) ? cdn(src, 800) : src);
+const srcSetFor = (src: string) =>
+  isCdn(src) ? `${cdn(src, 500)} 500w, ${cdn(src, 800)} 800w` : undefined;
 
 const projects: Project[] =
   cmsProjects && cmsProjects.length
@@ -89,7 +96,8 @@ const projects: Project[] =
         .filter((p) => p.src && p.label)
         .map((p) => ({
           variant: p.variant === 'phone' ? 'phone' : 'browser',
-          src: sized(p.src as string),
+          src: srcFor(p.src as string),
+          srcset: srcSetFor(p.src as string),
           alt: `${p.label} — built by HEK Design Studio`,
           label: p.label as string,
           tag: p.tag ?? '',
@@ -126,6 +134,8 @@ const loop = [...projects, ...projects];
                 <div class="relative aspect-[16/10] overflow-hidden bg-background-primary">
                   <img
                     src={p.src}
+                    srcset={p.srcset}
+                    sizes="(min-width: 1024px) 400px, 300px"
                     alt={p.alt}
                     width={p.width}
                     height={p.height}
