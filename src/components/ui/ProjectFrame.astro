@@ -79,6 +79,13 @@ const {
 )}
 
 <style>
+  /* Browser frame: dial the card radius down on small screens where 24px reads
+     as too bubbly; step it back up toward desktop. (Phone frame keeps its own
+     device radius.) */
+  .pframe.surface-elevated { border-radius: 12px; }
+  @media (min-width: 640px) { .pframe.surface-elevated { border-radius: 15px; } }
+  @media (min-width: 1024px) { .pframe.surface-elevated { border-radius: 20px; } }
+
   .pframe {
     transition: transform 0.5s var(--ease-out-expo),
       box-shadow 0.5s var(--ease-out-expo),

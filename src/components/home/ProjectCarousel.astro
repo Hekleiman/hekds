@@ -210,6 +210,12 @@ const loop = [...projects, ...projects];
     .carousel-track { animation-duration: 32s; }
   }
 
+  /* Browser card: less bubbly on small screens; steps up toward desktop.
+     (Phone card keeps its own device radius.) */
+  .cframe.surface-elevated { border-radius: 12px; }
+  @media (min-width: 640px) { .cframe.surface-elevated { border-radius: 15px; } }
+  @media (min-width: 1024px) { .cframe.surface-elevated { border-radius: 20px; } }
+
   .cframe {
     transition: transform 0.5s var(--ease-out-expo, ease-out),
       box-shadow 0.5s var(--ease-out-expo, ease-out);
