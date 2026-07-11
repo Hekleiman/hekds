@@ -1,6 +1,8 @@
 ---
 import Section from '../ui/Section.astro';
+import ProjectFrame from '../ui/ProjectFrame.astro';
 import type { Project } from '../../data/projects';
+import { portfolioImageFor } from '../../lib/portfolioImages';
 
 interface Props {
   project: Project;
@@ -8,92 +10,93 @@ interface Props {
 }
 
 const { project, class: className } = Astro.props;
+
+const mapped = portfolioImageFor({ slug: project.slug, title: project.title });
+const primarySrc = mapped?.src ?? project.thumbnail;
+// Prefer Sanity images when populated; otherwise fall back to the mapped gallery.
+const gallery =
+  project.images && project.images.length > 0
+    ? project.images
+    : mapped?.gallery ?? [];
 ---
 
 <Section class:list={['pt-0', className]}>
+  <!-- Primary framed shot — the "money shot", in browser chrome -->
+  {primarySrc && (
+    <div class="relative mb-16 group" data-animate="fade-up">
+      <div class="aura w-[70%] h-[60%] top-[10%] left-1/2 -translate-x-1/2 bg-accent-bronze/[0.07]"></div>
+      <div class="relative max-w-[980px] mx-auto">
+        <ProjectFrame
+          variant={mapped?.variant ?? 'browser'}
+          src={primarySrc}
+          alt={`${project.title} — ${project.category}, built by HEK Design Studio`}
+          url={mapped?.url}
+          loading="eager"
+          sizes="(min-width: 1024px) 980px, 100vw"
+        />
+      </div>
+    </div>
+  )}
+
   <div class="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-16" data-animate="fade-up">
-    <!-- Main Content (3/5 width on desktop) -->
-    <div class="lg:col-span-3 space-y-8">
-      <!-- Full Description -->
+    <!-- Main Content -->
+    <div class="lg:col-span-3 space-y-10">
       <p class="text-body-lg text-text-secondary leading-relaxed">
         {project.fullDescription}
       </p>
 
-      <!-- Image Gallery Placeholders -->
-      <div class="space-y-8">
-        {[1, 2, 3].map((i) => (
-          <div class="aspect-video bg-background-secondary border border-border-primary rounded-card flex items-center justify-center">
-            <div class="text-center">
-              <svg
-                width="48"
-                height="48"
-                viewBox="0 0 48 48"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                class="text-text-placeholder opacity-50 mx-auto mb-3"
-              >
-                <rect
-                  x="6"
-                  y="10"
-                  width="36"
-                  height="28"
-                  rx="2"
-                  stroke="currentColor"
-                  stroke-width="2"
-                />
-                <circle cx="16" cy="20" r="3" stroke="currentColor" stroke-width="2" />
-                <path
-                  d="M6 32L16 24L24 30L34 22L42 28"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
-              <p class="text-text-muted text-sm">Project imagery coming soon</p>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-
-    <!-- Sidebar (2/5 width on desktop) -->
-    <div class="lg:col-span-2 space-y-10">
-      <!-- Services -->
-      <div>
-        <h3 class="text-sm uppercase tracking-wider text-text-muted mb-4">Services</h3>
-        <ul class="space-y-2">
-          {project.services.map((service) => (
-            <li class="text-text-secondary">{service}</li>
+      <!-- Gallery of secondary shots -->
+      {gallery.length > 0 && (
+        <div class="space-y-8">
+          {gallery.map((src, i) => (
+            <figure class="group surface-elevated overflow-hidden">
+              <img
+                src={src}
+                alt={`${project.title} — additional screen ${i + 1}`}
+                loading="lazy"
+                decoding="async"
+                class="w-full h-auto block transition-transform duration-[1200ms] ease-out group-hover:scale-[1.02]"
+              />
+            </figure>
           ))}
-        </ul>
-      </div>
-
-      <!-- Testimonial -->
-      {project.testimonial && (
-        <div class="bg-background-secondary border border-border-primary rounded-card p-6 relative">
-          <!-- Quote Mark -->
-          <div class="absolute top-4 left-6 text-6xl text-border-secondary font-serif leading-none select-none" aria-hidden="true">
-            "
-          </div>
-
-          <blockquote class="relative pt-8">
-            <p class="text-body-lg text-text-secondary italic mb-6">
-              "{project.testimonial.quote}"
-            </p>
-            <footer>
-              <p class="font-medium text-white">{project.testimonial.author}</p>
-              <p class="text-text-muted text-sm">{project.testimonial.role}</p>
-            </footer>
-          </blockquote>
         </div>
       )}
     </div>
+
+    <!-- Sidebar -->
+    <div class="lg:col-span-2">
+      <div class="lg:sticky lg:top-32 space-y-8">
+        <!-- Services (elevated) -->
+        <div class="surface-elevated p-6">
+          <h2 class="text-caption uppercase tracking-[0.18em] text-accent-bronze-bright/80 mb-4">Services</h2>
+          <ul class="space-y-2.5">
+            {project.services.map((service) => (
+              <li class="flex items-center gap-3 text-text-secondary">
+                <span class="w-1.5 h-1.5 rounded-full bg-accent-bronze-bright/70 shrink-0"></span>
+                {service}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <!-- Testimonial (only when real) -->
+        {project.testimonial && (
+          <div class="surface-elevated p-6 relative">
+            <div class="absolute top-3 left-6 text-6xl text-border-secondary font-serif leading-none select-none" aria-hidden="true">
+              &ldquo;
+            </div>
+            <blockquote class="relative pt-8">
+              <p class="text-body-lg text-text-secondary italic mb-5">
+                &ldquo;{project.testimonial.quote}&rdquo;
+              </p>
+              <footer>
+                <p class="font-medium text-white">{project.testimonial.author}</p>
+                <p class="text-caption text-text-muted">{project.testimonial.role}</p>
+              </footer>
+            </blockquote>
+          </div>
+        )}
+      </div>
+    </div>
   </div>
 </Section>
-
-<style>
-  .rounded-card {
-    border-radius: var(--radius-card);
-  }
-</style>
