@@ -9,12 +9,24 @@ interface Project {
   label: string;
   tag: string;
   url?: string;
-  width: number;
-  height: number;
+  width?: number;
+  height?: number;
 }
 
-// Real projects we have exported. (Jewmanity to be added once its frame lands.)
-const projects: Project[] = [
+// Optional CMS-provided list (Sanity "Featured Work"). Falls back to defaults.
+interface Props {
+  projects?: Array<{
+    src?: string;
+    label?: string;
+    tag?: string;
+    url?: string;
+    variant?: 'browser' | 'phone';
+  }>;
+}
+const { projects: cmsProjects } = Astro.props;
+
+// Fallback projects (used until Featured Work is populated in the CMS).
+const defaultProjects: Project[] = [
   {
     variant: 'browser',
     src: '/images/portfolio/lisette.webp',
@@ -46,6 +58,24 @@ const projects: Project[] = [
     height: 750,
   },
 ];
+
+// Sanity CDN images get sizing params; local files are left as-is.
+const sized = (src: string) =>
+  src.includes('cdn.sanity.io') ? `${src}?w=1200&fit=max&auto=format` : src;
+
+const projects: Project[] =
+  cmsProjects && cmsProjects.length
+    ? cmsProjects
+        .filter((p) => p.src && p.label)
+        .map((p) => ({
+          variant: p.variant === 'phone' ? 'phone' : 'browser',
+          src: sized(p.src as string),
+          alt: `${p.label} — built by HEK Design Studio`,
+          label: p.label as string,
+          tag: p.tag ?? '',
+          url: p.url,
+        }))
+    : defaultProjects;
 
 // Duplicate the set so the marquee can loop seamlessly (track animates -50%).
 const loop = [...projects, ...projects];
@@ -108,7 +138,7 @@ const loop = [...projects, ...projects];
             <div class="flex items-center gap-2 mt-2.5 pl-1">
               <span class="w-1.5 h-1.5 rounded-full bg-accent-bronze-bright shrink-0"></span>
               <span class="text-caption text-white font-medium whitespace-nowrap">{p.label}</span>
-              <span class="text-caption text-text-muted whitespace-nowrap">— {p.tag}</span>
+              {p.tag && <span class="text-caption text-text-muted whitespace-nowrap">— {p.tag}</span>}
             </div>
           </article>
         ))}

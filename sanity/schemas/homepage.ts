@@ -103,6 +103,46 @@ export default defineType({
       initialValue: '$500',
       group: 'hero',
     }),
+    defineField({
+      name: 'heroFeaturedLabel',
+      title: 'Featured Work — label',
+      type: 'string',
+      description: 'Small label above the work carousel',
+      initialValue: 'Selected work',
+      group: 'hero',
+    }),
+    defineField({
+      name: 'featuredWork',
+      title: 'Featured Work (carousel)',
+      description: 'Project screenshots shown in the hero work carousel',
+      type: 'array',
+      group: 'hero',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'workItem',
+          fields: [
+            { name: 'image', title: 'Screenshot', type: 'image', options: { hotspot: true } },
+            {
+              name: 'label',
+              title: 'Project name',
+              type: 'string',
+              validation: (Rule) => Rule.required(),
+            },
+            { name: 'tag', title: 'Tag (e.g. Product, Photography)', type: 'string' },
+            { name: 'url', title: 'Site URL for the address bar (optional)', type: 'string' },
+            {
+              name: 'variant',
+              title: 'Frame style',
+              type: 'string',
+              options: { list: ['browser', 'phone'] },
+              initialValue: 'browser',
+            },
+          ],
+          preview: { select: { title: 'label', subtitle: 'tag', media: 'image' } },
+        }),
+      ],
+    }),
 
     // ============ SERVICES INTRO ============
     defineField({
@@ -159,8 +199,15 @@ export default defineType({
 
     // ============ HOW WE WORK ============
     defineField({
+      name: 'processEyebrow',
+      title: 'Process Eyebrow (small label)',
+      type: 'string',
+      initialValue: 'How We Work',
+      group: 'process',
+    }),
+    defineField({
       name: 'processHeadline',
-      title: 'Process Headline',
+      title: 'Process Heading (large)',
       type: 'string',
       initialValue: 'How we bring ideas to life',
       group: 'process',
@@ -205,8 +252,15 @@ export default defineType({
 
     // ============ WHY US ============
     defineField({
+      name: 'whyUsEyebrow',
+      title: 'Why Us Eyebrow (small label)',
+      type: 'string',
+      initialValue: 'Why Us',
+      group: 'whyUs',
+    }),
+    defineField({
       name: 'whyUsHeadline',
-      title: 'Why Us Headline',
+      title: 'Why Us Heading (large)',
       type: 'string',
       initialValue: 'What sets us apart',
       group: 'whyUs',

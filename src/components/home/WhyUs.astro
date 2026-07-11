@@ -9,6 +9,7 @@ interface WhyUsCard {
 }
 
 interface Props {
+  eyebrow?: string;
   headline?: string;
   description?: string;
   cards?: WhyUsCard[];
@@ -34,6 +35,7 @@ const defaultCards: WhyUsCard[] = [
 ];
 
 const {
+  eyebrow = 'Why Us',
   headline = 'Why Us?',
   description = 'Working with a small, focused studio has its advantages.',
   cards = defaultCards,
@@ -52,7 +54,7 @@ const cardsWithAccent = cards.map((card, i) => ({ ...card, accent: accents[i % a
 <Section class={className}>
   <!-- Header Area -->
   <div class="mb-14 text-center" data-animate="fade-up">
-    <span class="text-caption uppercase tracking-[0.2em] text-accent-bronze-bright/80">Why Us</span>
+    <span class="text-caption uppercase tracking-[0.2em] text-accent-bronze-bright/80">{eyebrow}</span>
     <h2 class="text-h2 mt-3 mb-4">
       {headline}
     </h2>

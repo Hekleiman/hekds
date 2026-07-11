@@ -53,6 +53,14 @@ export interface HomepageContent {
   heroSecondaryCta?: CtaLink;
   heroPricingLabel?: string;
   heroPricingValue?: string;
+  heroFeaturedLabel?: string;
+  featuredWork?: Array<{
+    src?: string;
+    label?: string;
+    tag?: string;
+    url?: string;
+    variant?: 'browser' | 'phone';
+  }>;
   // Services
   servicesHeadline?: string;
   servicesHeading?: string;
@@ -64,6 +72,7 @@ export interface HomepageContent {
     icon?: string;
   }>;
   // Process
+  processEyebrow?: string;
   processHeadline?: string;
   processDescription?: string;
   processSteps?: Array<{
@@ -73,6 +82,7 @@ export interface HomepageContent {
     description: string;
   }>;
   // Why Us
+  whyUsEyebrow?: string;
   whyUsHeadline?: string;
   whyUsDescription?: string;
   whyUsCards?: Array<{
@@ -248,6 +258,14 @@ export async function getHomepageContent(): Promise<HomepageContent | null> {
       heroSecondaryCta,
       heroPricingLabel,
       heroPricingValue,
+      heroFeaturedLabel,
+      featuredWork[] {
+        "src": image.asset->url,
+        label,
+        tag,
+        url,
+        variant
+      },
       servicesHeadline,
       servicesHeading,
       servicesDescription,
@@ -257,6 +275,7 @@ export async function getHomepageContent(): Promise<HomepageContent | null> {
         description,
         icon
       },
+      processEyebrow,
       processHeadline,
       processDescription,
       processSteps[] {
@@ -265,6 +284,7 @@ export async function getHomepageContent(): Promise<HomepageContent | null> {
         title,
         description
       },
+      whyUsEyebrow,
       whyUsHeadline,
       whyUsDescription,
       whyUsCards[] {

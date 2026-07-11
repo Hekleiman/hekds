@@ -44,6 +44,8 @@ try {
     secondaryCta={content?.heroSecondaryCta}
     pricingLabel={content?.heroPricingLabel}
     pricingValue={content?.heroPricingValue}
+    featuredLabel={content?.heroFeaturedLabel}
+    featuredWork={content?.featuredWork}
   />
 
   <ServicesIntro
@@ -53,11 +55,13 @@ try {
     services={content?.servicesCards}
   />
   <HowWeWork
+    eyebrow={content?.processEyebrow}
     headline={content?.processHeadline}
     description={content?.processDescription}
     steps={content?.processSteps}
   />
   <WhyUs
+    eyebrow={content?.whyUsEyebrow}
     headline={content?.whyUsHeadline}
     description={content?.whyUsDescription}
     cards={content?.whyUsCards}

@@ -13,6 +13,14 @@ interface Props {
   secondaryCta?: { text: string; href: string };
   pricingLabel?: string;
   pricingValue?: string;
+  featuredLabel?: string;
+  featuredWork?: Array<{
+    src?: string;
+    label?: string;
+    tag?: string;
+    url?: string;
+    variant?: 'browser' | 'phone';
+  }>;
   class?: string;
 }
 
@@ -27,6 +35,8 @@ const {
   secondaryCta = { text: '⊕ View Our Work', href: '/work' },
   pricingLabel = 'Project pricing from',
   pricingValue = '$500',
+  featuredLabel = 'Selected work',
+  featuredWork,
   class: className,
 } = Astro.props;
 ---
@@ -105,13 +115,13 @@ const {
   <!-- Work-wall carousel (above the fold) -->
   <div class="relative z-10 w-full pb-8" data-hero="visual">
     <div class="container-main w-full flex items-end justify-between mb-3">
-      <span class="text-[11px] uppercase tracking-[0.25em] text-text-muted">Selected work</span>
+      <span class="text-[11px] uppercase tracking-[0.25em] text-text-muted">{featuredLabel}</span>
       <a href="/work" class="group inline-flex items-center gap-1.5 text-caption text-text-secondary hover:text-white transition-colors">
         View all
         <span class="transition-transform duration-300 group-hover:translate-x-1">→</span>
       </a>
     </div>
-    <ProjectCarousel />
+    <ProjectCarousel projects={featuredWork} />
   </div>
 </section>
 

@@ -9,6 +9,7 @@ interface ProcessStep {
 }
 
 interface Props {
+  eyebrow?: string;
   headline?: string;
   description?: string;
   steps?: ProcessStep[];
@@ -35,6 +36,7 @@ const defaultSteps: ProcessStep[] = [
 ];
 
 const {
+  eyebrow = 'How We Work',
   headline = 'How We Work',
   description = 'A straightforward process built for collaboration and clarity.',
   steps = defaultSteps,
@@ -51,7 +53,7 @@ const stepsWithNumbers = steps.map((step, index) => ({
 <Section class={className}>
   <!-- Header Area -->
   <div class="mb-14 max-w-[600px]" data-animate="fade-up">
-    <span class="text-caption uppercase tracking-[0.2em] text-accent-bronze-bright/80">How We Work</span>
+    <span class="text-caption uppercase tracking-[0.2em] text-accent-bronze-bright/80">{eyebrow}</span>
     <h2 class="text-h2 mt-3 mb-4">
       {headline}
     </h2>
