@@ -1,6 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import ServicesHero from '../components/services/ServicesHero.astro';
+import ServiceProcess from '../components/services/ServiceProcess.astro';
+import ServiceSummary from '../components/services/ServiceSummary.astro';
 import ServiceBlock from '../components/services/ServiceBlock.astro';
 import CtaSection from '../components/home/CtaSection.astro';
 import { getServicesPageContent, type ServicesPageContent, type ServiceItem } from '../lib/sanity';
@@ -147,20 +149,26 @@ const heroSubtext = legacyHero ? undefined : content?.heroSubtext;
     subtext={heroSubtext}
   />
 
-  <!-- Services — the fuller, standalone version of Home's "What We Do":
-       a framing header, then the four alternating rows stitched together by the
-       drawn-in blueprint connector spine. -->
+  <!-- How a project runs — the engagement's process, as a drawn horizontal
+       timeline (unique to this page; Home has no equivalent). -->
+  <ServiceProcess />
+
+  <!-- The four services, at a glance — a scannable overview that jump-links down
+       to each detailed row below (progressive disclosure). -->
+  <ServiceSummary services={services} />
+
+  <!-- Each service, in depth — the four alternating rows stitched together by
+       the drawn-in blueprint connector spine. -->
   <section class="py-services scroll-mt-32">
     <div class="container-main">
-      <!-- Framing header -->
+      <!-- Lighter header (the framing intro lives in the overview above) -->
       <div class="mb-16 lg:mb-20 max-w-[680px]" data-animate="fade-up">
-        <span class="text-caption uppercase tracking-[0.2em] text-accent-bronze-bright/80">Our services</span>
+        <span class="text-caption uppercase tracking-[0.2em] text-accent-bronze-bright/80">In depth</span>
         <h2 class="text-h2 mt-3 mb-4">
-          Four disciplines, <span class="text-metallic-bronze">one team.</span>
+          A closer look at <span class="text-metallic-bronze">each.</span>
         </h2>
         <p class="text-body-lg text-text-secondary">
-          The same two people carry your project the whole way — so strategy, design, build, and support connect
-          seamlessly instead of getting lost in handoffs.
+          What every discipline covers, what you get, and how it fits into the whole.
         </p>
       </div>
 
