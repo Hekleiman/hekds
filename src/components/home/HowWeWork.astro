@@ -9,6 +9,7 @@ interface ProcessStep {
 }
 
 interface Props {
+  eyebrow?: string;
   headline?: string;
   description?: string;
   steps?: ProcessStep[];
@@ -35,6 +36,7 @@ const defaultSteps: ProcessStep[] = [
 ];
 
 const {
+  eyebrow = 'How We Work',
   headline = 'How We Work',
   description = 'A straightforward process built for collaboration and clarity.',
   steps = defaultSteps,
@@ -50,31 +52,37 @@ const stepsWithNumbers = steps.map((step, index) => ({
 
 <Section class={className}>
   <!-- Header Area -->
-  <div class="mb-12" data-animate="fade-up">
-    <h2 class="text-h2 mb-4">
+  <div class="mb-14 max-w-[600px]" data-animate="fade-up">
+    <span class="text-caption uppercase tracking-[0.2em] text-accent-bronze-bright/80">{eyebrow}</span>
+    <h2 class="text-h2 mt-3 mb-4">
       {headline}
     </h2>
-    <p class="text-body-lg text-text-secondary max-w-[600px]">
+    <p class="text-body-lg text-text-secondary">
       {description}
     </p>
   </div>
 
   <!-- Steps Grid -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-12" data-animate="stagger">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-14" data-animate="stagger">
     {stepsWithNumbers.map((step) => (
-      <div class="flex flex-col">
-        <!-- Step Number -->
-        <span class="text-5xl font-medium text-text-muted mb-4">
+      <div class="group relative flex flex-col pt-8">
+        <!-- Hairline that brightens on hover -->
+        <span class="absolute top-0 left-0 h-px w-full bg-border-primary overflow-hidden">
+          <span class="block h-full w-full origin-left scale-x-0 bg-gradient-to-r from-accent-bronze-bright to-transparent transition-transform duration-500 ease-out group-hover:scale-x-100"></span>
+        </span>
+
+        <!-- Step Number (now bold, metallic, unmistakable) -->
+        <span class="text-metallic block text-[64px] leading-none font-semibold tabular-nums mb-5">
           {step.number}
         </span>
 
         <!-- Step Title -->
-        <h3 class="text-lg font-medium text-white mb-2">
+        <h3 class="text-h3 font-medium text-white mb-2">
           {step.title}
         </h3>
 
         <!-- Step Description -->
-        <p class="text-sm text-text-secondary">
+        <p class="text-body text-text-secondary max-w-[440px]">
           {step.description}
         </p>
       </div>

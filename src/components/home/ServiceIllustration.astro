@@ -1,0 +1,205 @@
+---
+// Bespoke per-service illustrations — dark "living blueprint" language with a
+// single bronze accent. Landscape 16:10 canvas (480 x 300) so the tile stays
+// short next to its text. Every element is on exact coordinates: connectors
+// meet edges, repeated items are symmetric, arcs are perfect circles.
+interface Props {
+  icon?: string;
+  class?: string;
+}
+const { icon = 'strategy', class: className } = Astro.props;
+---
+
+<div class:list={['service-ill relative w-full h-full', className]}>
+  <svg viewBox="0 0 480 300" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+    <defs>
+      <linearGradient id="mBronze" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#cd7f32" />
+        <stop offset="0.5" stop-color="#e6b878" />
+        <stop offset="1" stop-color="#cd7f32" />
+      </linearGradient>
+      <linearGradient id="mSilver" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#a8a8a8" />
+        <stop offset="0.5" stop-color="#f0f0f0" />
+        <stop offset="1" stop-color="#a8a8a8" />
+      </linearGradient>
+      <linearGradient id="mGold" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#c9a227" />
+        <stop offset="0.5" stop-color="#ffe89a" />
+        <stop offset="1" stop-color="#c9a227" />
+      </linearGradient>
+      <pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse">
+        <path d="M24 0H0V24" fill="none" stroke="rgba(255,255,255,0.035)" stroke-width="1" />
+      </pattern>
+    </defs>
+
+    <!-- faint blueprint grid -->
+    <rect x="0" y="0" width="480" height="300" fill="url(#grid)" />
+
+    {icon === 'strategy' && (
+      <g>
+        <!-- User journey → three screens in a flow, last is the goal.
+             Journey dots sit directly above node centres (92 / 240 / 388). -->
+        <line x1="92" y1="90" x2="388" y2="90" class="dash" />
+        <circle cx="92" cy="90" r="4" class="dot" />
+        <circle cx="240" cy="90" r="4" class="dot" />
+        <circle cx="388" cy="90" r="4" class="accent-fill pulse" />
+
+        <!-- Node 1 -->
+        <rect x="40" y="120" width="104" height="78" rx="12" class="fill-1 ln" />
+        <rect x="56" y="138" width="72" height="8" rx="4" class="bar-1" />
+        <rect x="56" y="156" width="52" height="6" rx="3" class="bar-0" />
+        <rect x="56" y="170" width="66" height="6" rx="3" class="bar-0" />
+
+        <!-- Node 2 -->
+        <rect x="188" y="120" width="104" height="78" rx="12" class="fill-1 ln" />
+        <rect x="204" y="138" width="72" height="8" rx="4" class="bar-1" />
+        <rect x="204" y="156" width="52" height="6" rx="3" class="bar-0" />
+        <rect x="204" y="170" width="66" height="6" rx="3" class="bar-0" />
+
+        <!-- Node 3 (goal / bronze) -->
+        <rect x="336" y="120" width="104" height="78" rx="12" class="fill-2 accent-stroke" />
+        <rect x="352" y="138" width="72" height="8" rx="4" class="accent-fill" />
+        <rect x="352" y="156" width="52" height="6" rx="3" class="bar-1" />
+        <rect x="352" y="170" width="66" height="6" rx="3" class="bar-0" />
+
+        <!-- Connector 1 → 2 (neutral) -->
+        <line x1="144" y1="159" x2="182" y2="159" class="ln" />
+        <path d="M182 154 L188 159 L182 164 Z" class="bar-1" />
+
+        <!-- Connector 2 → 3 (bronze, leads to the goal) -->
+        <line x1="292" y1="159" x2="330" y2="159" class="accent-ln" />
+        <path d="M330 154 L336 159 L330 164 Z" class="accent-fill" />
+      </g>
+    )}
+
+    {icon === 'design' && (
+      <g>
+        <!-- Design system: type scale (left), component card (right),
+             full evenly-spaced swatch row — every swatch labelled. -->
+        <rect x="42" y="50" width="138" height="16" rx="4" class="bar-2" />
+        <rect x="42" y="76" width="102" height="11" rx="3" class="bar-1" />
+        <rect x="42" y="94" width="120" height="7" rx="3" class="bar-0" />
+        <rect x="42" y="108" width="84" height="7" rx="3" class="bar-0" />
+
+        <!-- component card -->
+        <rect x="288" y="46" width="150" height="92" rx="14" class="fill-2 ln" />
+        <rect x="306" y="64" width="62" height="8" rx="4" class="bar-1" />
+        <circle cx="420" cy="68" r="5" class="dot" />
+        <rect x="306" y="90" width="84" height="22" rx="11" class="accent-fill" />
+        <rect x="306" y="122" width="100" height="6" rx="3" class="bar-0" />
+
+        <!-- divider -->
+        <line x1="42" y1="158" x2="438" y2="158" class="ln" />
+
+        <!-- swatch row (5 across, gap 34) -->
+        <rect x="42" y="180" width="52" height="52" rx="12" fill="url(#mBronze)" />
+        <rect x="128" y="180" width="52" height="52" rx="12" fill="url(#mSilver)" />
+        <rect x="214" y="180" width="52" height="52" rx="12" fill="url(#mGold)" />
+        <rect x="300" y="180" width="52" height="52" rx="12" fill="#3f3f46" />
+        <rect x="386" y="180" width="52" height="52" rx="12" class="fill-1 ln" />
+
+        <!-- swatch labels (centred under each) -->
+        <rect x="52" y="246" width="32" height="6" rx="3" class="bar-0" />
+        <rect x="138" y="246" width="32" height="6" rx="3" class="bar-0" />
+        <rect x="224" y="246" width="32" height="6" rx="3" class="bar-0" />
+        <rect x="310" y="246" width="32" height="6" rx="3" class="bar-0" />
+        <rect x="396" y="246" width="32" height="6" rx="3" class="bar-0" />
+      </g>
+    )}
+
+    {icon === 'code' && (
+      <g>
+        <!-- Editor window + a clean deploy progress bar with a knob. -->
+        <rect x="42" y="42" width="396" height="176" rx="14" class="fill-2 ln" />
+        <line x1="42" y1="72" x2="438" y2="72" class="ln" />
+        <circle cx="60" cy="57" r="4" class="dot" />
+        <circle cx="76" cy="57" r="4" class="dot" />
+        <circle cx="92" cy="57" r="4" class="dot" />
+        <rect x="114" y="50" width="96" height="16" rx="5" class="fill-1 ln" />
+        <rect x="124" y="56" width="58" height="4" rx="2" class="bar-0" />
+
+        <!-- code lines (gutter x=62, indents in multiples of 20) -->
+        <rect x="62" y="92" width="40" height="7" rx="3.5" class="accent-fill" />
+        <rect x="110" y="92" width="66" height="7" rx="3.5" class="bar-1" />
+        <rect x="82" y="113" width="120" height="7" rx="3.5" class="bar-0" />
+        <rect x="82" y="134" width="52" height="7" rx="3.5" class="bar-0" />
+        <rect x="144" y="134" width="80" height="7" rx="3.5" class="bar-0" />
+        <rect x="82" y="155" width="46" height="7" rx="3.5" class="accent-fill" />
+        <rect x="138" y="155" width="94" height="7" rx="3.5" class="bar-0" />
+        <rect x="104" y="176" width="118" height="7" rx="3.5" class="bar-0" />
+        <rect x="62" y="197" width="42" height="7" rx="3.5" class="accent-fill" />
+        <rect x="112" y="197" width="72" height="7" rx="3.5" class="bar-0" />
+
+        <!-- deploy progress bar -->
+        <rect x="42" y="240" width="396" height="26" rx="13" class="fill-1 ln" />
+        <rect x="42" y="240" width="252" height="26" rx="13" class="accent-fill soft" />
+        <circle cx="294" cy="253" r="8" class="accent-fill" />
+        <circle cx="294" cy="253" r="3" class="knob-core" />
+      </g>
+    )}
+
+    {icon === 'settings' && (
+      <g>
+        <!-- Analytics: trend chart (left) + stat block & circular gauge (right). -->
+        <rect x="42" y="48" width="248" height="204" rx="14" class="fill-2 ln" />
+        <line x1="58" y1="110" x2="276" y2="110" class="ln faint" />
+        <line x1="58" y1="152" x2="276" y2="152" class="ln faint" />
+        <line x1="58" y1="194" x2="276" y2="194" class="ln faint" />
+        <path d="M60 208 L104 178 L148 190 L192 146 L236 160 L276 92 L276 226 L60 226 Z" class="accent-area" />
+        <path d="M60 208 L104 178 L148 190 L192 146 L236 160 L276 92" class="accent-ln thick" />
+        <circle cx="276" cy="92" r="5" class="accent-fill pulse" />
+
+        <!-- stat block -->
+        <rect x="306" y="48" width="134" height="96" rx="14" class="fill-1 ln" />
+        <rect x="322" y="66" width="54" height="8" rx="4" class="bar-1" />
+        <rect x="322" y="86" width="86" height="15" rx="4" class="bar-2" />
+        <rect x="322" y="112" width="40" height="7" rx="3.5" class="accent-fill" />
+
+        <!-- circular progress gauge (perfect circles: track + ~72% ring) -->
+        <circle cx="373" cy="206" r="42" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="8" />
+        <circle
+          cx="373" cy="206" r="42" fill="none"
+          stroke="var(--color-accent-bronze-bright)" stroke-width="8" stroke-linecap="round"
+          stroke-dasharray="190 264" transform="rotate(-90 373 206)"
+        />
+        <rect x="357" y="202" width="32" height="8" rx="4" class="bar-2" />
+      </g>
+    )}
+  </svg>
+</div>
+
+<style>
+  .service-ill svg { display: block; }
+
+  .ln { stroke: rgba(255, 255, 255, 0.16); stroke-width: 1.5; }
+  .ln.faint { stroke: rgba(255, 255, 255, 0.07); }
+  .ln.thick { stroke-width: 2.5; }
+  .dash { stroke: rgba(255, 255, 255, 0.14); stroke-width: 1.5; stroke-dasharray: 3 6; }
+
+  .fill-1 { fill: rgba(255, 255, 255, 0.04); }
+  .fill-2 { fill: rgba(255, 255, 255, 0.06); }
+
+  .bar-0 { fill: rgba(255, 255, 255, 0.12); }
+  .bar-1 { fill: rgba(255, 255, 255, 0.24); }
+  .bar-2 { fill: rgba(255, 255, 255, 0.44); }
+
+  .dot { fill: rgba(255, 255, 255, 0.28); }
+  .knob-core { fill: #101013; }
+
+  .accent-fill { fill: var(--color-accent-bronze-bright); }
+  .accent-fill.soft { fill: rgba(224, 162, 96, 0.26); }
+  .accent-stroke { stroke: var(--color-accent-bronze-bright); stroke-width: 1.5; fill: rgba(224, 162, 96, 0.06); }
+  .accent-ln { stroke: var(--color-accent-bronze-bright); stroke-width: 2; fill: none; }
+  .accent-ln.thick { stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+  .accent-area { fill: rgba(224, 162, 96, 0.10); }
+
+  .pulse { animation: ill-pulse 3s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+  @keyframes ill-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.45; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pulse { animation: none; }
+  }
+</style>

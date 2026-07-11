@@ -10,7 +10,9 @@ export const sanityClient: SanityClient | null = isConfigured
       projectId,
       dataset: import.meta.env.PUBLIC_SANITY_DATASET || 'production',
       apiVersion: '2024-01-01',
-      useCdn: true, // Use CDN for faster responses (cached data)
+      // Content is fetched at build time, so read fresh from the API (not the
+      // CDN) — published edits then reliably appear on the next build.
+      useCdn: false,
     })
   : null;
 
@@ -41,14 +43,27 @@ export interface CtaLink {
 // Homepage Content (singleton)
 export interface HomepageContent {
   // Hero (3-line headline)
+  heroEyebrow?: string;
+  heroEyebrowShort?: string;
   heroHeadlineLine1?: string;
   heroHeadlineLine2?: string;
   heroHeadlineLine3?: string;
   heroSubtext?: string;
   heroPrimaryCta?: CtaLink;
   heroSecondaryCta?: CtaLink;
+  heroPricingLabel?: string;
+  heroPricingValue?: string;
+  heroFeaturedLabel?: string;
+  featuredWork?: Array<{
+    src?: string;
+    label?: string;
+    tag?: string;
+    url?: string;
+    variant?: 'browser' | 'phone';
+  }>;
   // Services
   servicesHeadline?: string;
+  servicesHeading?: string;
   servicesDescription?: string;
   servicesCards?: Array<{
     _key: string;
@@ -57,6 +72,7 @@ export interface HomepageContent {
     icon?: string;
   }>;
   // Process
+  processEyebrow?: string;
   processHeadline?: string;
   processDescription?: string;
   processSteps?: Array<{
@@ -66,6 +82,7 @@ export interface HomepageContent {
     description: string;
   }>;
   // Why Us
+  whyUsEyebrow?: string;
   whyUsHeadline?: string;
   whyUsDescription?: string;
   whyUsCards?: Array<{
@@ -231,13 +248,26 @@ export async function getHomepageContent(): Promise<HomepageContent | null> {
   if (!sanityClient) return null;
   return sanityClient.fetch(`
     *[_type == "homepage"][0] {
+      heroEyebrow,
+      heroEyebrowShort,
       heroHeadlineLine1,
       heroHeadlineLine2,
       heroHeadlineLine3,
       heroSubtext,
       heroPrimaryCta,
       heroSecondaryCta,
+      heroPricingLabel,
+      heroPricingValue,
+      heroFeaturedLabel,
+      featuredWork[] {
+        "src": image.asset->url,
+        label,
+        tag,
+        url,
+        variant
+      },
       servicesHeadline,
+      servicesHeading,
       servicesDescription,
       servicesCards[] {
         _key,
@@ -245,6 +275,7 @@ export async function getHomepageContent(): Promise<HomepageContent | null> {
         description,
         icon
       },
+      processEyebrow,
       processHeadline,
       processDescription,
       processSteps[] {
@@ -253,6 +284,7 @@ export async function getHomepageContent(): Promise<HomepageContent | null> {
         title,
         description
       },
+      whyUsEyebrow,
       whyUsHeadline,
       whyUsDescription,
       whyUsCards[] {

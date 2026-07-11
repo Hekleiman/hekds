@@ -1,46 +1,136 @@
 ---
-import Section from '../ui/Section.astro';
 import Button from '../ui/Button.astro';
+import ProjectCarousel from './ProjectCarousel.astro';
 
 interface Props {
+  eyebrow?: string;
+  eyebrowShort?: string;
   headlineLine1?: string;
   headlineLine2?: string;
   headlineLine3?: string;
   subtext?: string;
   primaryCta?: { text: string; href: string };
   secondaryCta?: { text: string; href: string };
+  pricingLabel?: string;
+  pricingValue?: string;
+  featuredLabel?: string;
+  featuredWork?: Array<{
+    src?: string;
+    label?: string;
+    tag?: string;
+    url?: string;
+    variant?: 'browser' | 'phone';
+  }>;
   class?: string;
 }
 
 const {
+  eyebrow = 'A two-person studio for small businesses & nonprofits',
+  eyebrowShort = 'A two-person design & dev studio',
   headlineLine1 = 'Designing and building',
   headlineLine2 = 'modern websites',
-  headlineLine3 = 'with clarity and intention.',
-  subtext = 'A design and development partnership focused on creating exceptional digital experiences. Direct collaboration, thoughtful execution, no handoffs.',
+  headlineLine3 = '',
+  subtext = 'Direct collaboration, thoughtful execution — no handoffs.',
   primaryCta = { text: 'Start a Project →', href: '/contact' },
   secondaryCta = { text: '⊕ View Our Work', href: '/work' },
+  pricingLabel = 'Project pricing from',
+  pricingValue = '$500',
+  featuredLabel = 'Selected work',
+  featuredWork,
   class: className,
 } = Astro.props;
 ---
 
-<Section class:list={['min-h-screen flex items-center pb-0', className]} data-animate="hero">
-  <div class="w-full flex flex-col items-center text-center">
-    <!-- Headline -->
-    <h1 class="text-h1 max-w-[900px] mb-6" data-hero="headline">
-      <span class="block text-white">{headlineLine1}</span>
-      <span class="block text-zinc-400">{headlineLine2}</span>
-      <span class="block text-white">{headlineLine3}</span>
+<!-- -mt-36 cancels the global nav offset so the hero is a true full viewport,
+     letting the work carousel sit above the fold. -->
+<section
+  class:list={['hero relative -mt-36 min-h-[100svh] flex flex-col overflow-hidden', className]}
+  data-animate="hero"
+  data-spotlight
+>
+  <!-- Depth glow -->
+  <div class="aura w-[640px] h-[520px] top-[8%] left-1/2 -translate-x-1/2 bg-accent-bronze/[0.11]"></div>
+
+  <!-- Living-blueprint contour layer -->
+  <div
+    class="absolute inset-0 pointer-events-none opacity-[0.5]"
+    aria-hidden="true"
+    data-parallax
+    data-parallax-speed="-0.1"
+  >
+    <svg class="w-full h-full" viewBox="0 0 1440 900" fill="none" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <path d="M-40 300 C 260 240, 460 360, 720 300 S 1140 200, 1500 280" stroke="var(--color-border-secondary)" stroke-width="1" data-draw="hero" />
+      <path d="M-40 380 C 300 320, 500 440, 780 370 S 1180 260, 1500 350" stroke="var(--color-border-primary)" stroke-width="1" data-draw="hero" />
+      <path d="M-40 220 C 240 180, 520 280, 760 220 S 1120 120, 1500 200" stroke="var(--color-border-primary)" stroke-width="1" data-draw="hero" />
+    </svg>
+  </div>
+
+  <!-- Cursor spotlight -->
+  <div
+    class="absolute w-[600px] h-[600px] rounded-full opacity-0 pointer-events-none mix-blend-screen -ml-[300px] -mt-[300px]"
+    style="background: radial-gradient(circle, rgba(224,162,96,0.12) 0%, rgba(224,162,96,0.05) 35%, transparent 70%);"
+    aria-hidden="true"
+    data-spotlight-light
+  >
+  </div>
+
+  <!-- Content (centered) -->
+  <div class="relative z-10 flex-1 flex flex-col items-center justify-center text-center w-full container-main pt-32 pb-4 sm:pt-20">
+    <!-- Eyebrow -->
+    <div
+      class="inline-flex items-center gap-2 mb-6 px-4 py-1.5 rounded-full border border-border-primary bg-background-secondary/60 backdrop-blur-sm"
+      data-hero="eyebrow"
+    >
+      <span class="w-1.5 h-1.5 shrink-0 rounded-full bg-accent-bronze-bright"></span>
+      <span class="text-caption text-text-secondary tracking-wide">
+        <span class="sm:hidden">{eyebrowShort}</span>
+        <span class="hidden sm:inline">{eyebrow}</span>
+      </span>
+    </div>
+
+    <!-- Headline with clip-reveal lines -->
+    <h1 class="hero-headline mb-5" data-hero="headline">
+      {headlineLine1 && <span class="line"><span class="line-inner text-white">{headlineLine1}</span></span>}
+      {headlineLine2 && <span class="line"><span class="line-inner text-metallic metallic-shimmer">{headlineLine2}</span></span>}
+      {headlineLine3 && <span class="line"><span class="line-inner text-white">{headlineLine3}</span></span>}
     </h1>
 
     <!-- Subheadline -->
-    <p class="text-body-lg text-text-muted max-w-[700px] mb-10" data-hero="subtext">
+    <p class="text-body-lg text-text-secondary max-w-[620px] mb-6" data-hero="subtext">
       {subtext}
     </p>
 
-    <!-- CTA Group -->
-    <div class="flex flex-col sm:flex-row gap-4" data-hero="cta">
-      <Button href={primaryCta.href}>{primaryCta.text}</Button>
-      <Button href={secondaryCta.href} variant="secondary">{secondaryCta.text}</Button>
+    <!-- CTAs + pricing (buttons side-by-side, centered) -->
+    <div class="flex flex-col items-center gap-4" data-hero="cta">
+      <div class="flex flex-row gap-2.5 sm:gap-3">
+        <Button href={primaryCta.href}>{primaryCta.text}</Button>
+        <Button href={secondaryCta.href} variant="secondary">{secondaryCta.text}</Button>
+      </div>
+      <p class="text-caption text-text-muted">
+        {pricingLabel} <span class="text-accent-bronze-bright font-medium">{pricingValue}</span>
+      </p>
     </div>
   </div>
-</Section>
+
+  <!-- Work-wall carousel (above the fold) -->
+  <div class="relative z-10 w-full pt-2 pb-8" data-hero="visual">
+    <ProjectCarousel projects={featuredWork} />
+  </div>
+</section>
+
+<style>
+  .hero-headline {
+    font-weight: 600;
+    font-size: clamp(1.9rem, 0.95rem + 4vw, 4rem);
+    line-height: 1.06;
+    letter-spacing: -0.035em;
+  }
+  .hero-headline .line {
+    display: block;
+    overflow: hidden;
+    padding-bottom: 0.05em; /* room for descenders inside the clip */
+  }
+  .hero-headline .line-inner {
+    display: block;
+  }
+</style>

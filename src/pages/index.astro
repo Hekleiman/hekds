@@ -21,7 +21,7 @@ try {
   title="HEK Design Studio — Brand & Web Design"
   description="HEK Design Studio is a boutique web design and development partnership serving small businesses and nonprofits. End-to-end design and development from $500 to $3,000+. Direct collaboration, no handoffs."
   canonicalPath="/"
-  backgroundImage="/images/backgrounds/HEK_Homepage_Background.png"
+  backgroundImage="/images/backgrounds/HEK_Homepage_Background.webp"
 >
   <script is:inline type="application/ld+json">{
     "@context": "https://schema.org",
@@ -34,31 +34,34 @@ try {
   }</script>
 
   <Hero
+    eyebrow={content?.heroEyebrow}
+    eyebrowShort={content?.heroEyebrowShort}
     headlineLine1={content?.heroHeadlineLine1}
     headlineLine2={content?.heroHeadlineLine2}
     headlineLine3={content?.heroHeadlineLine3}
     subtext={content?.heroSubtext}
     primaryCta={content?.heroPrimaryCta}
     secondaryCta={content?.heroSecondaryCta}
+    pricingLabel={content?.heroPricingLabel}
+    pricingValue={content?.heroPricingValue}
+    featuredLabel={content?.heroFeaturedLabel}
+    featuredWork={content?.featuredWork}
   />
 
-  <div class="text-center max-w-2xl mx-auto px-6 -mt-8 mb-16">
-    <p class="text-sm text-zinc-400">
-      HEK Design Studio is a two-person web design and development partnership. We build modern, performant websites for small businesses and nonprofits, with project-based pricing starting at $500.
-    </p>
-  </div>
-
   <ServicesIntro
-    headline={content?.servicesHeadline}
+    eyebrow={content?.servicesHeadline}
+    heading={content?.servicesHeading}
     description={content?.servicesDescription}
     services={content?.servicesCards}
   />
   <HowWeWork
+    eyebrow={content?.processEyebrow}
     headline={content?.processHeadline}
     description={content?.processDescription}
     steps={content?.processSteps}
   />
   <WhyUs
+    eyebrow={content?.whyUsEyebrow}
     headline={content?.whyUsHeadline}
     description={content?.whyUsDescription}
     cards={content?.whyUsCards}

@@ -16,16 +16,17 @@ const {
   ...rest
 } = Astro.props;
 
-const baseStyles = 'inline-flex items-center justify-center rounded-full font-medium text-sm transition-colors duration-150 ease-in-out';
+const baseStyles = 'btn inline-flex items-center justify-center rounded-full font-medium text-sm whitespace-nowrap';
 
+// Sizes scale down on small screens so buttons never feel oversized on mobile.
 const sizeStyles = {
-  default: 'h-14 px-6',
-  small: 'h-11 px-6',
+  default: 'h-12 px-5 sm:h-14 sm:px-7',
+  small: 'h-10 px-4 sm:h-11 sm:px-6',
 };
 
 const variantStyles = {
-  primary: 'bg-border-primary text-white hover:bg-border-secondary',
-  secondary: 'bg-transparent border border-border-secondary text-white hover:bg-background-secondary',
+  primary: 'btn-primary',
+  secondary: 'btn-secondary',
 };
 
 const classes = [

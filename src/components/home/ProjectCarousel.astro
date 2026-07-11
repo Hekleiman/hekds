@@ -1,0 +1,202 @@
+---
+// An auto-drifting, 3D-tilted "wall of work" — real client screens framed in
+// subtle browser / phone chrome. Motion + cursor tilt live in animations.ts and
+// degrade to a static, manually-scrollable row under prefers-reduced-motion.
+interface Project {
+  variant: 'browser' | 'phone';
+  src: string;
+  alt: string;
+  label: string;
+  tag: string;
+  url?: string;
+  width?: number;
+  height?: number;
+}
+
+// Optional CMS-provided list (Sanity "Featured Work"). Falls back to defaults.
+interface Props {
+  projects?: Array<{
+    src?: string;
+    label?: string;
+    tag?: string;
+    url?: string;
+    variant?: 'browser' | 'phone';
+  }>;
+}
+const { projects: cmsProjects } = Astro.props;
+
+// Fallback projects (used until Featured Work is populated in the CMS).
+const defaultProjects: Project[] = [
+  {
+    variant: 'browser',
+    src: '/images/portfolio/lisette.webp',
+    alt: 'Images by Lisette — fine-art photography portfolio built by HEK',
+    label: 'Images by Lisette',
+    tag: 'Photography',
+    url: 'imagesbylisette.com',
+    width: 1200,
+    height: 750,
+  },
+  {
+    variant: 'browser',
+    src: '/images/portfolio/tradeup.webp',
+    alt: 'Trade Up — peer-to-peer marketplace site built by HEK',
+    label: 'Trade Up',
+    tag: 'Product',
+    url: 'tradeupmarket.com',
+    width: 1200,
+    height: 751,
+  },
+  {
+    variant: 'browser',
+    src: '/images/portfolio/yieldstone.webp',
+    alt: 'Yieldstone Systems — B2B quality-systems site built by HEK',
+    label: 'Yieldstone',
+    tag: 'B2B Systems',
+    url: 'yieldstonesystems.com',
+    width: 1200,
+    height: 750,
+  },
+  {
+    variant: 'browser',
+    src: '/images/portfolio/jewmanity.webp',
+    alt: 'Jewmanity — mental-health nonprofit site built by HEK',
+    label: 'Jewmanity',
+    tag: 'Nonprofit',
+    url: 'jewmanity.com',
+    width: 1200,
+    height: 750,
+  },
+  {
+    variant: 'browser',
+    src: '/images/portfolio/sbk.webp',
+    alt: 'SBK MD — Stuart B Kipper M.D. concierge-medicine site built by HEK',
+    label: 'SBK MD',
+    tag: 'Healthcare',
+    url: 'stuartbkippermd.com',
+    width: 1200,
+    height: 750,
+  },
+];
+
+// Sanity CDN images get sizing params; local files are left as-is.
+const sized = (src: string) =>
+  src.includes('cdn.sanity.io') ? `${src}?w=1200&fit=max&auto=format` : src;
+
+const projects: Project[] =
+  cmsProjects && cmsProjects.length
+    ? cmsProjects
+        .filter((p) => p.src && p.label)
+        .map((p) => ({
+          variant: p.variant === 'phone' ? 'phone' : 'browser',
+          src: sized(p.src as string),
+          alt: `${p.label} — built by HEK Design Studio`,
+          label: p.label as string,
+          tag: p.tag ?? '',
+          url: p.url,
+        }))
+    : defaultProjects;
+
+// Duplicate the set so the marquee can loop seamlessly (track animates -50%).
+const loop = [...projects, ...projects];
+---
+
+<div class="carousel-perspective" data-carousel>
+  <div class="carousel-tilt" data-carousel-tilt>
+    <div class="carousel-viewport">
+      <div class="carousel-track" data-carousel-track>
+        {loop.map((p, i) => (
+          <article
+            class="ccard group/cc shrink-0 relative"
+            data-cc
+            aria-hidden={i >= projects.length ? 'true' : undefined}
+          >
+            {p.variant === 'browser' ? (
+              <div class="cframe surface-elevated overflow-hidden w-[400px] sm:w-[520px]">
+                <div class="flex items-center gap-1.5 h-8 px-3 border-b border-border-primary bg-background-secondary/70">
+                  <span class="w-2 h-2 rounded-full bg-border-secondary"></span>
+                  <span class="w-2 h-2 rounded-full bg-border-secondary"></span>
+                  <span class="w-2 h-2 rounded-full bg-border-secondary"></span>
+                  {p.url && (
+                    <div class="ml-2 h-4 flex-1 max-w-[190px] flex items-center px-2 rounded bg-surface-overlay border border-border-primary">
+                      <span class="text-[10px] leading-none text-text-muted truncate">{p.url}</span>
+                    </div>
+                  )}
+                </div>
+                <div class="relative aspect-[16/10] overflow-hidden bg-background-primary">
+                  <img
+                    src={p.src}
+                    alt={p.alt}
+                    width={p.width}
+                    height={p.height}
+                    loading="lazy"
+                    decoding="async"
+                    class="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-[1200ms] ease-out group-hover/cc:scale-[1.05]"
+                  />
+                </div>
+              </div>
+            ) : (
+              <div class="relative flex items-end justify-center w-[220px] sm:w-[240px]">
+                <div
+                  class="cframe relative rounded-[1.75rem] border-[5px] border-[#141417] bg-black overflow-hidden shadow-elevated-lg w-[168px]"
+                  style="aspect-ratio: 9 / 19.5;"
+                >
+                  <img
+                    src={p.src}
+                    alt={p.alt}
+                    width={p.width}
+                    height={p.height}
+                    loading="lazy"
+                    decoding="async"
+                    class="w-full h-full object-cover object-top transition-transform duration-[1200ms] ease-out group-hover/cc:scale-[1.05]"
+                  />
+                </div>
+              </div>
+            )}
+
+            <!-- label -->
+            <div class="flex items-center gap-2 mt-2.5 pl-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-accent-bronze-bright shrink-0"></span>
+              <span class="text-caption text-white font-medium whitespace-nowrap">{p.label}</span>
+              {p.tag && <span class="text-caption text-text-muted whitespace-nowrap">— {p.tag}</span>}
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .carousel-perspective {
+    width: 100%;
+  }
+  .carousel-viewport {
+    overflow: hidden;
+    padding: 12px 0 24px;
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 7%, #000 93%, transparent);
+    mask-image: linear-gradient(to right, transparent, #000 7%, #000 93%, transparent);
+  }
+  .carousel-track {
+    display: flex;
+    align-items: flex-end;
+    gap: 40px;
+    width: max-content;
+    will-change: transform;
+  }
+  .cframe {
+    transition: transform 0.5s var(--ease-out-expo, ease-out),
+      box-shadow 0.5s var(--ease-out-expo, ease-out);
+  }
+  /* Hover: straighten + lift the individual card out of the tilt */
+  .ccard:hover .cframe {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-elevated-lg);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .carousel-viewport { overflow-x: auto; }
+    .cframe, .cframe img { transition: none; }
+    .ccard:hover .cframe { transform: none; }
+  }
+</style>
