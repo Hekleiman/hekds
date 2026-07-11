@@ -176,10 +176,11 @@ const liveUrl = mapped?.url;
      alpha, so a soft ambient glow + depth shadow lift them off the dark page. */
   .device-strip,
   .device-phone {
+    /* A tight, per-phone soft shadow — enough to lift each phone off the page
+       without the wide glows merging into a grey haze behind the row. */
     filter:
-      drop-shadow(0 18px 34px rgba(0, 0, 0, 0.55))
-      drop-shadow(0 0 26px rgba(224, 162, 96, 0.10))
-      drop-shadow(0 0 1px rgba(255, 255, 255, 0.35));
+      drop-shadow(0 12px 24px rgba(0, 0, 0, 0.5))
+      drop-shadow(0 0 6px rgba(255, 255, 255, 0.05));
   }
 
   /* Hide the scrollbar on the swipe rail (still scrollable/keyboard-accessible) */
