@@ -14,6 +14,8 @@ interface Props {
   height?: number;
   loading?: 'lazy' | 'eager';
   fetchpriority?: 'high' | 'low' | 'auto';
+  /** Sweep a subtle shine across the shot when a surrounding .group is hovered. */
+  shine?: boolean;
   class?: string;
 }
 
@@ -28,6 +30,7 @@ const {
   height = 500,
   loading = 'lazy',
   fetchpriority,
+  shine = false,
   class: className,
 } = Astro.props;
 ---
@@ -58,6 +61,7 @@ const {
         decoding="async"
         class="pshot-img absolute inset-0 w-full h-full object-cover object-top"
       />
+      {shine && <span class="pshine" aria-hidden="true"></span>}
     </div>
   </div>
 ) : (
@@ -96,6 +100,30 @@ const {
   }
   .pshot-img {
     transition: transform 1.2s var(--ease-out-expo);
+  }
+
+  /* Shine sweep — a soft diagonal light that crosses the shot on group hover
+     (same language as the button shine). Clipped by the frame's overflow. */
+  .pshine {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: linear-gradient(
+      105deg,
+      transparent 34%,
+      rgba(255, 255, 255, 0.1) 46%,
+      rgba(224, 162, 96, 0.14) 50%,
+      transparent 62%
+    );
+    transform: translateX(-115%);
+    transition: transform 0.9s var(--ease-out-expo);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    :global(.group:hover) .pshine { transform: translateX(115%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pshine { display: none; }
   }
 
   @media (hover: hover) and (pointer: fine) {

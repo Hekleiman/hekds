@@ -64,6 +64,7 @@ const eager = index === 0;
         sizes="(min-width: 768px) 50vw, 100vw"
         loading={eager ? 'eager' : 'lazy'}
         fetchpriority={eager ? 'high' : undefined}
+        shine
       />
     ) : (
       <div class="surface-elevated aspect-[16/10] flex items-center justify-center text-text-placeholder">
