@@ -74,14 +74,15 @@ const {
   >
   </div>
 
-  <!-- Content (centered) -->
+  <!-- Content — grows to fill the space above the carousel and centers the text
+       block within it, giving generous breathing room above and below. The
+       padding-top keeps it clear of the fixed nav on short viewports. -->
   <div
-    class="relative z-10 flex flex-col items-center justify-center text-center w-full container-main pb-4"
-    style="padding-top: clamp(8rem, 7.6rem + 1.6vw, 9.5rem);"
+    class="relative z-10 flex-1 flex flex-col items-center justify-center text-center w-full container-main pt-28 pb-6"
   >
     <!-- Eyebrow -->
     <div
-      class="inline-flex items-center gap-2 mb-6 px-4 py-1.5 rounded-full border border-border-primary bg-background-secondary/60 backdrop-blur-sm"
+      class="inline-flex items-center gap-2 mb-8 px-4 py-1.5 rounded-full border border-border-primary bg-background-secondary/60 backdrop-blur-sm"
       data-hero="eyebrow"
     >
       <span class="w-1.5 h-1.5 shrink-0 rounded-full bg-accent-bronze-bright"></span>
@@ -93,17 +94,17 @@ const {
 
     <!-- Headline with clip-reveal lines. Stacks on mobile/tablet; collapses to a
          single line on wide desktop (xl+) where it fits the container. -->
-    <h1 class="hero-headline mb-5" data-hero="headline">
+    <h1 class="hero-headline mb-7" data-hero="headline">
       {headlineLine1 && <span class="line"><span class="line-inner text-white">{headlineLine1}</span></span>}{headlineLine2 && <span class="line"><span class="line-inner text-metallic metallic-shimmer">{headlineLine2}</span></span>}{headlineLine3 && <span class="line"><span class="line-inner text-white">{headlineLine3}</span></span>}
     </h1>
 
     <!-- Subheadline -->
-    <p class="text-body-lg text-text-secondary max-w-[620px] mb-6" data-hero="subtext">
+    <p class="text-body-lg text-text-secondary max-w-[620px] mb-9" data-hero="subtext">
       {subtext}
     </p>
 
     <!-- CTAs + pricing (buttons side-by-side, centered) -->
-    <div class="flex flex-col items-center gap-4" data-hero="cta">
+    <div class="flex flex-col items-center gap-5" data-hero="cta">
       <div class="flex flex-row gap-2.5 sm:gap-3">
         <Button href={primaryCta.href}>{primaryCta.text}</Button>
         <Button href={secondaryCta.href} variant="secondary">{secondaryCta.text}</Button>
@@ -114,9 +115,8 @@ const {
     </div>
   </div>
 
-  <!-- Work-wall carousel (above the fold). On desktop it grows to fill the
-       space beneath the hero text and centers itself there. -->
-  <div class="relative z-10 w-full pb-8 pt-2 md:flex-1 md:flex md:items-center" data-hero="visual">
+  <!-- Work-wall carousel — pinned toward the bottom of the hero. -->
+  <div class="relative z-10 w-full pt-2 pb-10" data-hero="visual">
     <ProjectCarousel projects={featuredWork} />
   </div>
 </section>
@@ -125,7 +125,7 @@ const {
   .hero-headline {
     font-weight: 600;
     font-size: clamp(1.9rem, 0.95rem + 4vw, 4rem);
-    line-height: 1.06;
+    line-height: 1.12;
     letter-spacing: -0.035em;
   }
   .hero-headline .line {
