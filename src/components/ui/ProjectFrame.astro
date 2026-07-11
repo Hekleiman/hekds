@@ -1,0 +1,133 @@
+---
+// Canonical "screen in device chrome" frame — the same browser/phone treatment
+// used by the Home ProjectCarousel, extracted so the Work index and detail pages
+// render identical chrome. Includes the blueprint→interface hover: a faint
+// wireframe underlay sits over the shot at rest and dissolves on hover (pointer
+// devices only), so the polished interface "resolves" out of the blueprint.
+interface Props {
+  variant?: 'browser' | 'phone';
+  src: string;
+  srcset?: string;
+  sizes?: string;
+  alt: string;
+  url?: string;
+  width?: number;
+  height?: number;
+  loading?: 'lazy' | 'eager';
+  /** Show the faint wireframe underlay that dissolves on hover. */
+  blueprint?: boolean;
+  class?: string;
+}
+
+const {
+  variant = 'browser',
+  src,
+  srcset,
+  sizes,
+  alt,
+  url,
+  width = 800,
+  height = 500,
+  loading = 'lazy',
+  blueprint = true,
+  class: className,
+} = Astro.props;
+---
+
+{variant === 'browser' ? (
+  <div class:list={['pframe surface-elevated overflow-hidden', className]}>
+    <!-- Browser chrome -->
+    <div class="flex items-center gap-1.5 h-8 px-3 border-b border-border-primary bg-background-secondary/70">
+      <span class="w-2 h-2 rounded-full bg-border-secondary"></span>
+      <span class="w-2 h-2 rounded-full bg-border-secondary"></span>
+      <span class="w-2 h-2 rounded-full bg-border-secondary"></span>
+      {url && (
+        <div class="ml-2 h-4 flex-1 max-w-[220px] flex items-center px-2 rounded bg-surface-overlay border border-border-primary">
+          <span class="text-[10px] leading-none text-text-muted truncate">{url}</span>
+        </div>
+      )}
+    </div>
+    <div class="pshot relative aspect-[16/10] overflow-hidden bg-background-primary">
+      <img
+        src={src}
+        srcset={srcset}
+        sizes={sizes}
+        alt={alt}
+        width={width}
+        height={height}
+        loading={loading}
+        decoding="async"
+        class="pshot-img absolute inset-0 w-full h-full object-cover object-top"
+      />
+      {blueprint && (
+        <span class="pblueprint" aria-hidden="true"></span>
+      )}
+    </div>
+  </div>
+) : (
+  <div class:list={['flex items-end justify-center', className]}>
+    <div
+      class="pframe pshot relative rounded-[1.75rem] border-[5px] border-[#141417] bg-black overflow-hidden shadow-elevated-lg"
+      style="aspect-ratio: 9 / 19.5;"
+    >
+      <img
+        src={src}
+        srcset={srcset}
+        sizes={sizes}
+        alt={alt}
+        width={width}
+        height={height}
+        loading={loading}
+        decoding="async"
+        class="pshot-img w-full h-full object-cover object-top"
+      />
+      {blueprint && <span class="pblueprint" aria-hidden="true"></span>}
+    </div>
+  </div>
+)}
+
+<style>
+  .pframe {
+    transition: transform 0.5s var(--ease-out-expo),
+      box-shadow 0.5s var(--ease-out-expo),
+      border-color 0.5s var(--ease-out-expo);
+  }
+  .pshot-img {
+    transition: transform 1.2s var(--ease-out-expo);
+  }
+
+  /* Blueprint underlay: a faint grid + accent hairline that reads as the
+     "wireframe" the finished interface resolved out of. Very low opacity at rest
+     so the real screenshot stays legible; dissolves on hover. */
+  .pblueprint {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.1;
+    mix-blend-mode: screen;
+    background-image:
+      linear-gradient(rgba(224, 162, 96, 0.5) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(224, 162, 96, 0.5) 1px, transparent 1px);
+    background-size: 28px 28px, 28px 28px;
+    transition: opacity 0.6s var(--ease-out-expo);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .pblueprint { opacity: 0.14; }
+    :global(.group:hover) .pblueprint,
+    .pframe:hover .pblueprint { opacity: 0; }
+    :global(.group:hover) .pshot-img,
+    .pframe:hover .pshot-img { transform: scale(1.04); }
+    /* Lift + metallic edge when the surrounding block (.group) is hovered. */
+    :global(.group:hover) .pframe {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-elevated-lg);
+      border-color: rgba(224, 162, 96, 0.4);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pframe, .pshot-img, .pblueprint { transition: none; }
+    .pblueprint { opacity: 0.1; }
+  }
+</style>
