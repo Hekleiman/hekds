@@ -1,7 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import ServicesHero from '../components/services/ServicesHero.astro';
-import ServiceProcess from '../components/services/ServiceProcess.astro';
 import ServiceBlock from '../components/services/ServiceBlock.astro';
 import CtaSection from '../components/home/CtaSection.astro';
 import { getServicesPageContent, type ServicesPageContent, type ServiceItem } from '../lib/sanity';
@@ -147,10 +146,6 @@ const heroSubtext = legacyHero ? undefined : content?.heroSubtext;
     headline={heroHeadline}
     subtext={heroSubtext}
   />
-
-  <!-- How a project runs — the engagement's process, as a drawn horizontal
-       timeline (unique to this page; Home has no equivalent). -->
-  <ServiceProcess />
 
   <!-- The four services, in depth — alternating rows with bespoke blueprint
        graphics, stitched together by the drawn-in connector spine. -->

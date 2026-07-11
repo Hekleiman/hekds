@@ -1,10 +1,12 @@
 ---
+import ProcessTimeline from './ProcessTimeline.astro';
+
 // Services hero — a sibling of the Home hero (Hero.astro) and Work hero
 // (WorkHero.astro): same layered vocabulary (aura glow, parallax blueprint
 // contours, cursor spotlight, clip-reveal headline with a metallic focal line,
 // and the xl: single-line re-fit), sized as a page header rather than a full
-// viewport hero. A small blueprint detail hides in the contour layer and only
-// reveals under the cursor spotlight (easter egg).
+// viewport hero. Carries the process timeline (fills in on load) and a blueprint
+// detail that reveals only under the cursor spotlight (easter egg).
 interface Props {
   eyebrow?: string;
   eyebrowShort?: string;
@@ -12,7 +14,6 @@ interface Props {
   headlineLine1?: string;
   headlineLine2?: string;
   subtext?: string;
-  meta?: string;
   class?: string;
 }
 
@@ -23,7 +24,6 @@ const {
   headlineLine1 = 'Everything from',
   headlineLine2 = 'concept to launch.',
   subtext = 'Strategy, design, build, and the care that comes after — one small team, no handoffs, every detail owned from first wireframe to launch day.',
-  meta = 'Strategy · Design · Development · Support',
   class: className,
 } = Astro.props;
 
@@ -127,14 +127,14 @@ if (headline && headline.trim()) {
     </h1>
 
     <!-- Subtext -->
-    <p class="text-body-lg text-text-secondary max-w-[620px] mb-7" data-hero="subtext">
+    <p class="text-body-lg text-text-secondary max-w-[620px] mb-9 sm:mb-10" data-hero="subtext">
       {subtext}
     </p>
 
-    <!-- Meta row -->
-    <p class="text-caption uppercase tracking-[0.2em] text-text-muted" data-hero="cta">
-      {meta}
-    </p>
+    <!-- Process timeline — fills in on load, lighting each step to the goal. -->
+    <div class="w-full max-w-[900px]" data-hero="timeline">
+      <ProcessTimeline />
+    </div>
   </div>
 </section>
 

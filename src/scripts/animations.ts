@@ -69,6 +69,14 @@ function initHeroAnimations() {
     gsap.set(path, { strokeDasharray: len, strokeDashoffset: len, opacity: 1 });
     tl.to(path, { strokeDashoffset: 0, duration: 1.8, ease: 'power2.inOut' }, 0.4 + i * 0.15);
   });
+
+  // Fade the process-timeline block in with the hero; its bronze fill is driven
+  // by scroll (see initProgressLine), inviting the reader to keep going.
+  const timeline = hero.querySelector('[data-hero="timeline"]');
+  if (timeline) {
+    gsap.set(timeline, { opacity: 0, y: 24 });
+    tl.to(timeline, { opacity: 1, y: 0, duration: 0.7 }, 0.85);
+  }
 }
 
 // Fade-up animation for elements with [data-animate="fade-up"]
@@ -178,10 +186,10 @@ function initLineDraw() {
 }
 
 // Progress line: a bronze fill that grows along a timeline as its section
-// scrolls, signifying movement from the first step to the last.
-// [data-progress-fill] (+ data-progress-axis="x|y") scrubbed over the nearest
-// [data-progress-trigger]. Reduced motion returns before this runs, leaving the
-// fill at its CSS-default full state.
+// Process-timeline fill: a bronze line that grows as the timeline scrolls
+// through the viewport, lighting each station in turn to the gold "goal".
+// [data-progress-fill] (+ axis) over its [data-timeline-layout]; nodes
+// ([data-progress-node]) light by their fraction along the untransformed track.
 function initProgressLine() {
   const fills = document.querySelectorAll<HTMLElement>('[data-progress-fill]');
 
@@ -189,14 +197,10 @@ function initProgressLine() {
     const axis = fill.dataset.progressAxis === 'y' ? 'y' : 'x';
     const prop = axis === 'y' ? 'scaleY' : 'scaleX';
     const layout = (fill.closest('[data-timeline-layout]') || fill.parentElement) as HTMLElement;
-    // Trigger on the timeline itself (not the whole section) so the fill — and
-    // the final gold node — completes while the timeline is still on screen.
     const trigger = layout || fill;
     const track = layout?.querySelector<HTMLElement>('[data-progress-track]');
     const nodes = Array.from(layout?.querySelectorAll<HTMLElement>('[data-progress-node]') || []);
 
-    // Each node's fractional position along the (untransformed) track. Measured
-    // against the track — not the fill, which carries the scrub transform.
     let fractions = nodes.map(() => Infinity);
     const measure = () => {
       if (!track) return;
@@ -213,7 +217,6 @@ function initProgressLine() {
           : (nr.left + nr.width / 2 - tr.left) / tr.width;
       });
     };
-    // Light each node once the fill has reached it (small lead so it feels live).
     const paint = (p: number) => {
       nodes.forEach((n, i) => {
         n.classList.toggle('is-active', p > 0.001 && p >= fractions[i] - 0.02);
@@ -228,8 +231,10 @@ function initProgressLine() {
         ease: 'none',
         scrollTrigger: {
           trigger,
-          start: 'top 82%',
-          end: 'bottom 50%',
+          // The timeline sits in the hero; fill it as it scrolls up and through,
+          // so the first step reads as visible/empty on load and fills as you go.
+          start: 'top 55%',
+          end: 'bottom 60%',
           scrub: true,
           onRefresh: () => measure(),
           onUpdate: (self) => paint(self.progress),
