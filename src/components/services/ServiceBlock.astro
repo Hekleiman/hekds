@@ -1,11 +1,20 @@
 ---
+import ServiceGraphic from './ServiceGraphic.astro';
+import ServiceIcon from './ServiceIcon.astro';
+import { resolveIconKey } from '../../lib/serviceIcons';
+
+// A single service row — the fuller, standalone sibling of Home's ServicesIntro
+// row: alternating asymmetric layout, a metallic 01–04 index numeral, a bronze
+// icon circle, a feature list, a small "process annotation" stat, and a bespoke
+// blueprint graphic in an elevated, lifting tile.
 interface Props {
   title: string;
   description: string;
   features: string[];
   slug?: string;
   icon?: string;
-  image?: string;
+  index?: number;
+  reversed?: boolean;
   class?: string;
 }
 
@@ -15,112 +24,118 @@ const {
   features,
   slug,
   icon,
-  image,
+  index = 0,
+  reversed = false,
   class: className,
 } = Astro.props;
 
-// Normalize icon to valid key, default to 'pen'
-const validIcons = ['pen', 'palette', 'code'] as const;
-type IconKey = typeof validIcons[number];
-const iconKey: IconKey = validIcons.includes(icon as IconKey) ? (icon as IconKey) : 'pen';
+// Unify on the Home illustration keys (legacy Sanity keys alias in one place).
+const iconKey = resolveIconKey(icon);
 
-// Icon SVG paths
-const icons = {
-  pen: `<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>`,
-  palette: `<path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.563-2.512 5.563-5.563C22 6.052 17.5 2 12 2z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="7.5" cy="11.5" r="1.5" fill="currentColor"/><circle cx="12" cy="7.5" r="1.5" fill="currentColor"/><circle cx="16.5" cy="11.5" r="1.5" fill="currentColor"/>`,
-  code: `<path d="M16 18l6-6-6-6M8 6l-6 6 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>`,
+const numeral = String(index + 1).padStart(2, '0');
+
+// A small, honest "process annotation" per service — count-up on the number.
+const stats: Record<string, { value: string; unit?: string; label: string }> = {
+  strategy: { value: '2', unit: 'wks', label: 'to a clickable prototype' },
+  design: { value: '1', label: 'design system, every screen' },
+  code: { value: '0', label: 'handoffs — we build it' },
+  settings: { value: '∞', label: 'ongoing care after launch' },
 };
+const stat = stats[iconKey];
+const statIsNumeric = stat ? /^\d+$/.test(stat.value) : false;
 ---
 
 <section
   id={slug}
-  class:list={[
-    'py-8 md:py-10',
-    className,
-  ]}
+  class:list={['service-block scroll-mt-28', className]}
   data-animate="fade-up"
 >
-  <div class="container-main">
-    <div class="border border-zinc-800/50 rounded-2xl overflow-hidden">
-      <div class="grid grid-cols-1 lg:grid-cols-2">
-        <!-- Content Column (always left) -->
-        <div class="p-8 md:p-10 flex flex-col justify-center">
-          <!-- Icon -->
-          <div class="w-12 h-12 rounded-full border border-zinc-700 flex items-center justify-center mb-6">
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              class="text-white"
-              set:html={icons[iconKey]}
-            />
-          </div>
+  <div
+    class:list={[
+      'group grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center',
+      reversed && 'lg:[direction:rtl]',
+    ]}
+  >
+    <!-- Text Column -->
+    <div class="lg:[direction:ltr]">
+      <!-- Metallic index — a "station" on the page's blueprint spine -->
+      <div class="flex items-center gap-4 mb-6">
+        <span class="service-numeral text-metallic leading-none font-semibold tabular-nums">{numeral}</span>
+        <span class="h-px flex-1 max-w-[72px] bg-gradient-to-r from-border-secondary to-transparent"></span>
+      </div>
 
-          <h2 class="text-[32px] md:text-[36px] leading-[40px] md:leading-[44px] font-medium mb-4">
-            {title}
-          </h2>
+      <!-- Icon (warms to bronze when its row is hovered, alongside the tile) -->
+      <div class="svc-icon w-12 h-12 rounded-full bg-surface-raised border border-border-secondary flex items-center justify-center mb-6">
+        <ServiceIcon icon={iconKey} />
+      </div>
 
-          <p class="text-body text-text-secondary mb-8">
-            {description}
-          </p>
+      <!-- Title -->
+      <h2 class="text-h3-lg font-medium text-white mb-4">
+        {title}
+      </h2>
 
-          <!-- Bullet list (simple dots, no header) -->
-          <ul class="space-y-3">
-            {features.map((feature) => (
-              <li class="flex items-start gap-3 text-sm text-zinc-400">
-                <span class="text-zinc-400 mt-0.5">•</span>
-                {feature}
-              </li>
-            ))}
-          </ul>
+      <!-- Description -->
+      <p class="text-body-lg text-text-secondary max-w-[520px] mb-7">
+        {description}
+      </p>
+
+      <!-- Feature list -->
+      <p class="text-caption uppercase tracking-[0.2em] text-text-muted mb-4">What's included</p>
+      <ul class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 mb-8 max-w-[520px]">
+        {features.map((feature) => (
+          <li class="flex items-start gap-2.5 text-body text-text-secondary">
+            <svg class="mt-[7px] shrink-0 text-accent-bronze-bright" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M2.5 7.5L5.5 10.5L11.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>{feature}</span>
+          </li>
+        ))}
+      </ul>
+
+      <!-- Process annotation stat -->
+      {stat && (
+        <div class="inline-flex items-baseline gap-2.5 rounded-full border border-border-primary bg-background-secondary/60 px-4 py-2">
+          <span class="text-metallic text-h3 leading-none font-semibold tabular-nums">
+            {statIsNumeric ? <span data-countup={stat.value}>{stat.value}</span> : stat.value}{stat.unit && <span class="text-[0.6em] font-medium ml-0.5">{stat.unit}</span>}
+          </span>
+          <span class="text-caption text-text-muted">{stat.label}</span>
         </div>
+      )}
+    </div>
 
-        <!-- Visual Column (always right) -->
-        <div class="bg-zinc-800/30 min-h-[300px] lg:min-h-0 flex items-center justify-center">
-          {image ? (
-            <img
-              src={image}
-              alt={`${title} illustration`}
-              width="600"
-              height="450"
-              class="w-full h-full object-cover"
-              loading="lazy"
-            />
-          ) : (
-            <div class="w-full h-full flex items-center justify-center p-8">
-              <!-- Subtle wireframe UI placeholder -->
-              <svg
-                width="200"
-                height="160"
-                viewBox="0 0 200 160"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                class="text-zinc-700 opacity-50"
-              >
-                <!-- Browser window frame -->
-                <rect x="10" y="10" width="180" height="140" rx="8" stroke="currentColor" stroke-width="1"/>
-                <!-- Title bar -->
-                <line x1="10" y1="30" x2="190" y2="30" stroke="currentColor" stroke-width="1"/>
-                <!-- Window buttons -->
-                <circle cx="24" cy="20" r="3" stroke="currentColor" stroke-width="1"/>
-                <circle cx="36" cy="20" r="3" stroke="currentColor" stroke-width="1"/>
-                <circle cx="48" cy="20" r="3" stroke="currentColor" stroke-width="1"/>
-                <!-- Content placeholders -->
-                <rect x="24" y="44" width="60" height="8" rx="2" stroke="currentColor" stroke-width="1"/>
-                <rect x="24" y="60" width="152" height="4" rx="1" stroke="currentColor" stroke-width="1"/>
-                <rect x="24" y="70" width="140" height="4" rx="1" stroke="currentColor" stroke-width="1"/>
-                <rect x="24" y="80" width="100" height="4" rx="1" stroke="currentColor" stroke-width="1"/>
-                <!-- Card placeholders -->
-                <rect x="24" y="100" width="48" height="36" rx="4" stroke="currentColor" stroke-width="1"/>
-                <rect x="80" y="100" width="48" height="36" rx="4" stroke="currentColor" stroke-width="1"/>
-                <rect x="136" y="100" width="40" height="36" rx="4" stroke="currentColor" stroke-width="1"/>
-              </svg>
-            </div>
-          )}
+    <!-- Graphic Column -->
+    <div class="lg:[direction:ltr]">
+      <div class="surface-elevated lift aspect-[16/10] overflow-hidden p-5 sm:p-7">
+        <div class="w-full h-full transition-transform duration-500 ease-out group-hover:scale-[1.02]">
+          <ServiceGraphic icon={iconKey} />
         </div>
       </div>
     </div>
   </div>
 </section>
+
+<style>
+  /* Matches Home's process/index numerals: fluid 40 → 56px so it isn't oversized
+     on phones or lost on desktop. */
+  .service-numeral {
+    font-size: clamp(2.5rem, 1.9rem + 2.4vw, 3.5rem);
+  }
+
+  /* Row-hover: the icon circle warms to bronze + a faint glow so the text column
+     responds together with the graphic tile (which already lifts). */
+  .svc-icon {
+    transition: border-color 0.4s var(--ease-out-expo),
+      box-shadow 0.4s var(--ease-out-expo),
+      background-color 0.4s var(--ease-out-expo);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .group:hover .svc-icon {
+      border-color: rgba(224, 162, 96, 0.55);
+      background-color: var(--color-surface-overlay);
+      box-shadow: 0 0 22px rgba(205, 127, 50, 0.18);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .svc-icon { transition: none; }
+  }
+</style>

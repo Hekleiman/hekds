@@ -1,0 +1,183 @@
+---
+// Process timeline for the hero — four labelled, described stations whose line
+// fills bronze and lights each node in turn (to the gold "goal") as the timeline
+// scrolls through the viewport. Horizontal on md+, a vertical left-rail below md.
+// Sized so the first step reads above the fold, inviting the reader to scroll.
+interface Phase {
+  title: string;
+  description: string;
+}
+
+interface Props {
+  phases?: Phase[];
+  class?: string;
+}
+
+const defaultPhases: Phase[] = [
+  { title: 'Discover', description: 'We map your goals, audience, and scope before any pixels move.' },
+  { title: 'Design', description: 'Wireframes become polished, on-brand UI — reviewed together at every step.' },
+  { title: 'Build', description: 'Clean, accessible, fast code that turns the design into the real thing.' },
+  { title: 'Launch & care', description: 'We ship, then keep monitoring and refining well past go-live.' },
+];
+
+const { phases = defaultPhases, class: className } = Astro.props;
+
+const items = phases.map((phase, index) => ({
+  ...phase,
+  number: String(index + 1).padStart(2, '0'),
+  first: index === 0,
+  last: index === phases.length - 1,
+}));
+
+const nodeClass = (first: boolean, last: boolean, extra = '') =>
+  ['pt-node', extra, first && 'pt-node--start', last && 'pt-node--final']
+    .filter(Boolean)
+    .join(' ');
+---
+
+<div class:list={['process-timeline text-left md:text-center', className]}>
+  <!-- ── md+ : horizontal ───────────────────────────────────────────────── -->
+  <div class="hidden md:block" data-timeline-layout>
+    <div class="relative h-4 mb-8">
+      <div
+        class="absolute top-1/2 left-[12.5%] right-[12.5%] h-px -translate-y-1/2 bg-border-secondary/70"
+        data-progress-track
+      ></div>
+      <div
+        class="progress-fill-x absolute top-1/2 left-[12.5%] right-[12.5%] h-[2px] -translate-y-1/2"
+        data-progress-fill data-progress-axis="x"
+      ></div>
+      <div class="relative grid grid-cols-4 h-full">
+        {items.map((item) => (
+          <div class="flex items-center justify-center">
+            <span class={nodeClass(item.first, item.last, 'relative')} data-progress-node></span>
+          </div>
+        ))}
+      </div>
+    </div>
+    <div class="grid grid-cols-4 gap-x-8">
+      {items.map((item) => (
+        <div>
+          <span class="text-metallic block text-[38px] leading-none font-semibold tabular-nums mb-2.5">{item.number}</span>
+          <h3 class="text-h3 font-medium text-white mb-2">{item.title}</h3>
+          <p class="text-body text-text-secondary max-w-[220px] mx-auto">{item.description}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- ── below md : vertical left-rail ──────────────────────────────────── -->
+  <div class="md:hidden relative pl-10 max-w-[420px]" data-timeline-layout>
+    <div class="rail-fade absolute left-[6px] top-2 bottom-2 w-[2px]">
+      <div class="absolute inset-0 bg-border-secondary/70" data-progress-track></div>
+      <div
+        class="progress-fill-y absolute inset-x-0 top-0 h-full"
+        data-progress-fill data-progress-axis="y"
+      ></div>
+    </div>
+    <div class="space-y-10">
+      {items.map((item) => (
+        <div class="relative">
+          <span class={nodeClass(item.first, item.last, 'absolute -left-10 top-1.5')} data-progress-node></span>
+          <span class="text-metallic block text-[34px] leading-none font-semibold tabular-nums mb-2">{item.number}</span>
+          <h3 class="text-h3 font-medium text-white mb-2">{item.title}</h3>
+          <p class="text-body text-text-secondary">{item.description}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Bronze progress fills. Default empty; initProgressLine grows them on scroll.
+     Reduced motion / no-JS present the completed line. */
+  .progress-fill-x,
+  .progress-fill-y {
+    background: linear-gradient(var(--pf-angle, 90deg), var(--color-accent-bronze), var(--color-accent-bronze-bright));
+    box-shadow: 0 0 10px rgba(224, 162, 96, 0.4);
+    border-radius: 2px;
+  }
+  .progress-fill-x { transform-origin: left center; transform: scaleX(0); }
+  .progress-fill-y { --pf-angle: 180deg; transform-origin: center top; transform: scaleY(0); }
+  @media (prefers-reduced-motion: reduce), (scripting: none) {
+    .progress-fill-x { transform: scaleX(1); }
+    .progress-fill-y { transform: scaleY(1); }
+  }
+
+  /* Soften the vertical rail's bottom so it dissolves past the final station. */
+  .rail-fade {
+    -webkit-mask-image: linear-gradient(180deg, #000 85%, transparent 100%);
+    mask-image: linear-gradient(180deg, #000 85%, transparent 100%);
+  }
+
+  /* ── Stations ───────────────────────────────────────────────────────────
+     Neutral until the fill reaches them (JS toggles .is-active). Three tiers:
+     start (ring) · bronze middle steps · gold, haloed, pulsing final goal. */
+  .pt-node {
+    width: 14px;
+    height: 14px;
+    border-radius: 9999px;
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border-secondary);
+    box-shadow: 0 0 0 4px var(--color-background-primary);
+    transition: background 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease;
+  }
+  .pt-node.is-active {
+    background: var(--gradient-bronze);
+    border-color: transparent;
+    box-shadow: 0 0 0 4px var(--color-background-primary), 0 0 12px rgba(224, 162, 96, 0.5);
+  }
+
+  .pt-node--start::after {
+    content: "";
+    position: absolute;
+    inset: -5px;
+    border-radius: 9999px;
+    border: 1px solid var(--color-border-secondary);
+    opacity: 0.55;
+    transition: border-color 0.5s ease, opacity 0.5s ease;
+  }
+  .pt-node--start.is-active::after {
+    border-color: var(--color-accent-bronze-bright);
+    opacity: 0.75;
+  }
+
+  .pt-node--final::after {
+    content: "";
+    position: absolute;
+    inset: -7px;
+    border-radius: 9999px;
+    border: 1px dashed var(--color-border-secondary);
+    opacity: 0.6;
+    transition: border-color 0.5s ease, opacity 0.5s ease;
+  }
+  .pt-node--final.is-active {
+    background: var(--gradient-gold);
+    border-color: transparent;
+    animation: station-pulse 3s ease-in-out infinite;
+  }
+  .pt-node--final.is-active::after {
+    border-color: var(--color-accent-gold);
+    opacity: 0.7;
+  }
+  @keyframes station-pulse {
+    0%, 100% { box-shadow: 0 0 0 4px var(--color-background-primary), 0 0 18px rgba(255, 215, 0, 0.5); }
+    50% { box-shadow: 0 0 0 4px var(--color-background-primary), 0 0 8px rgba(255, 215, 0, 0.22); }
+  }
+
+  /* Reduced motion / no-JS: present the completed timeline. */
+  @media (prefers-reduced-motion: reduce), (scripting: none) {
+    .pt-node {
+      background: var(--gradient-bronze);
+      border-color: transparent;
+      box-shadow: 0 0 0 4px var(--color-background-primary), 0 0 10px rgba(224, 162, 96, 0.4);
+    }
+    .pt-node--start::after { border-color: var(--color-accent-bronze-bright); opacity: 0.75; }
+    .pt-node--final {
+      background: var(--gradient-gold);
+      animation: none;
+      box-shadow: 0 0 0 4px var(--color-background-primary), 0 0 14px rgba(255, 215, 0, 0.45);
+    }
+    .pt-node--final::after { border-color: var(--color-accent-gold); opacity: 0.7; }
+  }
+</style>

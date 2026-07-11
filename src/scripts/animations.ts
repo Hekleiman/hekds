@@ -29,7 +29,9 @@ export function initAnimations() {
   initStagger();
   initParallax();
   initLineDraw();
+  initProgressLine();
   initSpotlight();
+  initCountUp();
   // The work carousel marquee is a pure CSS animation (see ProjectCarousel.astro)
   // so it runs on the compositor — smooth on mobile — and never reacts to touch.
 }
@@ -67,6 +69,14 @@ function initHeroAnimations() {
     gsap.set(path, { strokeDasharray: len, strokeDashoffset: len, opacity: 1 });
     tl.to(path, { strokeDashoffset: 0, duration: 1.8, ease: 'power2.inOut' }, 0.4 + i * 0.15);
   });
+
+  // Fade the process-timeline block in with the hero; its bronze fill is driven
+  // by scroll (see initProgressLine), inviting the reader to keep going.
+  const timeline = hero.querySelector('[data-hero="timeline"]');
+  if (timeline) {
+    gsap.set(timeline, { opacity: 0, y: 24 });
+    tl.to(timeline, { opacity: 1, y: 0, duration: 0.7 }, 0.85);
+  }
 }
 
 // Fade-up animation for elements with [data-animate="fade-up"]
@@ -175,6 +185,68 @@ function initLineDraw() {
   });
 }
 
+// Progress line: a bronze fill that grows along a timeline as its section
+// Process-timeline fill: a bronze line that grows as the timeline scrolls
+// through the viewport, lighting each station in turn to the gold "goal".
+// [data-progress-fill] (+ axis) over its [data-timeline-layout]; nodes
+// ([data-progress-node]) light by their fraction along the untransformed track.
+function initProgressLine() {
+  const fills = document.querySelectorAll<HTMLElement>('[data-progress-fill]');
+
+  fills.forEach((fill) => {
+    const axis = fill.dataset.progressAxis === 'y' ? 'y' : 'x';
+    const prop = axis === 'y' ? 'scaleY' : 'scaleX';
+    const layout = (fill.closest('[data-timeline-layout]') || fill.parentElement) as HTMLElement;
+    const trigger = layout || fill;
+    const track = layout?.querySelector<HTMLElement>('[data-progress-track]');
+    const nodes = Array.from(layout?.querySelectorAll<HTMLElement>('[data-progress-node]') || []);
+
+    let fractions = nodes.map(() => Infinity);
+    const measure = () => {
+      if (!track) return;
+      const tr = track.getBoundingClientRect();
+      const size = axis === 'y' ? tr.height : tr.width;
+      if (size < 1) {
+        fractions = nodes.map(() => Infinity); // layout hidden at this breakpoint
+        return;
+      }
+      fractions = nodes.map((n) => {
+        const nr = n.getBoundingClientRect();
+        return axis === 'y'
+          ? (nr.top + nr.height / 2 - tr.top) / tr.height
+          : (nr.left + nr.width / 2 - tr.left) / tr.width;
+      });
+    };
+    const paint = (p: number) => {
+      nodes.forEach((n, i) => {
+        n.classList.toggle('is-active', p > 0.001 && p >= fractions[i] - 0.02);
+      });
+    };
+
+    gsap.fromTo(
+      fill,
+      { [prop]: 0 },
+      {
+        [prop]: 1,
+        ease: 'none',
+        scrollTrigger: {
+          trigger,
+          // The timeline sits in the hero; fill it as it scrolls up and through,
+          // so the first step reads as visible/empty on load and fills as you go.
+          start: 'top 55%',
+          end: 'bottom 60%',
+          scrub: true,
+          onRefresh: () => measure(),
+          onUpdate: (self) => paint(self.progress),
+        },
+      }
+    );
+
+    measure();
+    paint(0);
+  });
+}
+
 // Cursor "spotlight" that reveals detail beneath it. [data-spotlight]
 // Pointer-fine only; degrades to nothing on touch / reduced motion.
 function initSpotlight() {
@@ -191,14 +263,61 @@ function initSpotlight() {
 
     zone.addEventListener('pointermove', (e) => {
       const rect = zone.getBoundingClientRect();
-      xTo(e.clientX - rect.left);
-      yTo(e.clientY - rect.top);
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      xTo(x);
+      yTo(y);
+      // Publish the cursor position so a masked "blueprint detail" layer can
+      // reveal only the area under the spotlight (see ServicesHero.astro).
+      zone.style.setProperty('--spot-x', `${x}px`);
+      zone.style.setProperty('--spot-y', `${y}px`);
     });
     zone.addEventListener('pointerenter', () => {
       gsap.to(light, { opacity: 1, duration: 0.4 });
     });
     zone.addEventListener('pointerleave', () => {
       gsap.to(light, { opacity: 0, duration: 0.6 });
+      // Move the reveal off-canvas so the hidden detail disappears again.
+      zone.style.setProperty('--spot-x', '-999px');
+      zone.style.setProperty('--spot-y', '-999px');
+    });
+  });
+}
+
+// Count a number up from 0 to its target when it scrolls into view.
+// [data-countup="42"] — the element's text is replaced with the tally. Purely
+// textual (no transforms), and skipped entirely under reduced motion (the CSS
+// guard above returns before this runs, leaving the final value in place — so
+// we set it immediately here as the honest resting state).
+function initCountUp() {
+  const els = document.querySelectorAll<HTMLElement>('[data-countup]');
+
+  els.forEach((el) => {
+    const target = parseInt(el.dataset.countup || '0', 10);
+    if (!Number.isFinite(target)) return;
+
+    // Motion is allowed here (reduced-motion returns before this runs), so start
+    // the tally from 0; the markup rendered the final value as its resting state.
+    el.textContent = '0';
+
+    ScrollTrigger.create({
+      trigger: el,
+      start: 'top 90%',
+      once: true,
+      onEnter: () => {
+        const counter = { v: 0 };
+        gsap.to(counter, {
+          v: target,
+          duration: 1.2,
+          ease: 'power2.out',
+          onUpdate: () => {
+            el.textContent = String(Math.round(counter.v));
+          },
+          onComplete: () => {
+            el.textContent = String(target);
+          },
+        });
+      },
     });
   });
 }

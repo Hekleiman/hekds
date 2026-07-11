@@ -1,27 +1,194 @@
 ---
-import Section from '../ui/Section.astro';
+import ProcessTimeline from './ProcessTimeline.astro';
 
+// Services hero — a sibling of the Home hero (Hero.astro) and Work hero
+// (WorkHero.astro): same layered vocabulary (aura glow, parallax blueprint
+// contours, cursor spotlight, clip-reveal headline with a metallic focal line,
+// and the xl: single-line re-fit), sized as a page header rather than a full
+// viewport hero. Carries the process timeline (fills in on load) and a blueprint
+// detail that reveals only under the cursor spotlight (easter egg).
 interface Props {
+  eyebrow?: string;
+  eyebrowShort?: string;
   headline?: string;
+  headlineLine1?: string;
+  headlineLine2?: string;
   subtext?: string;
   class?: string;
 }
 
 const {
-  headline = 'Services',
-  subtext = 'End-to-end design and development. We handle every aspect of your project, from initial concept to final launch.',
+  eyebrow = 'What we do — end to end',
+  eyebrowShort = 'What we do',
+  headline,
+  headlineLine1 = 'Everything from',
+  headlineLine2 = 'concept to launch.',
+  subtext = 'A two-person studio — no handoffs, every detail owned.',
   class: className,
 } = Astro.props;
+
+// A CMS-provided single-string headline overrides the two-line default: the
+// final word takes the metallic focal treatment (matches Home/Work/CTA).
+let line1 = headlineLine1;
+let line2 = headlineLine2;
+if (headline && headline.trim()) {
+  const m = headline.trim().match(/^([\s\S]*\S)\s+(\S+[.!?…]*)$/);
+  if (m) {
+    line1 = m[1];
+    line2 = m[2];
+  } else {
+    line1 = '';
+    line2 = headline.trim();
+  }
+}
 ---
 
-<Section class:list={[className]}>
-  <div class="flex flex-col items-start" data-animate="fade-up">
-    <h1 class="text-h1 mb-6">
-      {headline}
+<!-- Desktop (md+): a true full-viewport hero — -mt-36 cancels the global nav
+     offset, min-h-[100svh] fills the screen, content is vertically centred.
+     Below md the hero flows naturally so the tall vertical timeline extends past
+     the fold (inviting scroll). -->
+<section
+  class:list={['services-hero relative overflow-hidden -mt-12 sm:mt-0 md:-mt-36 md:min-h-[100svh] md:flex md:flex-col', className]}
+  data-animate="hero"
+  data-spotlight
+>
+  <!-- Depth glow -->
+  <div class="aura w-[620px] h-[440px] top-[-6%] left-1/2 -translate-x-1/2 bg-accent-bronze/[0.10]"></div>
+
+  <!-- Living-blueprint contour layer (parallax + draw-in on load) -->
+  <div
+    class="absolute inset-0 pointer-events-none opacity-[0.45]"
+    aria-hidden="true"
+    data-parallax
+    data-parallax-speed="-0.1"
+  >
+    <svg class="w-full h-full" viewBox="0 0 1440 640" fill="none" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <path d="M-40 230 C 260 170, 460 290, 720 230 S 1140 130, 1500 210" stroke="var(--color-border-secondary)" stroke-width="1" data-draw="hero" />
+      <path d="M-40 310 C 300 250, 500 370, 780 300 S 1180 190, 1500 280" stroke="var(--color-border-primary)" stroke-width="1" data-draw="hero" />
+      <path d="M-40 160 C 240 120, 520 210, 760 160 S 1120 70, 1500 140" stroke="var(--color-border-primary)" stroke-width="1" data-draw="hero" />
+    </svg>
+  </div>
+
+  <!-- Easter egg: faint blueprint annotations that only reveal under the cursor
+       spotlight (masked to the pointer). Each is a complete, self-contained
+       schematic anchored to exact points on the contour curves above (same
+       viewBox), so it reads as a precise annotation of the blueprint — never a
+       floating shape. -->
+  <div class="blueprint-detail absolute inset-0 pointer-events-none" aria-hidden="true">
+    <svg class="w-full h-full" viewBox="0 0 1440 640" fill="none" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <g class="bd-ink">
+        <!-- 1) Left: a dimension measuring the gap between two contour lines.
+             Both endpoints sit exactly on the drawn curves (169,150) & (169,213). -->
+        <circle cx="169" cy="150" r="3" fill="currentColor" stroke="none" />
+        <circle cx="169" cy="213" r="3" fill="currentColor" stroke="none" />
+        <path d="M161 150 h18 M161 213 h18" />
+        <path d="M169 152 V211" />
+        <path d="M165 158 l4 -6 4 6 M165 205 l4 6 4 -6" />
+        <rect x="187" y="176" width="40" height="9" rx="2" fill="currentColor" stroke="none" opacity="0.42" />
+
+        <!-- 2) Right: an annotated callout on a contour node (1003,174). -->
+        <circle cx="1003" cy="174" r="4.5" fill="currentColor" stroke="none" />
+        <circle cx="1003" cy="174" r="15" stroke-dasharray="3 5" />
+        <path d="M1003 150 v-11 M1003 198 v11 M979 174 h-11 M1027 174 h11" />
+        <path d="M1015 165 L1082 138" />
+        <rect x="1086" y="128" width="80" height="10" rx="2" fill="currentColor" stroke="none" opacity="0.5" />
+        <rect x="1086" y="144" width="52" height="7" rx="2" fill="currentColor" stroke="none" opacity="0.3" />
+
+        <!-- 3) Upper-right: a registration target on a contour node (1077,105). -->
+        <circle cx="1077" cy="105" r="10" stroke-dasharray="2 4" />
+        <path d="M1077 89 v-9 M1077 121 v9 M1061 105 h-9 M1093 105 h9" />
+        <circle cx="1077" cy="105" r="2" fill="currentColor" stroke="none" />
+      </g>
+    </svg>
+  </div>
+
+  <!-- Cursor spotlight -->
+  <div
+    class="absolute w-[600px] h-[600px] rounded-full opacity-0 pointer-events-none mix-blend-screen -ml-[300px] -mt-[300px]"
+    style="background: radial-gradient(circle, rgba(224,162,96,0.12) 0%, rgba(224,162,96,0.05) 35%, transparent 70%);"
+    aria-hidden="true"
+    data-spotlight-light
+  >
+  </div>
+
+  <!-- Content — vertically centred within the full-height hero on md+. -->
+  <div class="relative z-10 container-main flex flex-col items-center text-center pt-4 pb-6 sm:pt-16 md:pt-28 md:pb-10 md:flex-1 md:justify-center">
+    <!-- Eyebrow pill -->
+    <div
+      class="inline-flex items-center gap-2 mb-8 px-4 py-1.5 rounded-full border border-border-primary bg-background-secondary/60 backdrop-blur-sm"
+      data-hero="eyebrow"
+    >
+      <span class="w-1.5 h-1.5 shrink-0 rounded-full bg-accent-bronze-bright"></span>
+      <span class="text-caption text-text-secondary tracking-wide whitespace-nowrap">
+        <span class="sm:hidden">{eyebrowShort}</span>
+        <span class="hidden sm:inline">{eyebrow}</span>
+      </span>
+    </div>
+
+    <!-- Clip-reveal headline; second line metallic. Collapses to one line on xl. -->
+    <h1 class="services-headline mb-7" data-hero="headline">
+      {line1 && <span class="line"><span class="line-inner text-white">{line1}</span></span>}<span class="line"><span class="line-inner text-metallic metallic-shimmer">{line2}</span></span>
     </h1>
 
-    <p class="text-body-lg text-text-secondary max-w-[650px]">
+    <!-- Subtext -->
+    <p class="text-body-lg text-text-secondary max-w-[620px] mb-9 sm:mb-10" data-hero="subtext">
       {subtext}
     </p>
+
+    <!-- Process timeline — fills in on load, lighting each step to the goal. -->
+    <div class="w-full max-w-[900px]" data-hero="timeline">
+      <ProcessTimeline />
+    </div>
   </div>
-</Section>
+</section>
+
+<style>
+  /* Blueprint-detail easter egg: only the disc under the cursor is unmasked.
+     --spot-x/--spot-y are published by initSpotlight (animations.ts); off-canvas
+     by default so nothing shows until the pointer moves across the hero. */
+  .blueprint-detail {
+    color: var(--color-accent-bronze-bright);
+    -webkit-mask: radial-gradient(circle 130px at var(--spot-x, -999px) var(--spot-y, -999px), #000 0%, #000 32%, transparent 70%);
+    mask: radial-gradient(circle 130px at var(--spot-x, -999px) var(--spot-y, -999px), #000 0%, #000 32%, transparent 70%);
+  }
+  .blueprint-detail .bd-ink {
+    stroke: currentColor;
+    stroke-width: 1.5;
+    fill: none;
+  }
+  /* Pointer-fine only (the reveal needs a cursor); no reveal under reduced motion. */
+  @media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
+    .blueprint-detail { display: none; }
+  }
+
+  .services-headline {
+    font-weight: 600;
+    font-size: clamp(2rem, 1.0rem + 4.2vw, 4rem);
+    line-height: 1.1;
+    letter-spacing: -0.035em;
+  }
+  .services-headline .line {
+    display: block;
+    overflow: hidden;
+    padding-bottom: 0.06em;
+  }
+  .services-headline .line-inner {
+    display: block;
+  }
+
+  /* Wide desktop: single line, capped so the full string fits the content column. */
+  @media (min-width: 1280px) {
+    .services-headline {
+      font-size: clamp(2.75rem, 1.6rem + 1.9vw, 3.5rem);
+      white-space: nowrap;
+    }
+    .services-headline .line {
+      display: inline-block;
+      vertical-align: top;
+      padding-bottom: 0.12em;
+    }
+    .services-headline .line + .line {
+      margin-left: 0.28em;
+    }
+  }
+</style>
