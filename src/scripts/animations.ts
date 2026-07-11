@@ -30,7 +30,8 @@ export function initAnimations() {
   initParallax();
   initLineDraw();
   initSpotlight();
-  initCarousel();
+  // The work carousel marquee is a pure CSS animation (see ProjectCarousel.astro)
+  // so it runs on the compositor — smooth on mobile — and never reacts to touch.
 }
 
 // Hero-specific animations (no scroll trigger, immediate)
@@ -66,31 +67,6 @@ function initHeroAnimations() {
     gsap.set(path, { strokeDasharray: len, strokeDashoffset: len, opacity: 1 });
     tl.to(path, { strokeDashoffset: 0, duration: 1.8, ease: 'power2.inOut' }, 0.4 + i * 0.15);
   });
-}
-
-// Infinite auto-drifting project carousel + cursor-reactive 3D tilt
-function initCarousel() {
-  const carousel = document.querySelector<HTMLElement>('[data-carousel]');
-  const track = document.querySelector<HTMLElement>('[data-carousel-track]');
-  if (!carousel || !track) return;
-
-  // Seamless marquee: track holds two copies, so -50% is exactly one set.
-  const setWidth = track.scrollWidth / 2;
-  const speed = 55; // px per second
-  const marquee = gsap.to(track, {
-    xPercent: -50,
-    ease: 'none',
-    duration: setWidth / speed,
-    repeat: -1,
-  });
-
-  // Ease the drift down (not a hard stop) while hovering the wall
-  carousel.addEventListener('pointerenter', () =>
-    gsap.to(marquee, { timeScale: 0.15, duration: 0.6, overwrite: true })
-  );
-  carousel.addEventListener('pointerleave', () =>
-    gsap.to(marquee, { timeScale: 1, duration: 0.8, overwrite: true })
-  );
 }
 
 // Fade-up animation for elements with [data-animate="fade-up"]

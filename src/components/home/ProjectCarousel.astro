@@ -192,21 +192,43 @@ const loop = [...projects, ...projects];
     align-items: flex-end;
     gap: 28px;
     width: max-content;
+    /* Pure-CSS marquee — runs on the compositor (smooth on mobile) and never
+       reacts to touch. The track holds two copies, so -50% is exactly one set.
+       Duration is tuned per card size so the px/sec speed stays consistent. */
+    animation: hek-marquee 40s linear infinite;
     will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
   }
+  @keyframes hek-marquee {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(-50%, 0, 0); }
+  }
+  /* Smaller cards on mobile → shorter set → shorter duration keeps the speed
+     constant. Touch devices get this same steady drift, never a slowdown. */
+  @media (max-width: 639px) {
+    .carousel-track { animation-duration: 32s; }
+  }
+
   .cframe {
     transition: transform 0.5s var(--ease-out-expo, ease-out),
       box-shadow 0.5s var(--ease-out-expo, ease-out);
   }
-  /* Hover: straighten + lift the individual card out of the tilt */
-  .ccard:hover .cframe {
-    transform: translateY(-8px);
-    box-shadow: var(--shadow-elevated-lg);
+  /* Desktop mouse only: pause the drift + lift the hovered card. Gated so a
+     finger tap never triggers (and never sticks) these states on mobile/tablet. */
+  @media (hover: hover) and (pointer: fine) {
+    .carousel-perspective:hover .carousel-track {
+      animation-play-state: paused;
+    }
+    .ccard:hover .cframe {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-elevated-lg);
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .carousel-track { animation: none; }
     .carousel-viewport { overflow-x: auto; }
     .cframe, .cframe img { transition: none; }
-    .ccard:hover .cframe { transform: none; }
   }
 </style>
