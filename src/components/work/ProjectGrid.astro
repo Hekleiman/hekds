@@ -21,18 +21,38 @@ const { projects, class: className } = Astro.props;
 ---
 
 <Section class:list={['pt-0', className]}>
-  <div class="space-y-24 md:space-y-32" data-animate="stagger">
-    {projects.map((project, index) => (
-      <ProjectBlock
-        title={project.title}
-        slug={project.slug}
-        category={project.category}
-        year={project.year}
-        description={project.description}
-        tags={project.tags}
-        thumbnail={project.thumbnail}
-        imageLeft={index % 2 === 0}
-      />
-    ))}
+  <!-- Living-blueprint spine: a single line threaded down the page that "connects
+       the work", drawn as it scrolls into view (reuses data-draw="scroll"). Sits
+       on the left rail on mobile, centered between the columns on desktop. -->
+  <div class="relative" data-draw-trigger>
+    <div
+      class="absolute inset-y-0 left-[7px] md:left-1/2 md:-translate-x-1/2 pointer-events-none opacity-40 hidden sm:block"
+      aria-hidden="true"
+    >
+      <svg class="h-full w-[44px] -ml-[22px]" viewBox="0 0 44 1200" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M22 0 C 8 200, 36 400, 22 600 S 8 1000, 22 1200"
+          stroke="var(--color-border-secondary)"
+          stroke-width="1"
+          data-draw="scroll"
+        />
+      </svg>
+    </div>
+
+    <div class="relative space-y-20 md:space-y-32" data-animate="stagger">
+      {projects.map((project, index) => (
+        <ProjectBlock
+          title={project.title}
+          slug={project.slug}
+          category={project.category}
+          year={project.year}
+          description={project.description}
+          tags={project.tags}
+          thumbnail={project.thumbnail}
+          index={index}
+          imageLeft={index % 2 === 0}
+        />
+      ))}
+    </div>
   </div>
 </Section>
