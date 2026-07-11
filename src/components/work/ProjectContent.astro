@@ -2,7 +2,7 @@
 import Section from '../ui/Section.astro';
 import ProjectFrame from '../ui/ProjectFrame.astro';
 import type { Project } from '../../data/projects';
-import { portfolioImageFor } from '../../lib/portfolioImages';
+import { portfolioImageFor, type GalleryShot } from '../../lib/portfolioImages';
 
 interface Props {
   project: Project;
@@ -13,17 +13,20 @@ const { project, class: className } = Astro.props;
 
 const mapped = portfolioImageFor({ slug: project.slug, title: project.title });
 const primarySrc = mapped?.src ?? project.thumbnail;
+
 // Prefer Sanity images when populated; otherwise fall back to the mapped gallery.
-const gallery =
+const gallery: GalleryShot[] =
   project.images && project.images.length > 0
-    ? project.images
+    ? project.images.map((src, i) => ({ src, label: `Screen ${i + 1}`, framed: true }))
     : mapped?.gallery ?? [];
+
+const liveUrl = mapped?.url;
 ---
 
 <Section class:list={['pt-0!', className]}>
   <!-- Primary framed shot — the "money shot", in browser chrome -->
   {primarySrc && (
-    <div class="relative mb-16 group" data-animate="fade-up">
+    <div class="relative mb-16 md:mb-24 group" data-animate="fade-up">
       <div class="aura w-[70%] h-[60%] top-[10%] left-1/2 -translate-x-1/2 bg-accent-bronze/[0.07]"></div>
       <div class="relative max-w-[980px] mx-auto">
         <ProjectFrame
@@ -31,6 +34,8 @@ const gallery =
           src={primarySrc}
           alt={`${project.title} — ${project.category}, built by HEK Design Studio`}
           url={mapped?.url}
+          width={1333}
+          height={833}
           loading="eager"
           sizes="(min-width: 1024px) 980px, 100vw"
         />
@@ -38,37 +43,19 @@ const gallery =
     </div>
   )}
 
-  <div class="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-16" data-animate="fade-up">
-    <!-- Main Content -->
-    <div class="lg:col-span-3 space-y-10">
+  <!-- Overview: lead paragraph + a meta card (services, live link) -->
+  <div class="grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-16" data-animate="fade-up">
+    <div class="lg:col-span-3">
+      <p class="text-caption uppercase tracking-[0.2em] text-accent-bronze-bright/80 mb-4">Overview</p>
       <p class="text-body-lg text-text-secondary leading-relaxed">
         {project.fullDescription}
       </p>
-
-      <!-- Gallery of secondary shots -->
-      {gallery.length > 0 && (
-        <div class="space-y-8">
-          {gallery.map((src, i) => (
-            <figure class="group surface-elevated overflow-hidden">
-              <img
-                src={src}
-                alt={`${project.title} — additional screen ${i + 1}`}
-                loading="lazy"
-                decoding="async"
-                class="w-full h-auto block transition-transform duration-[1200ms] ease-out group-hover:scale-[1.02]"
-              />
-            </figure>
-          ))}
-        </div>
-      )}
     </div>
 
-    <!-- Sidebar -->
-    <div class="lg:col-span-2">
-      <div class="lg:sticky lg:top-32 space-y-8">
-        <!-- Services (elevated) -->
+    <aside class="lg:col-span-2">
+      <div class="lg:sticky lg:top-32 space-y-6">
         <div class="surface-elevated p-6">
-          <h2 class="text-caption uppercase tracking-[0.18em] text-accent-bronze-bright/80 mb-4">Services</h2>
+          <h2 class="text-caption uppercase tracking-[0.18em] text-accent-bronze-bright/80 mb-4">What we did</h2>
           <ul class="space-y-2.5">
             {project.services.map((service) => (
               <li class="flex items-center gap-3 text-text-secondary">
@@ -77,6 +64,22 @@ const gallery =
               </li>
             ))}
           </ul>
+
+          {liveUrl && (
+            <>
+              <div class="h-px bg-border-primary my-5"></div>
+              <a
+                href={`https://${liveUrl}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="visit-link group/vl inline-flex items-center gap-2 text-caption font-medium text-white"
+              >
+                <span class="visit-label">Visit the live site</span>
+                <span class="transition-transform duration-300 ease-out group-hover/vl:translate-x-0.5 group-hover/vl:-translate-y-0.5 text-metallic">↗</span>
+              </a>
+              <p class="text-caption text-text-muted mt-1">{liveUrl}</p>
+            </>
+          )}
         </div>
 
         <!-- Testimonial (only when real) -->
@@ -97,6 +100,65 @@ const gallery =
           </div>
         )}
       </div>
-    </div>
+    </aside>
   </div>
+
+  <!-- Selected screens gallery — real pages from the project, each captioned -->
+  {gallery.length > 0 && (
+    <div class="mt-16 md:mt-28" data-animate="fade-up">
+      <div class="flex items-center gap-4 mb-8 md:mb-12">
+        <h2 class="text-h3 text-white whitespace-nowrap">Selected screens</h2>
+        <span class="h-px flex-1 bg-border-primary"></span>
+      </div>
+
+      <div class="space-y-12 md:space-y-16">
+        {gallery.map((item) => (
+          <figure class="group max-w-[940px] mx-auto">
+            {item.framed !== false ? (
+              <ProjectFrame
+                variant="browser"
+                src={item.src}
+                alt={`${project.title} — ${item.label}`}
+                url={liveUrl}
+                sizes="(min-width: 1024px) 940px, 100vw"
+              />
+            ) : (
+              <div class="surface-elevated overflow-hidden p-4 sm:p-6">
+                <img
+                  src={item.src}
+                  alt={`${project.title} — ${item.label}`}
+                  loading="lazy"
+                  decoding="async"
+                  class="w-full h-auto block"
+                />
+              </div>
+            )}
+            {item.label && (
+              <figcaption class="mt-3 flex items-center gap-2 text-caption text-text-muted">
+                <span class="w-1.5 h-1.5 rounded-full bg-accent-bronze-bright/70 shrink-0"></span>
+                {item.label}
+              </figcaption>
+            )}
+          </figure>
+        ))}
+      </div>
+    </div>
+  )}
 </Section>
+
+<style>
+  .visit-label {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 0% 1px;
+    transition: background-size 0.4s var(--ease-out-expo);
+    padding-bottom: 2px;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .visit-link:hover .visit-label { background-size: 100% 1px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .visit-label { transition: none; }
+  }
+</style>

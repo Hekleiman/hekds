@@ -3,12 +3,20 @@
 // draw from the same assets so the two pages stay visually consistent — a project
 // looks identical whether it comes from Sanity or the hardcoded fallback.
 
+export interface GalleryShot {
+  src: string;
+  /** Short caption describing the screen (adds insight on the detail page). */
+  label: string;
+  /** Website pages render in browser chrome; device mockups render bare. */
+  framed?: boolean;
+}
+
 export interface PortfolioImage {
   src: string;
   variant: 'browser' | 'phone';
   url?: string;
-  /** Optional secondary shots for the detail-page gallery. */
-  gallery?: string[];
+  /** Secondary shots for the detail-page gallery. */
+  gallery?: GalleryShot[];
 }
 
 // Ordered most-specific first; matched against "slug + title".
@@ -19,7 +27,10 @@ const MAP: Array<{ match: RegExp; img: PortfolioImage }> = [
       src: '/images/portfolio/lisette.webp',
       variant: 'browser',
       url: 'imagesbylisette.com',
-      gallery: ['/images/portfolio/lisette-gallery.webp'],
+      gallery: [
+        { src: '/images/portfolio/lisette-gallery.webp', label: 'Gallery — the work, uninterrupted', framed: true },
+        { src: '/images/portfolio/lisette-prints.webp', label: 'Prints & shop', framed: true },
+      ],
     },
   },
   {
@@ -28,7 +39,9 @@ const MAP: Array<{ match: RegExp; img: PortfolioImage }> = [
       src: '/images/portfolio/tradeup.webp',
       variant: 'browser',
       url: 'tradeupmarket.com',
-      gallery: ['/images/portfolio/tradeup-app.webp'],
+      gallery: [
+        { src: '/images/portfolio/tradeup-app.webp', label: 'The companion mobile app', framed: false },
+      ],
     },
   },
   {
@@ -37,7 +50,10 @@ const MAP: Array<{ match: RegExp; img: PortfolioImage }> = [
       src: '/images/portfolio/yieldstone.webp',
       variant: 'browser',
       url: 'yieldstonesystems.com',
-      gallery: ['/images/portfolio/yieldstone-services.webp'],
+      gallery: [
+        { src: '/images/portfolio/yieldstone-services.webp', label: 'Services — tiered engagement model', framed: true },
+        { src: '/images/portfolio/yieldstone-about.webp', label: 'About the practice', framed: true },
+      ],
     },
   },
   {
