@@ -65,21 +65,35 @@ if (headline && headline.trim()) {
     </svg>
   </div>
 
-  <!-- Easter egg: a faint blueprint annotation that only reveals under the
-       cursor spotlight (masked to the pointer position; hidden otherwise). -->
+  <!-- Easter egg: faint blueprint annotations that only reveal under the cursor
+       spotlight (masked to the pointer). Each is a complete, self-contained
+       schematic anchored to exact points on the contour curves above (same
+       viewBox), so it reads as a precise annotation of the blueprint — never a
+       floating shape. -->
   <div class="blueprint-detail absolute inset-0 pointer-events-none" aria-hidden="true">
     <svg class="w-full h-full" viewBox="0 0 1440 640" fill="none" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <g class="bd-ink">
-        <!-- annotated node sitting on a contour -->
-        <circle cx="1012" cy="300" r="4.5" fill="currentColor" stroke="none" />
-        <circle cx="1012" cy="300" r="16" stroke-dasharray="3 5" />
-        <path d="M1012 272 v-12 M1012 328 v12 M984 300 h-12 M1040 300 h12" />
-        <!-- leader line + label plates -->
-        <path d="M1024 290 L1118 250" />
-        <rect x="1122" y="240" width="88" height="11" rx="2" fill="currentColor" stroke="none" opacity="0.5" />
-        <rect x="1122" y="257" width="60" height="8" rx="2" fill="currentColor" stroke="none" opacity="0.3" />
-        <!-- a small dimension line lower-left -->
-        <path d="M356 432 h180 M356 426 v12 M536 426 v12" />
+        <!-- 1) Left: a dimension measuring the gap between two contour lines.
+             Both endpoints sit exactly on the drawn curves (169,150) & (169,213). -->
+        <circle cx="169" cy="150" r="3" fill="currentColor" stroke="none" />
+        <circle cx="169" cy="213" r="3" fill="currentColor" stroke="none" />
+        <path d="M161 150 h18 M161 213 h18" />
+        <path d="M169 152 V211" />
+        <path d="M165 158 l4 -6 4 6 M165 205 l4 6 4 -6" />
+        <rect x="187" y="176" width="40" height="9" rx="2" fill="currentColor" stroke="none" opacity="0.42" />
+
+        <!-- 2) Right: an annotated callout on a contour node (1003,174). -->
+        <circle cx="1003" cy="174" r="4.5" fill="currentColor" stroke="none" />
+        <circle cx="1003" cy="174" r="15" stroke-dasharray="3 5" />
+        <path d="M1003 150 v-11 M1003 198 v11 M979 174 h-11 M1027 174 h11" />
+        <path d="M1015 165 L1082 138" />
+        <rect x="1086" y="128" width="80" height="10" rx="2" fill="currentColor" stroke="none" opacity="0.5" />
+        <rect x="1086" y="144" width="52" height="7" rx="2" fill="currentColor" stroke="none" opacity="0.3" />
+
+        <!-- 3) Upper-right: a registration target on a contour node (1077,105). -->
+        <circle cx="1077" cy="105" r="10" stroke-dasharray="2 4" />
+        <path d="M1077 89 v-9 M1077 121 v9 M1061 105 h-9 M1093 105 h9" />
+        <circle cx="1077" cy="105" r="2" fill="currentColor" stroke="none" />
       </g>
     </svg>
   </div>

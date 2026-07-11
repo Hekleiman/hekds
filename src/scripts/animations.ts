@@ -29,6 +29,7 @@ export function initAnimations() {
   initStagger();
   initParallax();
   initLineDraw();
+  initProgressLine();
   initSpotlight();
   initCountUp();
   // The work carousel marquee is a pure CSS animation (see ProjectCarousel.astro)
@@ -173,6 +174,35 @@ function initLineDraw() {
         toggleActions: 'play none none none',
       },
     });
+  });
+}
+
+// Progress line: a bronze fill that grows along a timeline as its section
+// scrolls, signifying movement from the first step to the last.
+// [data-progress-fill] (+ data-progress-axis="x|y") scrubbed over the nearest
+// [data-progress-trigger]. Reduced motion returns before this runs, leaving the
+// fill at its CSS-default full state.
+function initProgressLine() {
+  const fills = document.querySelectorAll<HTMLElement>('[data-progress-fill]');
+
+  fills.forEach((fill) => {
+    const prop = fill.dataset.progressAxis === 'y' ? 'scaleY' : 'scaleX';
+    const trigger = fill.closest('[data-progress-trigger]') || fill;
+
+    gsap.fromTo(
+      fill,
+      { [prop]: 0 },
+      {
+        [prop]: 1,
+        ease: 'none',
+        scrollTrigger: {
+          trigger,
+          start: 'top 78%',
+          end: 'bottom 58%',
+          scrub: true,
+        },
+      }
+    );
   });
 }
 
