@@ -113,31 +113,58 @@ const liveUrl = mapped?.url;
 
       <div class="space-y-12 md:space-y-16">
         {gallery.map((item) => (
-          <figure class="group max-w-[940px] mx-auto">
-            {item.framed !== false ? (
-              <ProjectFrame
-                variant="browser"
-                src={item.src}
-                alt={`${project.title} — ${item.label}`}
-                url={liveUrl}
-                sizes="(min-width: 1024px) 940px, 100vw"
-              />
-            ) : (
-              <img
-                src={item.src}
-                alt={`${project.title} — ${item.label}`}
-                loading="lazy"
-                decoding="async"
-                class="device-strip w-full h-auto block"
-              />
-            )}
-            {item.label && (
-              <figcaption class="mt-3 flex items-center gap-2 text-caption text-text-muted">
-                <span class="w-1.5 h-1.5 rounded-full bg-accent-bronze-bright/70 shrink-0"></span>
-                {item.label}
-              </figcaption>
-            )}
-          </figure>
+          item.phones ? (
+            <figure class="group">
+              <!-- Swipeable device carousel: one phone at a time on mobile,
+                   full row on desktop (CSS scroll-snap, no JS). -->
+              <div class="phone-rail no-scrollbar flex gap-5 sm:gap-6 overflow-x-auto snap-x snap-mandatory py-6">
+                {item.phones.map((src, i) => (
+                  <div class="snap-center shrink-0 w-[64%] sm:w-[33%] lg:flex-1 lg:w-auto lg:shrink flex justify-center">
+                    <img
+                      src={src}
+                      alt={`${project.title} — mobile app screen ${i + 1}`}
+                      loading="lazy"
+                      decoding="async"
+                      class="device-phone w-full h-auto block"
+                    />
+                  </div>
+                ))}
+              </div>
+              {item.label && (
+                <figcaption class="mt-1 flex items-center gap-2 text-caption text-text-muted">
+                  <span class="w-1.5 h-1.5 rounded-full bg-accent-bronze-bright/70 shrink-0"></span>
+                  {item.label}
+                  <span class="lg:hidden text-text-placeholder">· swipe →</span>
+                </figcaption>
+              )}
+            </figure>
+          ) : (
+            <figure class="group max-w-[940px] mx-auto">
+              {item.framed !== false ? (
+                <ProjectFrame
+                  variant="browser"
+                  src={item.src}
+                  alt={`${project.title} — ${item.label}`}
+                  url={liveUrl}
+                  sizes="(min-width: 1024px) 940px, 100vw"
+                />
+              ) : (
+                <img
+                  src={item.src}
+                  alt={`${project.title} — ${item.label}`}
+                  loading="lazy"
+                  decoding="async"
+                  class="device-strip w-full h-auto block"
+                />
+              )}
+              {item.label && (
+                <figcaption class="mt-3 flex items-center gap-2 text-caption text-text-muted">
+                  <span class="w-1.5 h-1.5 rounded-full bg-accent-bronze-bright/70 shrink-0"></span>
+                  {item.label}
+                </figcaption>
+              )}
+            </figure>
+          )
         ))}
       </div>
     </div>
@@ -147,12 +174,17 @@ const liveUrl = mapped?.url;
 <style>
   /* Device strip (transparent phone mockups): drop-shadow traces each phone's
      alpha, so a soft ambient glow + depth shadow lift them off the dark page. */
-  .device-strip {
+  .device-strip,
+  .device-phone {
     filter:
       drop-shadow(0 18px 34px rgba(0, 0, 0, 0.55))
       drop-shadow(0 0 26px rgba(224, 162, 96, 0.10))
       drop-shadow(0 0 1px rgba(255, 255, 255, 0.35));
   }
+
+  /* Hide the scrollbar on the swipe rail (still scrollable/keyboard-accessible) */
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
 
   .visit-label {
     background-image: linear-gradient(currentColor, currentColor);

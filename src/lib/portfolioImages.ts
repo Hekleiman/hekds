@@ -4,11 +4,13 @@
 // looks identical whether it comes from Sanity or the hardcoded fallback.
 
 export interface GalleryShot {
-  src: string;
+  src?: string;
   /** Short caption describing the screen (adds insight on the detail page). */
   label: string;
   /** Website pages render in browser chrome; device mockups render bare. */
   framed?: boolean;
+  /** A set of framed phone images rendered as a swipeable carousel. */
+  phones?: string[];
 }
 
 export interface PortfolioImage {
@@ -40,7 +42,16 @@ const MAP: Array<{ match: RegExp; img: PortfolioImage }> = [
       variant: 'browser',
       url: 'tradeupmarket.com',
       gallery: [
-        { src: '/images/portfolio/tradeup-app.webp', label: 'The companion mobile app', framed: false },
+        {
+          label: 'The companion mobile app',
+          phones: [
+            '/images/portfolio/tradeup-app-1.webp',
+            '/images/portfolio/tradeup-app-2.webp',
+            '/images/portfolio/tradeup-app-3.webp',
+            '/images/portfolio/tradeup-app-4.webp',
+            '/images/portfolio/tradeup-app-5.webp',
+          ],
+        },
       ],
     },
   },
