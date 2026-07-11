@@ -21,19 +21,19 @@ interface Props {
 const defaultPhases: Phase[] = [
   {
     title: 'Discover',
-    description: 'We dig into your goals, audience, and constraints, and agree on scope before any pixels move.',
+    description: 'We map your goals, audience, and scope before any pixels move.',
   },
   {
     title: 'Design',
-    description: 'Wireframes evolve into polished, on-brand UI — reviewed together at every step, no surprises.',
+    description: 'Wireframes become polished, on-brand UI — reviewed together at every step.',
   },
   {
     title: 'Build',
-    description: 'We write the clean, accessible, fast code that turns the approved design into the real thing.',
+    description: 'Clean, accessible, fast code that turns the design into the real thing.',
   },
   {
     title: 'Launch & care',
-    description: "We ship it, then keep monitoring and refining — support doesn't stop at go-live.",
+    description: "We ship, then keep monitoring and refining well past go-live.",
   },
 ];
 
@@ -65,9 +65,10 @@ const phasesWithNumbers = phases.map((phase, index) => ({
   </div>
 
   <div class="relative" data-draw-trigger data-animate="fade-up">
-    <!-- Desktop: drawn horizontal line threaded through four station dots.
-         Dots sit at the centre of each of the four equal columns (12.5% …). -->
-    <div class="hidden md:block relative h-4 mb-9">
+    <!-- Horizontal drawn line threaded through four station dots — shown only at
+         lg+, where the four columns have room to breathe. Below lg the phases
+         reflow to a 2-up (sm) / stacked (mobile) grid with a top hairline. -->
+    <div class="hidden lg:block relative h-4 mb-9">
       <svg class="absolute inset-0 w-full h-full" preserveAspectRatio="none" aria-hidden="true">
         <line
           x1="12.5%" y1="50%" x2="87.5%" y2="50%"
@@ -91,12 +92,12 @@ const phasesWithNumbers = phases.map((phase, index) => ({
       </div>
     </div>
 
-    <!-- Phase columns (desktop 4-up; mobile stacked with a top hairline) -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-x-8 gap-y-10">
+    <!-- Phase columns: stacked (mobile) → 2-up (sm) → 4-up horizontal (lg). -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-10">
       {phasesWithNumbers.map((phase) => (
-        <div class="group relative pt-6 md:pt-0 md:text-center">
-          <!-- mobile-only top hairline that brightens on hover -->
-          <span class="md:hidden absolute top-0 left-0 h-px w-full bg-border-primary overflow-hidden">
+        <div class="group relative pt-6 lg:pt-0 lg:text-center">
+          <!-- top hairline (below lg) that brightens on hover -->
+          <span class="lg:hidden absolute top-0 left-0 h-px w-full bg-border-primary overflow-hidden">
             <span class="block h-full w-full origin-left scale-x-0 bg-gradient-to-r from-accent-bronze-bright to-transparent transition-transform duration-500 ease-out group-hover:scale-x-100"></span>
           </span>
 
@@ -106,7 +107,7 @@ const phasesWithNumbers = phases.map((phase, index) => ({
           <h3 class="text-h3 font-medium text-white mb-2">
             {phase.title}
           </h3>
-          <p class="text-body text-text-secondary md:max-w-[220px] md:mx-auto">
+          <p class="text-body text-text-secondary lg:max-w-[220px] lg:mx-auto">
             {phase.description}
           </p>
         </div>
