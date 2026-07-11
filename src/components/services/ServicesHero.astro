@@ -23,7 +23,7 @@ const {
   headline,
   headlineLine1 = 'Everything from',
   headlineLine2 = 'concept to launch.',
-  subtext = 'Strategy, design, build, and the care that comes after — one small team, no handoffs, every detail owned from first wireframe to launch day.',
+  subtext = 'A two-person studio — no handoffs, every detail owned.',
   class: className,
 } = Astro.props;
 
@@ -43,8 +43,12 @@ if (headline && headline.trim()) {
 }
 ---
 
+<!-- Desktop (md+): a true full-viewport hero — -mt-36 cancels the global nav
+     offset, min-h-[100svh] fills the screen, content is vertically centred.
+     Below md the hero flows naturally so the tall vertical timeline extends past
+     the fold (inviting scroll). -->
 <section
-  class:list={['services-hero relative overflow-hidden -mt-12 sm:mt-0', className]}
+  class:list={['services-hero relative overflow-hidden -mt-12 sm:mt-0 md:-mt-36 md:min-h-[100svh] md:flex md:flex-col', className]}
   data-animate="hero"
   data-spotlight
 >
@@ -107,8 +111,8 @@ if (headline && headline.trim()) {
   >
   </div>
 
-  <!-- Content -->
-  <div class="relative z-10 container-main pt-4 pb-6 sm:pt-16 flex flex-col items-center text-center">
+  <!-- Content — vertically centred within the full-height hero on md+. -->
+  <div class="relative z-10 container-main flex flex-col items-center text-center pt-4 pb-6 sm:pt-16 md:pt-28 md:pb-10 md:flex-1 md:justify-center">
     <!-- Eyebrow pill -->
     <div
       class="inline-flex items-center gap-2 mb-8 px-4 py-1.5 rounded-full border border-border-primary bg-background-secondary/60 backdrop-blur-sm"
