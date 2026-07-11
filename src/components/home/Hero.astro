@@ -100,9 +100,9 @@ const {
       {subtext}
     </p>
 
-    <!-- CTAs + pricing (stacked & centered) -->
+    <!-- CTAs + pricing (buttons side-by-side, centered) -->
     <div class="flex flex-col items-center gap-4" data-hero="cta">
-      <div class="flex flex-col sm:flex-row gap-3">
+      <div class="flex flex-row gap-2.5 sm:gap-3">
         <Button href={primaryCta.href}>{primaryCta.text}</Button>
         <Button href={secondaryCta.href} variant="secondary">{secondaryCta.text}</Button>
       </div>
@@ -128,8 +128,8 @@ const {
 <style>
   .hero-headline {
     font-weight: 600;
-    font-size: clamp(2.4rem, 5.2vw, 4rem);
-    line-height: 1.05;
+    font-size: clamp(1.9rem, 0.95rem + 4vw, 4rem);
+    line-height: 1.06;
     letter-spacing: -0.035em;
   }
   .hero-headline .line {
