@@ -24,8 +24,12 @@ const {
 } = Astro.props;
 ---
 
+<!-- On mobile the global nav offset (main pt-36) leaves a large dead band above
+     the hero; a negative top margin on the whole section pulls it up to match the
+     Home hero's rhythm. Applied to the section (not the inner content) so the
+     overflow-hidden clip box moves with it and never crops the eyebrow. -->
 <section
-  class:list={['work-hero relative overflow-hidden', className]}
+  class:list={['work-hero relative overflow-hidden -mt-12 sm:mt-0', className]}
   data-animate="hero"
   data-spotlight
 >
@@ -55,10 +59,8 @@ const {
   >
   </div>
 
-  <!-- Content. On mobile the global nav offset (main pt-36) leaves a large dead
-       band above the eyebrow; a negative top margin pulls the block up to match
-       the Home hero's rhythm. Reverts to normal flow on sm+. -->
-  <div class="relative z-10 container-main -mt-11 pt-4 pb-6 sm:mt-0 sm:pt-16 flex flex-col items-center text-center">
+  <!-- Content -->
+  <div class="relative z-10 container-main pt-4 pb-6 sm:pt-16 flex flex-col items-center text-center">
     <!-- Eyebrow pill -->
     <div
       class="inline-flex items-center gap-2 mb-8 px-4 py-1.5 rounded-full border border-border-primary bg-background-secondary/60 backdrop-blur-sm"
