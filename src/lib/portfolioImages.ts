@@ -62,6 +62,10 @@ const MAP: Array<{ match: RegExp; img: PortfolioImage }> = [
       src: '/images/portfolio/jewmanity.webp',
       variant: 'browser',
       url: 'jewmanity.com',
+      gallery: [
+        { src: '/images/portfolio/jewmanity-programs.webp', label: 'Programs — Heads Up', framed: true },
+        { src: '/images/portfolio/jewmanity-shop.webp', label: 'Community shop', framed: true },
+      ],
     },
   },
   {
