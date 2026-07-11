@@ -72,8 +72,24 @@ function initHeroAnimations() {
 // Fade-up animation for elements with [data-animate="fade-up"]
 function initFadeUp() {
   const elements = document.querySelectorAll('[data-animate="fade-up"]');
+  const vh = window.innerHeight;
 
   elements.forEach((el) => {
+    // If the element is already within (or peeking into) the viewport on load,
+    // reveal it right away — otherwise content in that band would sit blank until
+    // the user scrolls (an awkward gap under the fold). Below-the-fold elements
+    // keep their scroll-triggered reveal.
+    const inViewOnLoad = el.getBoundingClientRect().top < vh - 40;
+
+    if (inViewOnLoad) {
+      gsap.fromTo(
+        el,
+        { opacity: 0, y: 24 },
+        { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }
+      );
+      return;
+    }
+
     gsap.fromTo(
       el,
       { opacity: 0, y: 40 },

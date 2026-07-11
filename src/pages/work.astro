@@ -2,33 +2,43 @@
 import Layout from '../layouts/Layout.astro';
 import WorkHero from '../components/work/WorkHero.astro';
 import ProjectGrid from '../components/work/ProjectGrid.astro';
+import CtaSection from '../components/home/CtaSection.astro';
 import { getAllProjects } from '../lib/sanity';
 
-// Default project data for the Work page
+// Fallback project data — the four real projects, used when Sanity is empty or
+// unreachable. Slugs match src/data/projects.ts so the detail pages resolve.
 const defaultProjects = [
   {
     title: 'Jewmanity',
     slug: 'jewmanity',
-    category: 'Web Design & Development',
+    category: 'Nonprofit · Web Design & Development',
     year: '2025',
-    description: 'A streamlined shopping experience with custom checkout flow and integrated inventory management. Built for scale with React and Node.js.',
-    tags: ['E-Commerce', 'React', 'Node.js'],
+    description: 'A warm, welcoming home for a community nonprofit — designed to grow its audience and built to be easy to run day to day.',
+    tags: ['Web Design', 'Development', 'Branding'],
   },
   {
-    title: 'Virufy',
-    slug: 'virufy',
-    category: 'Web Design & Development',
+    title: 'Images by Lisette',
+    slug: 'images-by-lisette',
+    category: 'Photography · Web Design',
     year: '2025',
-    description: 'A streamlined shopping experience with custom checkout flow and integrated inventory management. Built for scale with React and Node.js.',
-    tags: ['E-Commerce', 'React', 'Node.js'],
+    description: 'An elegant, image-first portfolio that gets out of the way and lets a fine-art photographer’s work fill the frame.',
+    tags: ['Web Design', 'Art Direction'],
   },
   {
     title: 'Trade Up',
     slug: 'trade-up',
-    category: 'Web Design & Development',
+    category: 'Product · Web & App',
     year: '2025',
-    description: 'A streamlined shopping experience with custom checkout flow and integrated inventory management. Built for scale with React and Node.js.',
-    tags: ['E-Commerce', 'React', 'Node.js'],
+    description: 'A peer-to-peer marketplace designed and built end-to-end — a marketing site and a product experience that feel like one.',
+    tags: ['Web Design', 'App Design', 'Development'],
+  },
+  {
+    title: 'Yieldstone Systems',
+    slug: 'yieldstone-systems',
+    category: 'B2B Systems · Web Design & Development',
+    year: '2025',
+    description: 'A B2B quality-systems platform with a clean, confident interface that makes complex operations feel simple.',
+    tags: ['Web Design', 'Development'],
   },
 ];
 
@@ -80,4 +90,9 @@ if (useFallback) {
 
   <WorkHero />
   <ProjectGrid projects={projects} />
+  <CtaSection
+    headline="Have a project in mind?"
+    subtext="If you've got something you want built — a new site, an app, a rebuild — we'd love to hear about it. Every project starts with a conversation."
+    primaryCta={{ text: 'Start a Project →', href: '/contact' }}
+  />
 </Layout>

@@ -2,6 +2,8 @@
 // An auto-drifting, 3D-tilted "wall of work" — real client screens framed in
 // subtle browser / phone chrome. Motion + cursor tilt live in animations.ts and
 // degrade to a static, manually-scrollable row under prefers-reduced-motion.
+import { portfolioImageFor } from '../../lib/portfolioImages';
+
 interface Project {
   variant: 'browser' | 'phone';
   src: string;
@@ -80,30 +82,44 @@ const defaultProjects: Project[] = [
   },
 ];
 
-// Sanity CDN images: request an appropriately-sized WebP/AVIF (auto=format) so a
-// phone doesn't decode a 1200px texture for a ~300px card — that was making the
-// marquee stutter on mobile. Two widths let the browser pick per device; 800px
-// keeps the 400px desktop card crisp at 2x. Local files are already 800px WebP.
+// Right-size per source so a phone doesn't decode a big texture for a ~300–400px
+// card (that stuttered the marquee). Sanity images get CDN width params; the
+// upgraded local project shots (now 1600px, shared with the Work pages) ship an
+// 880px -card variant so the browser serves ~half the bytes for these cards.
 const isCdn = (src: string) => src.includes('cdn.sanity.io');
 const cdn = (src: string, w: number) => `${src}?w=${w}&q=80&fit=max&auto=format`;
+const LOCAL_CARDS = new Set(['jewmanity', 'lisette', 'tradeup', 'yieldstone']);
+const localBase = (src: string) => src.split('/').pop()?.replace('.webp', '') ?? '';
 const srcFor = (src: string) => (isCdn(src) ? cdn(src, 800) : src);
-const srcSetFor = (src: string) =>
-  isCdn(src) ? `${cdn(src, 500)} 500w, ${cdn(src, 800)} 800w` : undefined;
+const srcSetFor = (src: string) => {
+  if (isCdn(src)) return `${cdn(src, 500)} 500w, ${cdn(src, 800)} 800w`;
+  if (LOCAL_CARDS.has(localBase(src))) return `${src.replace('.webp', '-card.webp')} 880w, ${src} 1600w`;
+  return undefined;
+};
+
+// Keep the home carousel visually in sync with the Work pages: when a CMS
+// featured project matches one of our real projects, swap in the same updated
+// local screenshot; otherwise use the CMS image.
+const resolveSrc = (label: string | undefined, cmsSrc: string) =>
+  portfolioImageFor({ title: label ?? '' })?.src ?? cmsSrc;
 
 const projects: Project[] =
   cmsProjects && cmsProjects.length
     ? cmsProjects
         .filter((p) => p.src && p.label)
-        .map((p) => ({
-          variant: p.variant === 'phone' ? 'phone' : 'browser',
-          src: srcFor(p.src as string),
-          srcset: srcSetFor(p.src as string),
-          alt: `${p.label} — built by HEK Design Studio`,
-          label: p.label as string,
-          tag: p.tag ?? '',
-          url: p.url,
-        }))
-    : defaultProjects;
+        .map((p) => {
+          const resolved = resolveSrc(p.label, p.src as string);
+          return {
+            variant: p.variant === 'phone' ? 'phone' : 'browser',
+            src: srcFor(resolved),
+            srcset: srcSetFor(resolved),
+            alt: `${p.label} — built by HEK Design Studio`,
+            label: p.label as string,
+            tag: p.tag ?? '',
+            url: p.url,
+          };
+        })
+    : defaultProjects.map((p) => ({ ...p, srcset: srcSetFor(p.src) }));
 
 // Duplicate the set so the marquee can loop seamlessly (track animates -50%).
 const loop = [...projects, ...projects];
@@ -209,6 +225,12 @@ const loop = [...projects, ...projects];
   @media (max-width: 639px) {
     .carousel-track { animation-duration: 32s; }
   }
+
+  /* Browser card: less bubbly on small screens; steps up toward desktop.
+     (Phone card keeps its own device radius.) */
+  .cframe.surface-elevated { border-radius: 12px; }
+  @media (min-width: 640px) { .cframe.surface-elevated { border-radius: 15px; } }
+  @media (min-width: 1024px) { .cframe.surface-elevated { border-radius: 20px; } }
 
   .cframe {
     transition: transform 0.5s var(--ease-out-expo, ease-out),

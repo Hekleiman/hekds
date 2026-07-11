@@ -1,7 +1,4 @@
 ---
-import Section from '../ui/Section.astro';
-import Tag from '../ui/Tag.astro';
-
 interface Props {
   title: string;
   category: string;
@@ -13,26 +10,67 @@ interface Props {
 const { title, category, year, client, class: className } = Astro.props;
 ---
 
-<Section class:list={['pt-32 pb-16', className]} data-animate="fade-up">
-  <!-- Back Link -->
-  <a
-    href="/work"
-    class="inline-flex items-center gap-2 text-text-muted hover:text-white transition-colors duration-150 mb-8"
-  >
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+<!-- The -mt-36 cancels the global nav offset (main pt-36) so the hero sits close
+     under the nav instead of stranded ~240px down; controlled pt/pb then set the
+     rhythm on every breakpoint (mirrors the Home/Work hero approach). -->
+<section class:list={['relative overflow-hidden -mt-36', className]} data-spotlight>
+  <!-- Depth glow -->
+  <div class="aura w-[560px] h-[360px] top-[24%] left-1/2 -translate-x-1/2 bg-accent-bronze/[0.09]"></div>
+
+  <!-- Blueprint contour layer -->
+  <div class="absolute inset-0 pointer-events-none opacity-[0.35]" aria-hidden="true" data-parallax data-parallax-speed="-0.08">
+    <svg class="w-full h-full" viewBox="0 0 1440 640" fill="none" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <path d="M-40 360 C 260 310, 460 420, 720 360 S 1140 270, 1500 350" stroke="var(--color-border-secondary)" stroke-width="1" data-draw="hero" />
+      <path d="M-40 440 C 300 380, 500 500, 780 430 S 1180 330, 1500 410" stroke="var(--color-border-primary)" stroke-width="1" data-draw="hero" />
     </svg>
-    Back to Work
-  </a>
+  </div>
 
-  <!-- Category Tag -->
-  <Tag class="mb-4">{category}</Tag>
+  <!-- Cursor spotlight -->
+  <div
+    class="absolute w-[520px] h-[520px] rounded-full opacity-0 pointer-events-none mix-blend-screen -ml-[260px] -mt-[260px]"
+    style="background: radial-gradient(circle, rgba(224,162,96,0.12) 0%, rgba(224,162,96,0.05) 35%, transparent 70%);"
+    aria-hidden="true"
+    data-spotlight-light
+  >
+  </div>
 
-  <!-- Title -->
-  <h1 class="text-h1 text-white mb-4">{title}</h1>
+  <div class="container-main relative z-10 pt-28 pb-10 sm:pt-32 sm:pb-12" data-animate="fade-up">
+    <!-- Back Link -->
+    <a
+      href="/work"
+      class="inline-flex items-center gap-2 text-caption text-text-muted hover:text-white transition-colors duration-150 mb-8"
+    >
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+      Back to Work
+    </a>
 
-  <!-- Meta -->
-  <p class="text-body-lg text-text-secondary">
-    {client && <span>Client: {client} · </span>}{year}
-  </p>
-</Section>
+    <!-- Category eyebrow (metallic role, echoing the index) -->
+    <p class="text-caption uppercase tracking-[0.2em] text-accent-bronze-bright/80 mb-4">
+      {category} <span class="text-text-muted">· {year}</span>
+    </p>
+
+    <!-- Title — always one line; the size scales to fit the container width. -->
+    <h1 class="project-title text-white mb-4">{title}</h1>
+
+    <!-- Meta (only when the client name adds information beyond the title) -->
+    {client && client.trim().toLowerCase() !== title.trim().toLowerCase() && (
+      <p class="text-body-lg text-text-secondary">
+        {client}
+      </p>
+    )}
+  </div>
+</section>
+
+<style>
+  /* Project title: never wraps — the fluid size is tuned so even the longest
+     project name fits the container on one line, down to ~320px. */
+  .project-title {
+    font-weight: 500;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    white-space: nowrap;
+    font-size: clamp(1.95rem, 1.05rem + 4.1vw, 4.5rem);
+  }
+</style>

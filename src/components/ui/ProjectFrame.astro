@@ -1,0 +1,143 @@
+---
+// Canonical "screen in device chrome" frame — the same browser/phone treatment
+// used by the Home ProjectCarousel, extracted so the Work index and detail pages
+// render identical chrome. Hovering a surrounding .group lifts the frame and
+// gently scales the shot.
+interface Props {
+  variant?: 'browser' | 'phone';
+  src: string;
+  srcset?: string;
+  sizes?: string;
+  alt: string;
+  url?: string;
+  width?: number;
+  height?: number;
+  loading?: 'lazy' | 'eager';
+  fetchpriority?: 'high' | 'low' | 'auto';
+  /** Sweep a subtle shine across the shot when a surrounding .group is hovered. */
+  shine?: boolean;
+  class?: string;
+}
+
+const {
+  variant = 'browser',
+  src,
+  srcset,
+  sizes,
+  alt,
+  url,
+  width = 800,
+  height = 500,
+  loading = 'lazy',
+  fetchpriority,
+  shine = false,
+  class: className,
+} = Astro.props;
+---
+
+{variant === 'browser' ? (
+  <div class:list={['pframe surface-elevated overflow-hidden', className]}>
+    <!-- Browser chrome -->
+    <div class="flex items-center gap-1.5 h-8 px-3 border-b border-border-primary bg-background-secondary/70">
+      <span class="w-2 h-2 rounded-full bg-border-secondary"></span>
+      <span class="w-2 h-2 rounded-full bg-border-secondary"></span>
+      <span class="w-2 h-2 rounded-full bg-border-secondary"></span>
+      {url && (
+        <div class="ml-2 h-4 flex-1 max-w-[220px] flex items-center px-2 rounded bg-surface-overlay border border-border-primary">
+          <span class="text-[10px] leading-none text-text-muted truncate">{url}</span>
+        </div>
+      )}
+    </div>
+    <div class="relative aspect-[16/10] overflow-hidden bg-background-primary">
+      <img
+        src={src}
+        srcset={srcset}
+        sizes={sizes}
+        alt={alt}
+        width={width}
+        height={height}
+        loading={loading}
+        fetchpriority={fetchpriority}
+        decoding="async"
+        class="pshot-img absolute inset-0 w-full h-full object-cover object-top"
+      />
+      {shine && <span class="pshine" aria-hidden="true"></span>}
+    </div>
+  </div>
+) : (
+  <div class:list={['flex items-end justify-center', className]}>
+    <div
+      class="pframe relative rounded-[1.75rem] border-[5px] border-[#141417] bg-black overflow-hidden shadow-elevated-lg"
+      style="aspect-ratio: 9 / 19.5;"
+    >
+      <img
+        src={src}
+        srcset={srcset}
+        sizes={sizes}
+        alt={alt}
+        width={width}
+        height={height}
+        loading={loading}
+        decoding="async"
+        class="pshot-img w-full h-full object-cover object-top"
+      />
+    </div>
+  </div>
+)}
+
+<style>
+  /* Browser frame: dial the card radius down on small screens where 24px reads
+     as too bubbly; step it back up toward desktop. (Phone frame keeps its own
+     device radius.) */
+  .pframe.surface-elevated { border-radius: 12px; }
+  @media (min-width: 640px) { .pframe.surface-elevated { border-radius: 15px; } }
+  @media (min-width: 1024px) { .pframe.surface-elevated { border-radius: 20px; } }
+
+  .pframe {
+    transition: transform 0.5s var(--ease-out-expo),
+      box-shadow 0.5s var(--ease-out-expo),
+      border-color 0.5s var(--ease-out-expo);
+  }
+  .pshot-img {
+    transition: transform 1.2s var(--ease-out-expo);
+  }
+
+  /* Shine sweep — a soft diagonal light that crosses the shot on group hover
+     (same language as the button shine). Clipped by the frame's overflow. */
+  .pshine {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: linear-gradient(
+      105deg,
+      transparent 34%,
+      rgba(255, 255, 255, 0.1) 46%,
+      rgba(224, 162, 96, 0.14) 50%,
+      transparent 62%
+    );
+    transform: translateX(-115%);
+    transition: transform 0.9s var(--ease-out-expo);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    :global(.group:hover) .pshine { transform: translateX(115%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pshine { display: none; }
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    :global(.group:hover) .pshot-img,
+    .pframe:hover .pshot-img { transform: scale(1.04); }
+    /* Lift + metallic edge when the surrounding block (.group) is hovered. */
+    :global(.group:hover) .pframe {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-elevated-lg);
+      border-color: rgba(224, 162, 96, 0.4);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pframe, .pshot-img { transition: none; }
+  }
+</style>
