@@ -186,8 +186,39 @@ function initProgressLine() {
   const fills = document.querySelectorAll<HTMLElement>('[data-progress-fill]');
 
   fills.forEach((fill) => {
-    const prop = fill.dataset.progressAxis === 'y' ? 'scaleY' : 'scaleX';
-    const trigger = fill.closest('[data-progress-trigger]') || fill;
+    const axis = fill.dataset.progressAxis === 'y' ? 'y' : 'x';
+    const prop = axis === 'y' ? 'scaleY' : 'scaleX';
+    const layout = (fill.closest('[data-timeline-layout]') || fill.parentElement) as HTMLElement;
+    // Trigger on the timeline itself (not the whole section) so the fill — and
+    // the final gold node — completes while the timeline is still on screen.
+    const trigger = layout || fill;
+    const track = layout?.querySelector<HTMLElement>('[data-progress-track]');
+    const nodes = Array.from(layout?.querySelectorAll<HTMLElement>('[data-progress-node]') || []);
+
+    // Each node's fractional position along the (untransformed) track. Measured
+    // against the track — not the fill, which carries the scrub transform.
+    let fractions = nodes.map(() => Infinity);
+    const measure = () => {
+      if (!track) return;
+      const tr = track.getBoundingClientRect();
+      const size = axis === 'y' ? tr.height : tr.width;
+      if (size < 1) {
+        fractions = nodes.map(() => Infinity); // layout hidden at this breakpoint
+        return;
+      }
+      fractions = nodes.map((n) => {
+        const nr = n.getBoundingClientRect();
+        return axis === 'y'
+          ? (nr.top + nr.height / 2 - tr.top) / tr.height
+          : (nr.left + nr.width / 2 - tr.left) / tr.width;
+      });
+    };
+    // Light each node once the fill has reached it (small lead so it feels live).
+    const paint = (p: number) => {
+      nodes.forEach((n, i) => {
+        n.classList.toggle('is-active', p > 0.001 && p >= fractions[i] - 0.02);
+      });
+    };
 
     gsap.fromTo(
       fill,
@@ -197,12 +228,17 @@ function initProgressLine() {
         ease: 'none',
         scrollTrigger: {
           trigger,
-          start: 'top 78%',
-          end: 'bottom 58%',
+          start: 'top 82%',
+          end: 'bottom 50%',
           scrub: true,
+          onRefresh: () => measure(),
+          onUpdate: (self) => paint(self.progress),
         },
       }
     );
+
+    measure();
+    paint(0);
   });
 }
 
