@@ -14,6 +14,22 @@ export default defineType({
   fields: [
     // ============ HERO SECTION ============
     defineField({
+      name: 'heroEyebrow',
+      title: 'Hero Eyebrow (pill above headline)',
+      type: 'string',
+      description: 'Small label in the pill above the headline (desktop)',
+      initialValue: 'A two-person studio for small businesses & nonprofits',
+      group: 'hero',
+    }),
+    defineField({
+      name: 'heroEyebrowShort',
+      title: 'Hero Eyebrow — short (mobile)',
+      type: 'string',
+      description: 'Shorter version shown on small screens',
+      initialValue: 'A two-person design & dev studio',
+      group: 'hero',
+    }),
+    defineField({
       name: 'heroHeadlineLine1',
       title: 'Hero Headline Line 1',
       type: 'string',
@@ -71,13 +87,38 @@ export default defineType({
         { name: 'link', title: 'Button Link', type: 'string', initialValue: '/contact' },
       ],
     }),
+    defineField({
+      name: 'heroPricingLabel',
+      title: 'Hero Pricing — label',
+      type: 'string',
+      description: 'Text before the price, e.g. "Project pricing from"',
+      initialValue: 'Project pricing from',
+      group: 'hero',
+    }),
+    defineField({
+      name: 'heroPricingValue',
+      title: 'Hero Pricing — value',
+      type: 'string',
+      description: 'The highlighted amount, e.g. "$500"',
+      initialValue: '$500',
+      group: 'hero',
+    }),
 
     // ============ SERVICES INTRO ============
     defineField({
       name: 'servicesHeadline',
-      title: 'Services Headline',
+      title: 'Services Eyebrow (small label)',
       type: 'string',
-      initialValue: 'Services built for modern brands',
+      description: 'Small label above the heading, e.g. "What We Do"',
+      initialValue: 'What We Do',
+      group: 'services',
+    }),
+    defineField({
+      name: 'servicesHeading',
+      title: 'Services Heading (large)',
+      type: 'string',
+      description: 'The large heading. The last word is shown in the metallic accent.',
+      initialValue: 'End-to-end, no handoffs.',
       group: 'services',
     }),
     defineField({

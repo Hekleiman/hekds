@@ -34,16 +34,21 @@ try {
   }</script>
 
   <Hero
+    eyebrow={content?.heroEyebrow}
+    eyebrowShort={content?.heroEyebrowShort}
     headlineLine1={content?.heroHeadlineLine1}
     headlineLine2={content?.heroHeadlineLine2}
     headlineLine3={content?.heroHeadlineLine3}
     subtext={content?.heroSubtext}
     primaryCta={content?.heroPrimaryCta}
     secondaryCta={content?.heroSecondaryCta}
+    pricingLabel={content?.heroPricingLabel}
+    pricingValue={content?.heroPricingValue}
   />
 
   <ServicesIntro
-    headline={content?.servicesHeadline}
+    eyebrow={content?.servicesHeadline}
+    heading={content?.servicesHeading}
     description={content?.servicesDescription}
     services={content?.servicesCards}
   />

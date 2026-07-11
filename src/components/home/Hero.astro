@@ -3,22 +3,30 @@ import Button from '../ui/Button.astro';
 import ProjectCarousel from './ProjectCarousel.astro';
 
 interface Props {
+  eyebrow?: string;
+  eyebrowShort?: string;
   headlineLine1?: string;
   headlineLine2?: string;
   headlineLine3?: string;
   subtext?: string;
   primaryCta?: { text: string; href: string };
   secondaryCta?: { text: string; href: string };
+  pricingLabel?: string;
+  pricingValue?: string;
   class?: string;
 }
 
 const {
+  eyebrow = 'A two-person studio for small businesses & nonprofits',
+  eyebrowShort = 'A two-person design & dev studio',
   headlineLine1 = 'Designing and building',
   headlineLine2 = 'modern websites',
-  headlineLine3 = 'with clarity and intention.',
+  headlineLine3 = '',
   subtext = 'Direct collaboration, thoughtful execution — no handoffs.',
   primaryCta = { text: 'Start a Project →', href: '/contact' },
   secondaryCta = { text: '⊕ View Our Work', href: '/work' },
+  pricingLabel = 'Project pricing from',
+  pricingValue = '$500',
   class: className,
 } = Astro.props;
 ---
@@ -65,16 +73,16 @@ const {
     >
       <span class="w-1.5 h-1.5 shrink-0 rounded-full bg-accent-bronze-bright"></span>
       <span class="text-caption text-text-secondary tracking-wide">
-        <span class="sm:hidden">A two-person design &amp; dev studio</span>
-        <span class="hidden sm:inline">A two-person studio for small businesses &amp; nonprofits</span>
+        <span class="sm:hidden">{eyebrowShort}</span>
+        <span class="hidden sm:inline">{eyebrow}</span>
       </span>
     </div>
 
     <!-- Headline with clip-reveal lines -->
     <h1 class="hero-headline mb-5" data-hero="headline">
-      <span class="line"><span class="line-inner text-white">{headlineLine1}</span></span>
-      <span class="line"><span class="line-inner text-metallic metallic-shimmer">{headlineLine2}</span></span>
-      <span class="line"><span class="line-inner text-white">{headlineLine3}</span></span>
+      {headlineLine1 && <span class="line"><span class="line-inner text-white">{headlineLine1}</span></span>}
+      {headlineLine2 && <span class="line"><span class="line-inner text-metallic metallic-shimmer">{headlineLine2}</span></span>}
+      {headlineLine3 && <span class="line"><span class="line-inner text-white">{headlineLine3}</span></span>}
     </h1>
 
     <!-- Subheadline -->
@@ -89,7 +97,7 @@ const {
         <Button href={secondaryCta.href} variant="secondary">{secondaryCta.text}</Button>
       </div>
       <p class="text-caption text-text-muted">
-        Project pricing from <span class="text-accent-bronze-bright font-medium">$500</span>
+        {pricingLabel} <span class="text-accent-bronze-bright font-medium">{pricingValue}</span>
       </p>
     </div>
   </div>

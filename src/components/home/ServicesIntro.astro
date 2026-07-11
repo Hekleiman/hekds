@@ -9,7 +9,8 @@ interface ServiceCard {
 }
 
 interface Props {
-  headline?: string;
+  eyebrow?: string;
+  heading?: string;
   description?: string;
   services?: ServiceCard[];
   class?: string;
@@ -39,11 +40,19 @@ const defaultServices: ServiceCard[] = [
 ];
 
 const {
-  headline = 'What We Do',
+  eyebrow = 'What We Do',
+  heading = 'End-to-end, no handoffs.',
   description = 'End-to-end design and development. No handoffs, no miscommunication. Just seamless collaboration from concept to launch.',
   services = defaultServices,
   class: className,
 } = Astro.props;
+
+// Metallic accent on the final word of the heading (matches the closing CTA)
+const headingText = (heading ?? '').trim() || 'End-to-end, no handoffs.';
+const headingMatch = headingText.match(/^([\s\S]*\S)\s+(\S+?)([.!?…]*)$/);
+const headingLead = headingMatch ? headingMatch[1] : '';
+const headingAccent = headingMatch ? headingMatch[2] : headingText;
+const headingPunct = headingMatch ? headingMatch[3] : '';
 
 // Add reversed flag based on index for alternating layout
 const servicesWithLayout = services.map((service, index) => ({
@@ -58,9 +67,9 @@ const servicesWithLayout = services.map((service, index) => ({
   <div class="container-main">
     <!-- Section Header -->
     <div class="mb-20 max-w-[720px]" data-animate="fade-up">
-      <span class="text-caption uppercase tracking-[0.2em] text-accent-bronze-bright/80">What We Do</span>
+      <span class="text-caption uppercase tracking-[0.2em] text-accent-bronze-bright/80">{eyebrow}</span>
       <h2 class="text-h2 mt-3 mb-4">
-        End-to-end, <span class="text-metallic-bronze">no handoffs</span>.
+        {headingLead && <>{headingLead}{' '}</>}<span class="text-metallic-bronze">{headingAccent}</span>{headingPunct}
       </h2>
       <p class="text-body-lg text-text-secondary">
         {description}

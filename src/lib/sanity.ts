@@ -10,7 +10,9 @@ export const sanityClient: SanityClient | null = isConfigured
       projectId,
       dataset: import.meta.env.PUBLIC_SANITY_DATASET || 'production',
       apiVersion: '2024-01-01',
-      useCdn: true, // Use CDN for faster responses (cached data)
+      // Content is fetched at build time, so read fresh from the API (not the
+      // CDN) — published edits then reliably appear on the next build.
+      useCdn: false,
     })
   : null;
 
@@ -41,14 +43,19 @@ export interface CtaLink {
 // Homepage Content (singleton)
 export interface HomepageContent {
   // Hero (3-line headline)
+  heroEyebrow?: string;
+  heroEyebrowShort?: string;
   heroHeadlineLine1?: string;
   heroHeadlineLine2?: string;
   heroHeadlineLine3?: string;
   heroSubtext?: string;
   heroPrimaryCta?: CtaLink;
   heroSecondaryCta?: CtaLink;
+  heroPricingLabel?: string;
+  heroPricingValue?: string;
   // Services
   servicesHeadline?: string;
+  servicesHeading?: string;
   servicesDescription?: string;
   servicesCards?: Array<{
     _key: string;
@@ -231,13 +238,18 @@ export async function getHomepageContent(): Promise<HomepageContent | null> {
   if (!sanityClient) return null;
   return sanityClient.fetch(`
     *[_type == "homepage"][0] {
+      heroEyebrow,
+      heroEyebrowShort,
       heroHeadlineLine1,
       heroHeadlineLine2,
       heroHeadlineLine3,
       heroSubtext,
       heroPrimaryCta,
       heroSecondaryCta,
+      heroPricingLabel,
+      heroPricingValue,
       servicesHeadline,
+      servicesHeading,
       servicesDescription,
       servicesCards[] {
         _key,
