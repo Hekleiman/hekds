@@ -154,8 +154,10 @@ const heroSubtext = legacyHero ? undefined : content?.heroSubtext;
 
   <!-- The four services, in depth — alternating rows with bespoke blueprint
        graphics, stitched together by the drawn-in connector spine. -->
-  <section class="py-services scroll-mt-32">
-    <div class="container-main">
+  <section class="py-services scroll-mt-32 relative overflow-hidden">
+    <!-- Ambient depth glow (keeps the mid-page from going flat) -->
+    <div class="aura w-[620px] h-[460px] top-[6%] left-1/2 -translate-x-1/2 bg-accent-bronze/[0.06]"></div>
+    <div class="container-main relative z-10">
       <div class="mb-16 lg:mb-20 max-w-[680px]" data-animate="fade-up">
         <span class="text-caption uppercase tracking-[0.2em] text-accent-bronze-bright/80">Our services</span>
         <h2 class="text-h2 mt-3 mb-4">

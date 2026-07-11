@@ -65,6 +65,25 @@ if (headline && headline.trim()) {
     </svg>
   </div>
 
+  <!-- Easter egg: a faint blueprint annotation that only reveals under the
+       cursor spotlight (masked to the pointer position; hidden otherwise). -->
+  <div class="blueprint-detail absolute inset-0 pointer-events-none" aria-hidden="true">
+    <svg class="w-full h-full" viewBox="0 0 1440 640" fill="none" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <g class="bd-ink">
+        <!-- annotated node sitting on a contour -->
+        <circle cx="1012" cy="300" r="4.5" fill="currentColor" stroke="none" />
+        <circle cx="1012" cy="300" r="16" stroke-dasharray="3 5" />
+        <path d="M1012 272 v-12 M1012 328 v12 M984 300 h-12 M1040 300 h12" />
+        <!-- leader line + label plates -->
+        <path d="M1024 290 L1118 250" />
+        <rect x="1122" y="240" width="88" height="11" rx="2" fill="currentColor" stroke="none" opacity="0.5" />
+        <rect x="1122" y="257" width="60" height="8" rx="2" fill="currentColor" stroke="none" opacity="0.3" />
+        <!-- a small dimension line lower-left -->
+        <path d="M356 432 h180 M356 426 v12 M536 426 v12" />
+      </g>
+    </svg>
+  </div>
+
   <!-- Cursor spotlight -->
   <div
     class="absolute w-[600px] h-[600px] rounded-full opacity-0 pointer-events-none mix-blend-screen -ml-[300px] -mt-[300px]"
@@ -106,6 +125,24 @@ if (headline && headline.trim()) {
 </section>
 
 <style>
+  /* Blueprint-detail easter egg: only the disc under the cursor is unmasked.
+     --spot-x/--spot-y are published by initSpotlight (animations.ts); off-canvas
+     by default so nothing shows until the pointer moves across the hero. */
+  .blueprint-detail {
+    color: var(--color-accent-bronze-bright);
+    -webkit-mask: radial-gradient(circle 130px at var(--spot-x, -999px) var(--spot-y, -999px), #000 0%, #000 32%, transparent 70%);
+    mask: radial-gradient(circle 130px at var(--spot-x, -999px) var(--spot-y, -999px), #000 0%, #000 32%, transparent 70%);
+  }
+  .blueprint-detail .bd-ink {
+    stroke: currentColor;
+    stroke-width: 1.5;
+    fill: none;
+  }
+  /* Pointer-fine only (the reveal needs a cursor); no reveal under reduced motion. */
+  @media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
+    .blueprint-detail { display: none; }
+  }
+
   .services-headline {
     font-weight: 600;
     font-size: clamp(2rem, 1.0rem + 4.2vw, 4rem);

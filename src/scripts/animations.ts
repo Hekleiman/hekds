@@ -192,14 +192,23 @@ function initSpotlight() {
 
     zone.addEventListener('pointermove', (e) => {
       const rect = zone.getBoundingClientRect();
-      xTo(e.clientX - rect.left);
-      yTo(e.clientY - rect.top);
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      xTo(x);
+      yTo(y);
+      // Publish the cursor position so a masked "blueprint detail" layer can
+      // reveal only the area under the spotlight (see ServicesHero.astro).
+      zone.style.setProperty('--spot-x', `${x}px`);
+      zone.style.setProperty('--spot-y', `${y}px`);
     });
     zone.addEventListener('pointerenter', () => {
       gsap.to(light, { opacity: 1, duration: 0.4 });
     });
     zone.addEventListener('pointerleave', () => {
       gsap.to(light, { opacity: 0, duration: 0.6 });
+      // Move the reveal off-canvas so the hidden detail disappears again.
+      zone.style.setProperty('--spot-x', '-999px');
+      zone.style.setProperty('--spot-y', '-999px');
     });
   });
 }
