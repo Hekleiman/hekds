@@ -4,20 +4,18 @@
 // looks identical whether it comes from Sanity or the hardcoded fallback.
 
 export interface GalleryShot {
-  src?: string;
+  src: string;
   /** Short caption describing the screen (adds insight on the detail page). */
   label: string;
-  /** Website pages render in browser chrome; device mockups render bare. */
-  framed?: boolean;
-  /** A set of framed phone images rendered as a swipeable carousel. */
-  phones?: string[];
+  /** 'phone' renders in a device frame; default 'browser' renders website chrome. */
+  type?: 'browser' | 'phone';
 }
 
 export interface PortfolioImage {
   src: string;
   variant: 'browser' | 'phone';
   url?: string;
-  /** Secondary shots for the detail-page gallery. */
+  /** Secondary screens for the detail-page "Selected screens" carousel. */
   gallery?: GalleryShot[];
 }
 
@@ -30,8 +28,8 @@ const MAP: Array<{ match: RegExp; img: PortfolioImage }> = [
       variant: 'browser',
       url: 'imagesbylisette.com',
       gallery: [
-        { src: '/images/portfolio/lisette-gallery.webp', label: 'Gallery — the work, uninterrupted', framed: true },
-        { src: '/images/portfolio/lisette-prints.webp', label: 'Prints & shop', framed: true },
+        { src: '/images/portfolio/lisette-gallery.webp', label: 'Gallery — the work, uninterrupted' },
+        { src: '/images/portfolio/lisette-prints.webp', label: 'Prints & shop' },
       ],
     },
   },
@@ -42,16 +40,11 @@ const MAP: Array<{ match: RegExp; img: PortfolioImage }> = [
       variant: 'browser',
       url: 'tradeupmarket.com',
       gallery: [
-        {
-          label: 'The companion mobile app',
-          phones: [
-            '/images/portfolio/tradeup-app-1.webp',
-            '/images/portfolio/tradeup-app-2.webp',
-            '/images/portfolio/tradeup-app-3.webp',
-            '/images/portfolio/tradeup-app-4.webp',
-            '/images/portfolio/tradeup-app-5.webp',
-          ],
-        },
+        { src: '/images/portfolio/tradeup-app-1.webp', label: 'Home feed', type: 'phone' },
+        { src: '/images/portfolio/tradeup-app-2.webp', label: 'Browse', type: 'phone' },
+        { src: '/images/portfolio/tradeup-app-3.webp', label: 'Listing', type: 'phone' },
+        { src: '/images/portfolio/tradeup-app-4.webp', label: 'Messages', type: 'phone' },
+        { src: '/images/portfolio/tradeup-app-5.webp', label: 'Rewards', type: 'phone' },
       ],
     },
   },
@@ -62,8 +55,8 @@ const MAP: Array<{ match: RegExp; img: PortfolioImage }> = [
       variant: 'browser',
       url: 'yieldstonesystems.com',
       gallery: [
-        { src: '/images/portfolio/yieldstone-services.webp', label: 'Services — tiered engagement model', framed: true },
-        { src: '/images/portfolio/yieldstone-about.webp', label: 'About the practice', framed: true },
+        { src: '/images/portfolio/yieldstone-services.webp', label: 'Services — tiered engagement model' },
+        { src: '/images/portfolio/yieldstone-about.webp', label: 'About the practice' },
       ],
     },
   },
@@ -74,8 +67,8 @@ const MAP: Array<{ match: RegExp; img: PortfolioImage }> = [
       variant: 'browser',
       url: 'jewmanity.com',
       gallery: [
-        { src: '/images/portfolio/jewmanity-programs.webp', label: 'Programs — Heads Up', framed: true },
-        { src: '/images/portfolio/jewmanity-shop.webp', label: 'Community shop', framed: true },
+        { src: '/images/portfolio/jewmanity-programs.webp', label: 'Programs — Heads Up' },
+        { src: '/images/portfolio/jewmanity-shop.webp', label: 'Community shop' },
       ],
     },
   },
