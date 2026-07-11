@@ -1,0 +1,287 @@
+---
+// Richer, standalone "living blueprint" illustrations for the Services page —
+// the fuller sibling of home/ServiceIllustration.astro. Same language exactly:
+// faint blueprint grid, everything on exact coordinates (connectors meet edges,
+// repeated items evenly spaced, arcs are true circles), the shared class
+// vocabulary (.ln / .fill-1,2 / .bar-0,1,2 / .dot / .accent-*) and the
+// #mBronze/#mSilver/#mGold gradients, and ONE bronze focal accent per scene.
+//
+// Landscape 16:10 canvas (560 x 350) — a touch larger than Home's 480 x 300 so
+// each scene has more room to breathe on a full page. Ambient life is calm and
+// idle by default (the focal accent pulses); the more expressive one-beat move
+// (deploy bar fills, swatches settle, gauge sweeps, goal pops) plays on hover of
+// the surrounding .group. All motion is killed under prefers-reduced-motion.
+interface Props {
+  icon?: string;
+  class?: string;
+}
+const { icon = 'strategy', class: className } = Astro.props;
+---
+
+<div class:list={['service-graphic relative w-full h-full', className]}>
+  <svg viewBox="0 0 560 350" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+    <defs>
+      <linearGradient id="sgBronze" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#cd7f32" />
+        <stop offset="0.5" stop-color="#e6b878" />
+        <stop offset="1" stop-color="#cd7f32" />
+      </linearGradient>
+      <linearGradient id="sgSilver" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#a8a8a8" />
+        <stop offset="0.5" stop-color="#f0f0f0" />
+        <stop offset="1" stop-color="#a8a8a8" />
+      </linearGradient>
+      <linearGradient id="sgGold" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#c9a227" />
+        <stop offset="0.5" stop-color="#ffe89a" />
+        <stop offset="1" stop-color="#c9a227" />
+      </linearGradient>
+      <pattern id="sgGrid" width="28" height="28" patternUnits="userSpaceOnUse">
+        <path d="M28 0H0V28" fill="none" stroke="rgba(255,255,255,0.035)" stroke-width="1" />
+      </pattern>
+    </defs>
+
+    <!-- faint blueprint grid -->
+    <rect x="0" y="0" width="560" height="350" fill="url(#sgGrid)" />
+
+    {icon === 'strategy' && (
+      <g>
+        <!-- User journey → three screens in a flow, the last is the bronze goal.
+             Node centres sit at x = 100 / 280 / 460; journey dots sit above. -->
+        <line x1="100" y1="66" x2="460" y2="66" class="dash" />
+        <circle cx="100" cy="66" r="4" class="dot" />
+        <circle cx="280" cy="66" r="4" class="dot" />
+        <circle cx="460" cy="66" r="5" class="accent-fill pulse" />
+
+        <!-- Node 1 -->
+        <rect x="40" y="100" width="120" height="98" rx="14" class="fill-1 ln" />
+        <circle cx="62" cy="124" r="8" class="dot" />
+        <rect x="80" y="118" width="56" height="9" rx="4" class="bar-1" />
+        <rect x="56" y="148" width="88" height="7" rx="3.5" class="bar-0" />
+        <rect x="56" y="164" width="64" height="7" rx="3.5" class="bar-0" />
+        <rect x="56" y="180" width="76" height="7" rx="3.5" class="bar-0" />
+
+        <!-- Node 2 -->
+        <rect x="220" y="100" width="120" height="98" rx="14" class="fill-1 ln" />
+        <circle cx="242" cy="124" r="8" class="dot" />
+        <rect x="260" y="118" width="56" height="9" rx="4" class="bar-1" />
+        <rect x="236" y="148" width="88" height="7" rx="3.5" class="bar-0" />
+        <rect x="236" y="164" width="64" height="7" rx="3.5" class="bar-0" />
+        <rect x="236" y="180" width="76" height="7" rx="3.5" class="bar-0" />
+
+        <!-- Node 3 (goal / bronze) -->
+        <g class="goal">
+          <rect x="400" y="100" width="120" height="98" rx="14" class="fill-2 accent-stroke" />
+          <rect x="416" y="118" width="56" height="9" rx="4" class="accent-fill" />
+          <rect x="416" y="148" width="88" height="7" rx="3.5" class="bar-1" />
+          <rect x="416" y="164" width="64" height="7" rx="3.5" class="bar-0" />
+          <!-- check mark in the goal -->
+          <path d="M470 176 l7 7 l13 -15" class="accent-ln thick" />
+        </g>
+
+        <!-- Connector 1 → 2 (neutral) -->
+        <line x1="160" y1="149" x2="214" y2="149" class="ln" />
+        <path d="M214 144 L220 149 L214 154 Z" class="bar-1" />
+
+        <!-- Connector 2 → 3 (bronze, leads to the goal) -->
+        <line x1="340" y1="149" x2="394" y2="149" class="accent-ln" />
+        <path d="M394 144 L400 149 L394 154 Z" class="accent-fill" />
+      </g>
+    )}
+
+    {icon === 'design' && (
+      <g>
+        <!-- Design system: type scale (left), component card (right), and a full
+             evenly-spaced metallic swatch row — every swatch labelled. -->
+        <rect x="48" y="58" width="150" height="18" rx="5" class="bar-2" />
+        <rect x="48" y="90" width="112" height="12" rx="3" class="bar-1" />
+        <rect x="48" y="112" width="132" height="8" rx="3" class="bar-0" />
+        <rect x="48" y="130" width="92" height="8" rx="3" class="bar-0" />
+        <rect x="48" y="148" width="118" height="8" rx="3" class="bar-0" />
+
+        <!-- component card -->
+        <rect x="330" y="52" width="182" height="118" rx="16" class="fill-2 ln" />
+        <rect x="350" y="70" width="72" height="9" rx="4" class="bar-1" />
+        <circle cx="490" cy="74" r="6" class="dot" />
+        <rect x="350" y="100" width="96" height="26" rx="13" class="accent-fill" />
+        <rect x="350" y="140" width="120" height="7" rx="3.5" class="bar-0" />
+        <rect x="350" y="153" width="88" height="7" rx="3.5" class="bar-0" />
+
+        <!-- divider -->
+        <line x1="48" y1="192" x2="512" y2="192" class="ln" />
+
+        <!-- swatch row (5 across; start x=48, step 101 → last ends at 512) -->
+        <g class="swatches">
+          <rect class="swatch" x="48"  y="214" width="60" height="60" rx="14" fill="url(#sgBronze)" />
+          <rect class="swatch" x="149" y="214" width="60" height="60" rx="14" fill="url(#sgSilver)" />
+          <rect class="swatch" x="250" y="214" width="60" height="60" rx="14" fill="url(#sgGold)" />
+          <rect class="swatch" x="351" y="214" width="60" height="60" rx="14" fill="#3f3f46" />
+          <rect class="swatch" x="452" y="214" width="60" height="60" rx="14" class="fill-1 ln" />
+        </g>
+
+        <!-- swatch labels (centred under each) -->
+        <rect x="60"  y="288" width="36" height="7" rx="3.5" class="bar-0" />
+        <rect x="161" y="288" width="36" height="7" rx="3.5" class="bar-0" />
+        <rect x="262" y="288" width="36" height="7" rx="3.5" class="bar-0" />
+        <rect x="363" y="288" width="36" height="7" rx="3.5" class="bar-0" />
+        <rect x="464" y="288" width="36" height="7" rx="3.5" class="bar-0" />
+      </g>
+    )}
+
+    {icon === 'code' && (
+      <g>
+        <!-- Editor window + a clean deploy progress bar with a knob. -->
+        <rect x="48" y="46" width="464" height="212" rx="16" class="fill-2 ln" />
+        <line x1="48" y1="80" x2="512" y2="80" class="ln" />
+        <circle cx="68" cy="63" r="4" class="dot" />
+        <circle cx="84" cy="63" r="4" class="dot" />
+        <circle cx="100" cy="63" r="4" class="dot" />
+        <rect x="126" y="55" width="108" height="17" rx="5" class="fill-1 ln" />
+        <rect x="136" y="61" width="64" height="5" rx="2.5" class="bar-0" />
+
+        <!-- code lines (gutter x=70, indents in multiples of 22) -->
+        <rect x="70"  y="104" width="46" height="8" rx="4" class="accent-fill" />
+        <rect x="124" y="104" width="76" height="8" rx="4" class="bar-1" />
+        <rect x="92"  y="128" width="140" height="8" rx="4" class="bar-0" />
+        <rect x="92"  y="152" width="60" height="8" rx="4" class="bar-0" />
+        <rect x="162" y="152" width="92" height="8" rx="4" class="bar-0" />
+        <rect x="92"  y="176" width="52" height="8" rx="4" class="accent-fill" />
+        <rect x="158" y="176" width="108" height="8" rx="4" class="bar-0" />
+        <rect x="114" y="200" width="136" height="8" rx="4" class="bar-0" />
+        <rect x="70"  y="224" width="48" height="8" rx="4" class="accent-fill" />
+        <rect x="128" y="224" width="84" height="8" rx="4" class="bar-0" />
+
+        <!-- deploy progress bar (fills on hover) -->
+        <rect x="48" y="284" width="464" height="30" rx="15" class="fill-1 ln" />
+        <clipPath id="sgDeployClip">
+          <rect x="48" y="284" width="464" height="30" rx="15" />
+        </clipPath>
+        <g clip-path="url(#sgDeployClip)">
+          <rect class="deploy-fill accent-fill soft" x="48" y="284" width="296" height="30" />
+        </g>
+        <circle cx="344" cy="299" r="9" class="accent-fill" />
+        <circle cx="344" cy="299" r="3.5" class="knob-core" />
+      </g>
+    )}
+
+    {icon === 'settings' && (
+      <g>
+        <!-- Analytics: trend chart (left) + stat block & circular gauge (right). -->
+        <rect x="48" y="54" width="290" height="242" rx="16" class="fill-2 ln" />
+        <line x1="66" y1="120" x2="320" y2="120" class="ln faint" />
+        <line x1="66" y1="172" x2="320" y2="172" class="ln faint" />
+        <line x1="66" y1="224" x2="320" y2="224" class="ln faint" />
+        <path d="M68 246 L120 208 L172 224 L224 168 L276 188 L320 104 L320 268 L68 268 Z" class="accent-area" />
+        <path d="M68 246 L120 208 L172 224 L224 168 L276 188 L320 104" class="accent-ln thick" />
+        <circle cx="320" cy="104" r="5" class="accent-fill pulse" />
+
+        <!-- stat block -->
+        <rect x="356" y="54" width="156" height="110" rx="16" class="fill-1 ln" />
+        <rect x="374" y="74" width="60" height="9" rx="4" class="bar-1" />
+        <rect x="374" y="96" width="96" height="17" rx="4" class="bar-2" />
+        <rect x="374" y="126" width="46" height="8" rx="4" class="accent-fill" />
+
+        <!-- circular progress gauge (true circles: track + ~72% ring) -->
+        <circle cx="434" cy="236" r="48" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="9" />
+        <circle
+          class="gauge-ring"
+          cx="434" cy="236" r="48" fill="none"
+          stroke="var(--color-accent-bronze-bright)" stroke-width="9" stroke-linecap="round"
+          stroke-dasharray="217 302" transform="rotate(-90 434 236)"
+        />
+        <rect x="416" y="231" width="36" height="9" rx="4.5" class="bar-2" />
+      </g>
+    )}
+  </svg>
+</div>
+
+<style>
+  .service-graphic svg { display: block; }
+
+  .ln { stroke: rgba(255, 255, 255, 0.16); stroke-width: 1.5; }
+  .ln.faint { stroke: rgba(255, 255, 255, 0.07); }
+  .ln.thick { stroke-width: 2.5; }
+  .dash { stroke: rgba(255, 255, 255, 0.14); stroke-width: 1.5; stroke-dasharray: 3 6; }
+
+  .fill-1 { fill: rgba(255, 255, 255, 0.04); }
+  .fill-2 { fill: rgba(255, 255, 255, 0.06); }
+
+  .bar-0 { fill: rgba(255, 255, 255, 0.12); }
+  .bar-1 { fill: rgba(255, 255, 255, 0.24); }
+  .bar-2 { fill: rgba(255, 255, 255, 0.44); }
+
+  .dot { fill: rgba(255, 255, 255, 0.28); }
+  .knob-core { fill: #101013; }
+
+  .accent-fill { fill: var(--color-accent-bronze-bright); }
+  .accent-fill.soft { fill: rgba(224, 162, 96, 0.26); }
+  .accent-stroke { stroke: var(--color-accent-bronze-bright); stroke-width: 1.5; fill: rgba(224, 162, 96, 0.06); }
+  .accent-ln { stroke: var(--color-accent-bronze-bright); stroke-width: 2; fill: none; }
+  .accent-ln.thick { stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+  .accent-area { fill: rgba(224, 162, 96, 0.10); }
+
+  /* Idle ambient — the single focal accent breathes (matches Home). */
+  .pulse { animation: sg-pulse 3s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+  @keyframes sg-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.45; }
+  }
+
+  /* Expressive one-beat life on hover of the surrounding .group (pointer-fine
+     only). Default (and touch) state is the finished illustration. */
+  @media (hover: hover) and (pointer: fine) {
+    /* strategy — the goal node gives a single confident pop */
+    :global(.group:hover) .goal {
+      animation: sg-goal 0.6s var(--ease-out-expo, cubic-bezier(0.16, 1, 0.3, 1));
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+    /* design — swatches settle in with a stagger */
+    :global(.group:hover) .swatch {
+      animation: sg-settle 0.5s var(--ease-out-expo, cubic-bezier(0.16, 1, 0.3, 1)) both;
+      transform-box: fill-box;
+      transform-origin: center bottom;
+    }
+    :global(.group:hover) .swatch:nth-child(1) { animation-delay: 0s; }
+    :global(.group:hover) .swatch:nth-child(2) { animation-delay: 0.06s; }
+    :global(.group:hover) .swatch:nth-child(3) { animation-delay: 0.12s; }
+    :global(.group:hover) .swatch:nth-child(4) { animation-delay: 0.18s; }
+    :global(.group:hover) .swatch:nth-child(5) { animation-delay: 0.24s; }
+    /* code — the deploy bar fills to its mark */
+    :global(.group:hover) .deploy-fill {
+      animation: sg-fill 0.9s var(--ease-out-expo, cubic-bezier(0.16, 1, 0.3, 1));
+      transform-box: fill-box;
+      transform-origin: left center;
+    }
+    /* settings — the gauge sweeps up to its value */
+    :global(.group:hover) .gauge-ring {
+      animation: sg-sweep 1s var(--ease-out-expo, cubic-bezier(0.16, 1, 0.3, 1));
+    }
+  }
+
+  @keyframes sg-goal {
+    0% { transform: scale(1); }
+    45% { transform: scale(1.045); }
+    100% { transform: scale(1); }
+  }
+  @keyframes sg-settle {
+    0% { transform: translateY(6px) scale(0.94); opacity: 0.4; }
+    100% { transform: translateY(0) scale(1); opacity: 1; }
+  }
+  @keyframes sg-fill {
+    0% { transform: scaleX(0); }
+    100% { transform: scaleX(1); }
+  }
+  @keyframes sg-sweep {
+    0% { stroke-dashoffset: 217; }
+    100% { stroke-dashoffset: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pulse,
+    .goal,
+    .swatch,
+    .deploy-fill,
+    .gauge-ring { animation: none !important; }
+  }
+</style>

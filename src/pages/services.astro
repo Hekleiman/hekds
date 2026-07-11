@@ -5,12 +5,14 @@ import ServiceBlock from '../components/services/ServiceBlock.astro';
 import CtaSection from '../components/home/CtaSection.astro';
 import { getServicesPageContent, type ServicesPageContent, type ServiceItem } from '../lib/sanity';
 
-// Fallback service data
+// Fallback service data. Icon keys are unified on the Home illustration keys
+// (strategy | design | code | settings) so each service maps to its bespoke
+// blueprint graphic; ServiceBlock also aliases legacy Sanity keys (pen/palette).
 const defaultServices: ServiceItem[] = [
   {
     title: 'Strategy & UX Design',
     slug: 'strategy-ux-design',
-    icon: 'pen',
+    icon: 'strategy',
     description:
       'We start every project with clear thinking. User research, information architecture, and wireframing lay the groundwork for success.',
     features: [
@@ -24,7 +26,7 @@ const defaultServices: ServiceItem[] = [
   {
     title: 'Visual Design & Systems',
     slug: 'visual-design-systems',
-    icon: 'palette',
+    icon: 'design',
     description:
       'From initial concepts to comprehensive design systems, we create cohesive visual languages that scale with your product.',
     features: [
@@ -52,7 +54,7 @@ const defaultServices: ServiceItem[] = [
   {
     title: 'Optimization & Support',
     slug: 'optimization-support',
-    icon: 'code',
+    icon: 'settings',
     description:
       'We continue optimizing your site after launch to improve performance and usability.',
     features: [
@@ -77,13 +79,14 @@ try {
 // Use CMS services or fall back to defaults
 const services = content?.services?.length ? content.services : defaultServices;
 
-// Service tile image mapping based on slug
-const serviceImages: Record<string, string> = {
-  'strategy-ux-design': '/images/services/Strategy__UX_Design_Tile.png',
-  'visual-design-systems': '/images/services/Visual_Design_Systems_Tile.png',
-  'development-launch': '/images/services/Development__Launch_Tile.png',
-  'optimization-support': '/images/services/Optimization__Support_Tile.png',
-};
+// The Sanity hero singleton still holds the pre-redesign placeholder copy
+// (heroHeadline "Services" + the old subtext). Treat that legacy value as
+// "unset" so the redesigned two-line hero shows through; a genuine future CMS
+// edit (any headline other than the placeholder) still flows through unchanged.
+const legacyHero =
+  !content?.heroHeadline || content.heroHeadline.trim().toLowerCase() === 'services';
+const heroHeadline = legacyHero ? undefined : content?.heroHeadline;
+const heroSubtext = legacyHero ? undefined : content?.heroSubtext;
 ---
 
 <Layout
@@ -140,22 +143,54 @@ const serviceImages: Record<string, string> = {
   }</script>
 
   <ServicesHero
-    headline={content?.heroHeadline}
-    subtext={content?.heroSubtext}
+    headline={heroHeadline}
+    subtext={heroSubtext}
   />
 
-  <div class="space-y-12 md:space-y-16 pb-16">
-    {services.map((service) => (
-      <ServiceBlock
-        title={service.title}
-        slug={service.slug}
-        description={service.description}
-        features={service.features}
-        icon={service.icon}
-        image={service.slug ? serviceImages[service.slug] : undefined}
-      />
-    ))}
-  </div>
+  <!-- Services — the fuller, standalone version of Home's "What We Do":
+       a framing header, then the four alternating rows stitched together by the
+       drawn-in blueprint connector spine. -->
+  <section class="py-services scroll-mt-32">
+    <div class="container-main">
+      <!-- Framing header -->
+      <div class="mb-16 lg:mb-20 max-w-[680px]" data-animate="fade-up">
+        <span class="text-caption uppercase tracking-[0.2em] text-accent-bronze-bright/80">Our services</span>
+        <h2 class="text-h2 mt-3 mb-4">
+          Four disciplines, <span class="text-metallic-bronze">one team.</span>
+        </h2>
+        <p class="text-body-lg text-text-secondary">
+          The same two people carry your project the whole way — so strategy, design, build, and support connect
+          seamlessly instead of getting lost in handoffs.
+        </p>
+      </div>
+
+      <!-- Rows + connecting blueprint spine -->
+      <div class="relative" data-draw-trigger>
+        <!-- Connecting lines (draw in on scroll) — the process, stitched -->
+        <div class="connecting-lines absolute inset-0 pointer-events-none hidden lg:block" aria-hidden="true">
+          <svg class="w-full h-full" preserveAspectRatio="none">
+            <line x1="75%" y1="18%" x2="25%" y2="30%" stroke="var(--color-border-secondary)" stroke-width="1.5" stroke-dasharray="5 5" data-draw="scroll" />
+            <line x1="25%" y1="44%" x2="75%" y2="56%" stroke="var(--color-border-secondary)" stroke-width="1.5" stroke-dasharray="5 5" data-draw="scroll" />
+            <line x1="75%" y1="70%" x2="25%" y2="82%" stroke="var(--color-border-secondary)" stroke-width="1.5" stroke-dasharray="5 5" data-draw="scroll" />
+          </svg>
+        </div>
+
+        <div class="space-y-24 lg:space-y-32 relative z-10">
+          {services.map((service, index) => (
+            <ServiceBlock
+              title={service.title}
+              slug={service.slug}
+              description={service.description}
+              features={service.features}
+              icon={service.icon}
+              index={index}
+              reversed={index % 2 === 1}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
 
   <CtaSection
     headline={content?.ctaHeadline || 'Not sure which service you need?'}
@@ -163,3 +198,10 @@ const serviceImages: Record<string, string> = {
     primaryCta={content?.ctaPrimaryCta || { text: 'Get in Touch', href: '/contact' }}
   />
 </Layout>
+
+<style>
+  .py-services {
+    padding-top: clamp(48px, 7vw, 80px);
+    padding-bottom: clamp(64px, 10vw, var(--spacing-section));
+  }
+</style>

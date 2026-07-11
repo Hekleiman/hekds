@@ -30,6 +30,7 @@ export function initAnimations() {
   initParallax();
   initLineDraw();
   initSpotlight();
+  initCountUp();
   // The work carousel marquee is a pure CSS animation (see ProjectCarousel.astro)
   // so it runs on the compositor — smooth on mobile — and never reacts to touch.
 }
@@ -199,6 +200,44 @@ function initSpotlight() {
     });
     zone.addEventListener('pointerleave', () => {
       gsap.to(light, { opacity: 0, duration: 0.6 });
+    });
+  });
+}
+
+// Count a number up from 0 to its target when it scrolls into view.
+// [data-countup="42"] — the element's text is replaced with the tally. Purely
+// textual (no transforms), and skipped entirely under reduced motion (the CSS
+// guard above returns before this runs, leaving the final value in place — so
+// we set it immediately here as the honest resting state).
+function initCountUp() {
+  const els = document.querySelectorAll<HTMLElement>('[data-countup]');
+
+  els.forEach((el) => {
+    const target = parseInt(el.dataset.countup || '0', 10);
+    if (!Number.isFinite(target)) return;
+
+    // Motion is allowed here (reduced-motion returns before this runs), so start
+    // the tally from 0; the markup rendered the final value as its resting state.
+    el.textContent = '0';
+
+    ScrollTrigger.create({
+      trigger: el,
+      start: 'top 90%',
+      once: true,
+      onEnter: () => {
+        const counter = { v: 0 };
+        gsap.to(counter, {
+          v: target,
+          duration: 1.2,
+          ease: 'power2.out',
+          onUpdate: () => {
+            el.textContent = String(Math.round(counter.v));
+          },
+          onComplete: () => {
+            el.textContent = String(target);
+          },
+        });
+      },
     });
   });
 }

@@ -1,11 +1,18 @@
 ---
+import ServiceGraphic from './ServiceGraphic.astro';
+
+// A single service row — the fuller, standalone sibling of Home's ServicesIntro
+// row: alternating asymmetric layout, a metallic 01–04 index numeral, a bronze
+// icon circle, a feature list, a small "process annotation" stat, and a bespoke
+// blueprint graphic in an elevated, lifting tile.
 interface Props {
   title: string;
   description: string;
   features: string[];
   slug?: string;
   icon?: string;
-  image?: string;
+  index?: number;
+  reversed?: boolean;
   class?: string;
 }
 
@@ -15,112 +22,142 @@ const {
   features,
   slug,
   icon,
-  image,
+  index = 0,
+  reversed = false,
   class: className,
 } = Astro.props;
 
-// Normalize icon to valid key, default to 'pen'
-const validIcons = ['pen', 'palette', 'code'] as const;
-type IconKey = typeof validIcons[number];
-const iconKey: IconKey = validIcons.includes(icon as IconKey) ? (icon as IconKey) : 'pen';
-
-// Icon SVG paths
-const icons = {
-  pen: `<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>`,
-  palette: `<path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.563-2.512 5.563-5.563C22 6.052 17.5 2 12 2z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="7.5" cy="11.5" r="1.5" fill="currentColor"/><circle cx="12" cy="7.5" r="1.5" fill="currentColor"/><circle cx="16.5" cy="11.5" r="1.5" fill="currentColor"/>`,
-  code: `<path d="M16 18l6-6-6-6M8 6l-6 6 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>`,
+// Unify on the Home illustration keys. Older Sanity/legacy keys map sensibly.
+const iconAliases: Record<string, string> = {
+  pen: 'strategy',
+  palette: 'design',
+  code: 'code',
+  settings: 'settings',
+  strategy: 'strategy',
+  design: 'design',
 };
+const iconKey = iconAliases[icon ?? ''] ?? 'strategy';
+
+const numeral = String(index + 1).padStart(2, '0');
+
+// A small, honest "process annotation" per service — count-up on the number.
+const stats: Record<string, { value: string; unit?: string; label: string }> = {
+  strategy: { value: '2', unit: 'wks', label: 'to a clickable prototype' },
+  design: { value: '1', label: 'design system, every screen' },
+  code: { value: '0', label: 'handoffs — we build it' },
+  settings: { value: '∞', label: 'ongoing care after launch' },
+};
+const stat = stats[iconKey];
+const statIsNumeric = stat ? /^\d+$/.test(stat.value) : false;
 ---
 
 <section
   id={slug}
-  class:list={[
-    'py-8 md:py-10',
-    className,
-  ]}
+  class:list={['service-block scroll-mt-28', className]}
   data-animate="fade-up"
 >
-  <div class="container-main">
-    <div class="border border-zinc-800/50 rounded-2xl overflow-hidden">
-      <div class="grid grid-cols-1 lg:grid-cols-2">
-        <!-- Content Column (always left) -->
-        <div class="p-8 md:p-10 flex flex-col justify-center">
-          <!-- Icon -->
-          <div class="w-12 h-12 rounded-full border border-zinc-700 flex items-center justify-center mb-6">
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              class="text-white"
-              set:html={icons[iconKey]}
-            />
-          </div>
+  <div
+    class:list={[
+      'group grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center',
+      reversed && 'lg:[direction:rtl]',
+    ]}
+  >
+    <!-- Text Column -->
+    <div class="lg:[direction:ltr]">
+      <!-- Metallic index — a "station" on the page's blueprint spine -->
+      <div class="flex items-center gap-4 mb-6">
+        <span class="service-numeral text-metallic leading-none font-semibold tabular-nums">{numeral}</span>
+        <span class="h-px flex-1 max-w-[72px] bg-gradient-to-r from-border-secondary to-transparent"></span>
+      </div>
 
-          <h2 class="text-[32px] md:text-[36px] leading-[40px] md:leading-[44px] font-medium mb-4">
-            {title}
-          </h2>
+      <!-- Icon -->
+      <div class="w-12 h-12 rounded-full bg-surface-raised border border-border-secondary flex items-center justify-center mb-6 text-accent-bronze-bright">
+        {iconKey === 'strategy' && (
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-accent-bronze-bright">
+            <path d="M9 5H7C5.89543 5 5 5.89543 5 7V19C5 20.1046 5.89543 21 7 21H17C18.1046 21 19 20.1046 19 19V7C19 5.89543 18.1046 5 17 5H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5C15 6.10457 14.1046 7 13 7H11C9.89543 7 9 6.10457 9 5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M9 12H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M9 16H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        )}
+        {iconKey === 'design' && (
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-accent-bronze-bright">
+            <path d="M12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22C12.926 22 13.648 21.212 13.648 20.286C13.648 19.858 13.482 19.474 13.21 19.178C12.948 18.892 12.786 18.516 12.786 18.094C12.786 17.168 13.508 16.38 14.434 16.38H16.5C19.538 16.38 22 13.918 22 10.88C22 5.976 17.522 2 12 2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="7.5" cy="11.5" r="1.5" fill="currentColor"/>
+            <circle cx="10.5" cy="7.5" r="1.5" fill="currentColor"/>
+            <circle cx="15.5" cy="7.5" r="1.5" fill="currentColor"/>
+            <circle cx="17.5" cy="11.5" r="1.5" fill="currentColor"/>
+          </svg>
+        )}
+        {iconKey === 'code' && (
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-accent-bronze-bright">
+            <path d="M16 18L22 12L16 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M8 6L2 12L8 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        )}
+        {iconKey === 'settings' && (
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-accent-bronze-bright">
+            <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M12 2V4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M12 20V22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M4.93 4.93L6.34 6.34" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M17.66 17.66L19.07 19.07" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M2 12H4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M20 12H22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M4.93 19.07L6.34 17.66" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M17.66 6.34L19.07 4.93" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        )}
+      </div>
 
-          <p class="text-body text-text-secondary mb-8">
-            {description}
-          </p>
+      <!-- Title -->
+      <h2 class="text-h3-lg font-medium text-white mb-4">
+        {title}
+      </h2>
 
-          <!-- Bullet list (simple dots, no header) -->
-          <ul class="space-y-3">
-            {features.map((feature) => (
-              <li class="flex items-start gap-3 text-sm text-zinc-400">
-                <span class="text-zinc-400 mt-0.5">•</span>
-                {feature}
-              </li>
-            ))}
-          </ul>
+      <!-- Description -->
+      <p class="text-body-lg text-text-secondary max-w-[520px] mb-7">
+        {description}
+      </p>
+
+      <!-- Feature list -->
+      <ul class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 mb-8 max-w-[520px]">
+        {features.map((feature) => (
+          <li class="flex items-start gap-2.5 text-body text-text-secondary">
+            <svg class="mt-[7px] shrink-0 text-accent-bronze-bright" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M2.5 7.5L5.5 10.5L11.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>{feature}</span>
+          </li>
+        ))}
+      </ul>
+
+      <!-- Process annotation stat -->
+      {stat && (
+        <div class="inline-flex items-baseline gap-2.5 rounded-full border border-border-primary bg-background-secondary/60 px-4 py-2">
+          <span class="text-metallic text-h3 leading-none font-semibold tabular-nums">
+            {statIsNumeric ? <span data-countup={stat.value}>{stat.value}</span> : stat.value}{stat.unit && <span class="text-[0.6em] font-medium ml-0.5">{stat.unit}</span>}
+          </span>
+          <span class="text-caption text-text-muted">{stat.label}</span>
         </div>
+      )}
+    </div>
 
-        <!-- Visual Column (always right) -->
-        <div class="bg-zinc-800/30 min-h-[300px] lg:min-h-0 flex items-center justify-center">
-          {image ? (
-            <img
-              src={image}
-              alt={`${title} illustration`}
-              width="600"
-              height="450"
-              class="w-full h-full object-cover"
-              loading="lazy"
-            />
-          ) : (
-            <div class="w-full h-full flex items-center justify-center p-8">
-              <!-- Subtle wireframe UI placeholder -->
-              <svg
-                width="200"
-                height="160"
-                viewBox="0 0 200 160"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                class="text-zinc-700 opacity-50"
-              >
-                <!-- Browser window frame -->
-                <rect x="10" y="10" width="180" height="140" rx="8" stroke="currentColor" stroke-width="1"/>
-                <!-- Title bar -->
-                <line x1="10" y1="30" x2="190" y2="30" stroke="currentColor" stroke-width="1"/>
-                <!-- Window buttons -->
-                <circle cx="24" cy="20" r="3" stroke="currentColor" stroke-width="1"/>
-                <circle cx="36" cy="20" r="3" stroke="currentColor" stroke-width="1"/>
-                <circle cx="48" cy="20" r="3" stroke="currentColor" stroke-width="1"/>
-                <!-- Content placeholders -->
-                <rect x="24" y="44" width="60" height="8" rx="2" stroke="currentColor" stroke-width="1"/>
-                <rect x="24" y="60" width="152" height="4" rx="1" stroke="currentColor" stroke-width="1"/>
-                <rect x="24" y="70" width="140" height="4" rx="1" stroke="currentColor" stroke-width="1"/>
-                <rect x="24" y="80" width="100" height="4" rx="1" stroke="currentColor" stroke-width="1"/>
-                <!-- Card placeholders -->
-                <rect x="24" y="100" width="48" height="36" rx="4" stroke="currentColor" stroke-width="1"/>
-                <rect x="80" y="100" width="48" height="36" rx="4" stroke="currentColor" stroke-width="1"/>
-                <rect x="136" y="100" width="40" height="36" rx="4" stroke="currentColor" stroke-width="1"/>
-              </svg>
-            </div>
-          )}
+    <!-- Graphic Column -->
+    <div class="lg:[direction:ltr]">
+      <div class="surface-elevated lift aspect-[16/10] overflow-hidden p-5 sm:p-7">
+        <div class="w-full h-full transition-transform duration-500 ease-out group-hover:scale-[1.02]">
+          <ServiceGraphic icon={iconKey} />
         </div>
       </div>
     </div>
   </div>
 </section>
+
+<style>
+  /* Matches Home's process/index numerals: fluid 40 → 56px so it isn't oversized
+     on phones or lost on desktop. */
+  .service-numeral {
+    font-size: clamp(2.5rem, 1.9rem + 2.4vw, 3.5rem);
+  }
+</style>
