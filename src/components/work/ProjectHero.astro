@@ -1,6 +1,4 @@
 ---
-import Section from '../ui/Section.astro';
-
 interface Props {
   title: string;
   category: string;
@@ -12,15 +10,18 @@ interface Props {
 const { title, category, year, client, class: className } = Astro.props;
 ---
 
-<section class:list={['relative overflow-hidden', className]} data-spotlight>
+<!-- The -mt-36 cancels the global nav offset (main pt-36) so the hero sits close
+     under the nav instead of stranded ~240px down; controlled pt/pb then set the
+     rhythm on every breakpoint (mirrors the Home/Work hero approach). -->
+<section class:list={['relative overflow-hidden -mt-36', className]} data-spotlight>
   <!-- Depth glow -->
-  <div class="aura w-[560px] h-[360px] top-[-4%] left-1/2 -translate-x-1/2 bg-accent-bronze/[0.09]"></div>
+  <div class="aura w-[560px] h-[360px] top-[24%] left-1/2 -translate-x-1/2 bg-accent-bronze/[0.09]"></div>
 
   <!-- Blueprint contour layer -->
-  <div class="absolute inset-0 pointer-events-none opacity-[0.4]" aria-hidden="true" data-parallax data-parallax-speed="-0.08">
-    <svg class="w-full h-full" viewBox="0 0 1440 520" fill="none" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-      <path d="M-40 200 C 260 150, 460 260, 720 200 S 1140 110, 1500 190" stroke="var(--color-border-secondary)" stroke-width="1" data-draw="hero" />
-      <path d="M-40 280 C 300 220, 500 340, 780 270 S 1180 170, 1500 250" stroke="var(--color-border-primary)" stroke-width="1" data-draw="hero" />
+  <div class="absolute inset-0 pointer-events-none opacity-[0.35]" aria-hidden="true" data-parallax data-parallax-speed="-0.08">
+    <svg class="w-full h-full" viewBox="0 0 1440 640" fill="none" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <path d="M-40 360 C 260 310, 460 420, 720 360 S 1140 270, 1500 350" stroke="var(--color-border-secondary)" stroke-width="1" data-draw="hero" />
+      <path d="M-40 440 C 300 380, 500 500, 780 430 S 1180 330, 1500 410" stroke="var(--color-border-primary)" stroke-width="1" data-draw="hero" />
     </svg>
   </div>
 
@@ -33,7 +34,7 @@ const { title, category, year, client, class: className } = Astro.props;
   >
   </div>
 
-  <Section class="pt-8 pb-14 relative z-10" data-animate="fade-up">
+  <div class="container-main relative z-10 pt-28 pb-10 sm:pt-32 sm:pb-12" data-animate="fade-up">
     <!-- Back Link -->
     <a
       href="/work"
@@ -59,5 +60,5 @@ const { title, category, year, client, class: className } = Astro.props;
         {client}
       </p>
     )}
-  </Section>
+  </div>
 </section>
