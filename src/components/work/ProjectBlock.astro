@@ -74,13 +74,14 @@ const eager = index === 0;
 
   <!-- Text column -->
   <div class:list={['flex flex-col', !imageLeft ? 'md:order-1 md:pr-6' : 'md:pl-6']}>
-    <!-- Metallic index numeral (echoes Home's process numbers) -->
-    <span class="text-metallic block text-[44px] sm:text-[56px] leading-none font-semibold tabular-nums mb-4">
+    <!-- Metallic index numeral — fluidly scales 44 → 64px (matching Home's
+         process numbers on desktop) instead of jumping at one breakpoint. -->
+    <span class="project-numeral text-metallic block leading-none font-semibold tabular-nums mb-4">
       {numeral}
     </span>
 
     <!-- Category + year -->
-    <p class="text-caption uppercase tracking-[0.16em] text-accent-bronze-bright/80 mb-3">
+    <p class="text-caption uppercase tracking-[0.2em] text-accent-bronze-bright/80 mb-3">
       {category} <span class="text-text-muted">· {year}</span>
     </p>
 
@@ -114,6 +115,10 @@ const eager = index === 0;
 </a>
 
 <style>
+  .project-numeral {
+    font-size: clamp(2.75rem, 1.9rem + 3.2vw, 4rem); /* 44 → 64px */
+  }
+
   .plink-label {
     background-image: linear-gradient(currentColor, currentColor);
     background-repeat: no-repeat;
