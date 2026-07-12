@@ -25,37 +25,35 @@ const navLinks = [
 
 <div class:list={['fixed top-5 left-0 right-0 z-50 px-5', className]}>
   <nav
+    data-nav
     class="max-w-[1280px] mx-auto grid grid-cols-[auto_1fr_auto] md:grid-cols-3 items-center pl-5 pr-2.5 py-2 sm:px-6 sm:py-3 bg-zinc-900/80 backdrop-blur-sm border border-border-primary rounded-full"
   >
     <!-- Logo (Left) -->
     <a
       href="/"
       aria-label="HEK Design Studio — home"
-      class="inline-flex items-center transition-opacity duration-150 hover:opacity-80"
+      class="group inline-flex items-center transition-opacity duration-150 hover:opacity-90"
     >
-      <img
-        src="/images/hek-logo.webp"
-        alt="HEK Design Studio"
-        width="265"
-        height="96"
-        class="h-[18px] w-auto sm:h-[22px]"
-        decoding="async"
-      />
+      <span class="hek-logo h-[18px] sm:h-[22px]" aria-hidden="true"></span>
     </a>
 
     <!-- Desktop Nav Links (Center) -->
     <div class="hidden md:flex items-center justify-center gap-1">
-      {navLinks.map((link) => (
-        <a
-          href={link.href}
-          class:list={[
-            'px-4 py-2 text-sm transition-colors duration-150',
-            normalizedPath === link.href ? 'text-white font-medium' : 'text-text-muted hover:text-white',
-          ]}
-        >
-          {link.label}
-        </a>
-      ))}
+      {navLinks.map((link) => {
+        const isActive = normalizedPath === link.href;
+        return (
+          <a
+            href={link.href}
+            aria-current={isActive ? 'page' : undefined}
+            class:list={[
+              'nav-link relative px-4 py-2 text-sm transition-colors duration-150',
+              isActive ? 'is-active text-white font-medium' : 'text-text-muted hover:text-white',
+            ]}
+          >
+            {link.label}
+          </a>
+        );
+      })}
     </div>
 
     <!-- Spacer for mobile -->
@@ -88,3 +86,105 @@ const navLinks = [
 
 <!-- Mobile Menu Overlay -->
 <MobileMenu currentPath={currentPath} />
+
+<style>
+  /* Wordmark filled with the site's refined metallic gradient — the same
+     champagne/bronze language as the hero focal words — instead of the old flat
+     grey. The logo's own alpha silhouette is used as a mask so the letterforms
+     stay pixel-identical; the gradient simply shows through them. A slow sheen
+     drifts across it (paused on touch + reduced motion so it never costs frames
+     on phones). */
+  .hek-logo {
+    display: inline-block;
+    aspect-ratio: 265 / 96;
+    background-image: var(--gradient-metallic);
+    background-size: 200% 100%;
+    background-position: 0% 50%;
+    -webkit-mask: url('/images/hek-logo.webp') center / contain no-repeat;
+    mask: url('/images/hek-logo.webp') center / contain no-repeat;
+    animation: hek-logo-sheen 7s var(--ease-out-soft) infinite;
+  }
+  @keyframes hek-logo-sheen {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  @media (hover: none), (prefers-reduced-motion: reduce) {
+    .hek-logo { animation: none; }
+  }
+
+  /* Machined scrolled state — the bar resolves in a touch more presence as the
+     page leaves the top (deeper fill, stronger blur, a hairline that firms up
+     and a soft lift), rather than snapping a hard border. */
+  [data-nav] {
+    transition: background-color 0.35s var(--ease-out-soft),
+      border-color 0.35s var(--ease-out-soft),
+      box-shadow 0.35s var(--ease-out-soft),
+      backdrop-filter 0.35s var(--ease-out-soft);
+  }
+  [data-nav][data-scrolled] {
+    background-color: rgba(20, 20, 23, 0.92);
+    border-color: var(--color-border-secondary);
+    box-shadow: var(--shadow-elevated), inset 0 1px 0 var(--color-border-highlight);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+  }
+
+  /* Active/hover link underline — a bronze hairline that DRAWS in from the left
+     (scaleX) rather than fading, matching the site's line-draw language. The
+     active page's line is drawn and rests; hover draws it on other links. */
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: 5px;
+    height: 1.5px;
+    border-radius: 2px;
+    background: var(--gradient-bronze);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.4s var(--ease-out-expo);
+  }
+  .nav-link.is-active::after {
+    transform: scaleX(1);
+  }
+  @media (hover: hover) {
+    .nav-link:hover::after {
+      transform: scaleX(1);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .nav-link::after { transition: none; }
+  }
+
+  /* On-system bronze focus ring for the bar's interactive elements (the global
+     default is a grey outline; this matches the form fields' bronze focus). */
+  [data-nav] a:focus-visible,
+  #mobile-menu-toggle:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+    border-radius: var(--radius-full);
+  }
+</style>
+
+<script is:inline>
+  // Scrolled-state toggle for the nav bar. Passive + rAF-throttled so it never
+  // costs scroll smoothness; runs once on load to catch a restored scroll pos.
+  (function () {
+    const bar = document.querySelector('[data-nav]');
+    if (!bar) return;
+    let ticking = false;
+    const apply = () => {
+      bar.toggleAttribute('data-scrolled', window.scrollY > 8);
+      ticking = false;
+    };
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(apply);
+      }
+    };
+    apply();
+    window.addEventListener('scroll', onScroll, { passive: true });
+  })();
+</script>
