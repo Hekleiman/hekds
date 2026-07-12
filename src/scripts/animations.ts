@@ -14,24 +14,49 @@ export function initAnimations() {
   // Only run on client
   if (typeof window === 'undefined') return;
 
+  // Reveal helper + failsafe set by the inline entrance guard in Layout.astro.
+  // Removing the `.anim` class hands reveal-control back to GSAP's inline styles.
+  const win = window as unknown as {
+    __animReveal?: () => void;
+    __animFailsafe?: number;
+  };
+  const reveal = win.__animReveal || (() => document.documentElement.classList.remove('anim'));
+  if (win.__animFailsafe) clearTimeout(win.__animFailsafe);
+
   // If the user prefers reduced motion, make sure everything is visible
   // and skip all motion. (CSS already forces [data-animate] visible.)
   if (prefersReducedMotion) {
     gsap.set('[data-animate], [data-hero]', { clearProps: 'all', opacity: 1, y: 0 });
+    reveal();
     return;
   }
 
-  // Refresh ScrollTrigger on page load (for accurate measurements)
-  ScrollTrigger.refresh();
-
+  // Hero first, synchronously — it's the above-the-fold entrance the visitor
+  // sees immediately, so its frames must not compete with anything. Its inline
+  // start states are set here, so the CSS guard can be dropped as soon as the
+  // deferred setup below has done the same for the rest of the page.
   initHeroAnimations();
-  initFadeUp();
-  initStagger();
-  initParallax();
-  initLineDraw();
-  initProgressLine();
-  initSpotlight();
-  initCountUp();
+
+  // Defer the scroll machinery (measuring layout, building every ScrollTrigger)
+  // by two frames so the hero paints its first frames on a clear main thread.
+  // On mobile this is the difference between a smooth entrance and a stutter:
+  // getBoundingClientRect / getTotalLength / trigger creation are all synchronous
+  // and previously ran in the same tick the hero timeline was trying to animate.
+  const initScroll = () => {
+    initFadeUp();
+    initStagger();
+    initParallax();
+    initLineDraw();
+    initProgressLine();
+    initSpotlight();
+    initCountUp();
+    // Every element that animates in now carries GSAP's own inline start state,
+    // so it's safe to drop the CSS entrance guard. Refresh once, after the
+    // triggers exist, so their start positions measure correctly.
+    ScrollTrigger.refresh();
+    reveal();
+  };
+  requestAnimationFrame(() => requestAnimationFrame(initScroll));
   // The work carousel marquee is a pure CSS animation (see ProjectCarousel.astro)
   // so it runs on the compositor — smooth on mobile — and never reacts to touch.
 }
@@ -51,6 +76,8 @@ function initHeroAnimations() {
   // Set initial state (tag keeps its own CSS rotate transform, so fade only)
   gsap.set([eyebrow, subtext, cta, visual].filter(Boolean), { opacity: 0, y: 24 });
   if (tag) gsap.set(tag, { opacity: 0 });
+  // The headline is not pre-guarded in CSS (see global.css), so GSAP fully owns
+  // its transform here — the clip-reveal lands cleanly at yPercent:0.
   if (lines.length) gsap.set(lines, { yPercent: 118 });
 
   const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
@@ -62,12 +89,21 @@ function initHeroAnimations() {
   if (visual) tl.to(visual, { opacity: 1, y: 0, duration: 1.0 }, 0.75);
   if (tag) tl.to(tag, { opacity: 1, duration: 0.8 }, 1.0);
 
-  // Draw the hero contour lines in on load
+  // Draw the hero contour lines in on load. Animating stroke-dashoffset forces
+  // the browser to re-rasterize the path every frame — cheap on desktop, but a
+  // real frame-drain on phone GPUs during the entrance. On touch devices we draw
+  // the contours instantly and simply fade the layer in instead (compositor-only).
+  const lowPower = window.matchMedia('(hover: none)').matches;
   const contours = hero.querySelectorAll('[data-draw="hero"]');
   contours.forEach((path, i) => {
     const len = getLength(path);
-    gsap.set(path, { strokeDasharray: len, strokeDashoffset: len, opacity: 1 });
-    tl.to(path, { strokeDashoffset: 0, duration: 1.8, ease: 'power2.inOut' }, 0.4 + i * 0.15);
+    if (lowPower) {
+      gsap.set(path, { strokeDasharray: len, strokeDashoffset: 0, opacity: 0 });
+      tl.to(path, { opacity: 1, duration: 0.9, ease: 'power2.out' }, 0.4 + i * 0.1);
+    } else {
+      gsap.set(path, { strokeDasharray: len, strokeDashoffset: len, opacity: 1 });
+      tl.to(path, { strokeDashoffset: 0, duration: 1.8, ease: 'power2.inOut' }, 0.4 + i * 0.15);
+    }
   });
 
   // Fade the process-timeline block in with the hero; its bronze fill is driven
