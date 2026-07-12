@@ -1,11 +1,14 @@
 ---
+import TierMedallion from './TierMedallion.astro';
+
 interface Props {
   name: string;
   price: string;
   timeline?: string;
   features: string[];
   accentColor: 'bronze' | 'silver' | 'gold';
-  icon?: string;
+  ctaText?: string;
+  ctaLink?: string;
   class?: string;
 }
 
@@ -15,62 +18,154 @@ const {
   timeline,
   features,
   accentColor,
-  icon,
+  ctaText,
+  ctaLink,
   class: className,
 } = Astro.props;
 
-const circleColors = {
-  bronze: 'bg-amber-700',
-  silver: 'bg-zinc-400',
-  gold: 'bg-yellow-600',
-};
+// ── Price parsing ──────────────────────────────────────────────────────────
+// tier.price stays authoritative — we only split it typographically into a big
+// metallic lead figure and a smaller supporting remainder, wrapping numeric runs
+// so they can count up and land on the exact comma-formatted figures. A "from"
+// price ("Starting at $3,000") renders as "$3,000+" so all three cards share one
+// clean shape: a big metal figure with a short qualifier.
+const raw = (price ?? '').trim();
+const leadMatch = raw.match(/\$\s?[\d,]+/);
+const prefix = leadMatch ? raw.slice(0, leadMatch.index).trim() : '';
+const leadStr = leadMatch ? leadMatch[0] : raw;
+const restStr = leadMatch ? raw.slice((leadMatch.index || 0) + leadStr.length).trim() : '';
+const isFrom = prefix.length > 0; // e.g. "Starting at" → render a trailing "+"
+
+// Split a string into text / number segments (numbers become count-up spans).
+type Seg = { t: string } | { n: number; plain: string };
+function segmentize(str: string): Seg[] {
+  const parts: Seg[] = [];
+  const re = /\d[\d,]*/g;
+  let last = 0;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(str))) {
+    if (m.index > last) parts.push({ t: str.slice(last, m.index) });
+    parts.push({ n: parseInt(m[0].replace(/,/g, ''), 10), plain: m[0] });
+    last = m.index + m[0].length;
+  }
+  if (last < str.length) parts.push({ t: str.slice(last) });
+  return parts;
+}
+const leadSegs = segmentize(leadStr);
+// The high end of a range (for the "to $X" qualifier line), if present.
+const highSeg = restStr ? segmentize(restStr).find((s): s is { n: number; plain: string } => 'n' in s) : undefined;
+
+// Per-tier metal (matches the medallion + the global gradients). Check-mark
+// colour is a legible bright tone of the same metal.
+const metal = {
+  bronze: { text: 'text-metallic-bronze', check: '#e0a260', gradient: 'var(--gradient-bronze)' },
+  silver: { text: 'text-metallic-silver', check: '#d4d4d8', gradient: 'var(--gradient-silver)' },
+  gold: { text: 'text-metallic-gold', check: '#ffe89a', gradient: 'var(--gradient-gold)' },
+}[accentColor];
+
+// Escalating materiality: the metal edge and the soft glow behind the medallion
+// both step up bronze → silver → gold, so the row reads as three grades of one
+// material. Every card keeps the same height and structure (no pill, no offset);
+// Gold alone adds a slow shimmer on its edge.
+const isGold = accentColor === 'gold';
+const material = {
+  bronze: { edge: 0.26, glow: 'rgba(224,162,96,0.16)' },
+  silver: { edge: 0.42, glow: 'rgba(214,214,220,0.14)' },
+  gold: { edge: 0.66, glow: 'rgba(255,232,154,0.24)' },
+}[accentColor];
 ---
 
-<div class:list={[
-  'flex flex-col p-6 rounded-xl border border-zinc-800/50',
-  className,
-]}>
-  <!-- Tier Icon -->
-  {icon ? (
-    <img
-      src={icon}
-      alt={`${name} icon`}
-      width="48"
-      height="48"
-      class="w-12 h-12 mb-4"
-      loading="lazy"
-    />
-  ) : (
-    <div class:list={[
-      'w-8 h-8 rounded-full mb-4',
-      circleColors[accentColor]
-    ]}></div>
-  )}
+<article
+  class:list={[
+    'tier-card group relative flex flex-col h-full surface-elevated lift tier-sheen overflow-hidden p-7 sm:p-8',
+    className,
+  ]}
+  style={`--tier-gradient:${metal.gradient}`}
+  data-tier={accentColor}
+>
+  <!-- Metal edge — present on every card, graded by tier; Gold shimmers. -->
+  <span
+    class:list={['tier-edge', isGold && 'metallic-shimmer']}
+    style={`--tier-edge-opacity:${material.edge}`}
+    aria-hidden="true"
+  ></span>
 
-  <!-- Tier Name -->
-  <span class="text-base font-bold text-white mb-3">
-    {name}
-  </span>
+  <!-- Medallion — a soft tier-metal glow sits behind it (graded), and it lifts
+       slightly when the card is hovered. -->
+  <div class="relative z-10 w-14 h-14 sm:w-16 sm:h-16 mb-6 transition-transform duration-500 ease-out group-hover:scale-[1.08]">
+    <span
+      class="absolute -inset-2.5 rounded-full pointer-events-none"
+      style={`background:radial-gradient(circle, ${material.glow} 0%, transparent 70%);`}
+      aria-hidden="true"
+    ></span>
+    <TierMedallion accent={accentColor} class="relative w-full h-full" />
+  </div>
 
-  <!-- Price -->
-  <span class="text-2xl font-bold text-white mb-1">
-    {price}
-  </span>
+  <!-- Tier name -->
+  <h3 class="relative z-10 text-h3 font-medium text-white mb-4">{name}</h3>
 
-  <!-- Timeline -->
-  {timeline && (
-    <span class="text-sm text-zinc-400 mb-6">
-      {timeline}
+  <!-- Price + timeline block — a fixed two-line shape across all three tiers
+       (big metal figure, then a short qualifier) so the divider and features
+       line up card-to-card. -->
+  <div class="relative z-10 mb-7">
+    <!-- Line 1: the big metal figure -->
+    <span class:list={['text-price block', metal.text]}>
+      {leadSegs.map((seg) =>
+        'n' in seg ? (
+          <span class="tabular-nums" data-countup={seg.n} data-countup-format="comma">{seg.plain}</span>
+        ) : (
+          <span>{seg.t}</span>
+        )
+      )}
     </span>
-  )}
 
-  <!-- Features List -->
-  <ul class="flex flex-col gap-3 flex-1">
+    <!-- Line 2: qualifier — "to $X" for a range, "and up" for a from-price -->
+    <span class="block mt-1.5 text-body text-text-secondary">
+      {highSeg ? (
+        <>to $<span class="tabular-nums" data-countup={highSeg.n} data-countup-format="comma">{highSeg.plain}</span></>
+      ) : isFrom ? (
+        <>and up</>
+      ) : (
+        <>&nbsp;</>
+      )}
+    </span>
+
+    <!-- Line 3: timeline -->
+    {timeline && (
+      <div class="mt-3 flex items-center gap-2 text-caption text-text-muted">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true" class="shrink-0">
+          <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5" />
+          <path d="M12 7.5V12l3 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <span>{timeline}</span>
+      </div>
+    )}
+  </div>
+
+  <!-- Divider -->
+  <span class="relative z-10 h-px w-full bg-border-primary mb-7" aria-hidden="true"></span>
+
+  <!-- Features -->
+  <ul class="relative z-10 flex flex-col gap-3.5 flex-1" style={`color:${metal.check}`}>
     {features.map((feature) => (
-      <li class="flex items-start gap-3 text-sm text-zinc-400">
-        <span class="text-zinc-400 flex-shrink-0">✓</span>
+      <li class="flex items-start gap-3 text-body text-text-secondary">
+        <svg class="mt-0.5 shrink-0" width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.25" opacity="0.35" />
+          <path d="M6 10.5 L9 13.5 L14.5 7" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
         <span>{feature}</span>
       </li>
     ))}
   </ul>
-</div>
+
+  <!-- Optional per-tier CTA (only when the CMS supplies one; the shared closing
+       CtaSection remains the primary conversion path). -->
+  {ctaText && ctaLink && (
+    <a
+      href={ctaLink}
+      class="relative z-10 mt-7 inline-flex items-center justify-center rounded-full border border-border-secondary h-10 px-5 text-caption font-medium text-white transition-colors duration-300 hover:border-accent-bronze-bright/60"
+    >
+      {ctaText}
+    </a>
+  )}
+</article>

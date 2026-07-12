@@ -1,0 +1,118 @@
+---
+// Bespoke programmatic tier medallion — the same "living blueprint" language as
+// ServiceIllustration.astro (faint grid, exact coordinates, one focal accent,
+// metallic gradient), rendered as three grades of one mark. The outer ring is the
+// tier's metal and draws in on scroll (data-draw="scroll") — the "assay". Detail
+// and aliveness escalate: bronze is grounded, silver adds precision, gold facets
+// and pulses. Deterministic vector — nothing to go wonky, no raster weight.
+interface Props {
+  accent: 'bronze' | 'silver' | 'gold';
+  class?: string;
+}
+const { accent, class: className } = Astro.props;
+
+// Unique gradient/pattern ids per instance so multiple medallions never collide.
+const uid = accent;
+const gradId = `med-${uid}`;
+const gridId = `medgrid-${uid}`;
+
+// The metal stops per tier (mirror the ServiceIllustration mBronze/mSilver/mGold).
+const stops: Record<Props['accent'], [string, string, string]> = {
+  bronze: ['#cd7f32', '#e6b878', '#cd7f32'],
+  silver: ['#a8a8a8', '#f0f0f0', '#a8a8a8'],
+  gold: ['#c9a227', '#ffe89a', '#c9a227'],
+};
+const [s0, s1, s2] = stops[accent];
+const level = accent === 'bronze' ? 1 : accent === 'silver' ? 2 : 3;
+---
+
+<div class:list={['tier-medallion relative', className]} aria-hidden="true">
+  <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+    <defs>
+      <linearGradient id={gradId} x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color={s0} />
+        <stop offset="0.5" stop-color={s1} />
+        <stop offset="1" stop-color={s2} />
+      </linearGradient>
+      <pattern id={gridId} width="12" height="12" patternUnits="userSpaceOnUse">
+        <path d="M12 0H0V12" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1" />
+      </pattern>
+    </defs>
+
+    <!-- faint blueprint grid, clipped to the medallion disc -->
+    <clipPath id={`clip-${uid}`}><circle cx="60" cy="60" r="46" /></clipPath>
+    <g clip-path={`url(#clip-${uid})`}>
+      <rect x="0" y="0" width="120" height="120" fill={`url(#${gridId})`} />
+      <!-- registration cross-hairs (precise, not decorative) -->
+      <line x1="60" y1="16" x2="60" y2="104" stroke="rgba(255,255,255,0.06)" stroke-width="1" />
+      <line x1="16" y1="60" x2="104" y2="60" stroke="rgba(255,255,255,0.06)" stroke-width="1" />
+    </g>
+
+    <!-- inner neutral guide ring -->
+    <circle cx="60" cy="60" r="34" stroke="rgba(255,255,255,0.12)" stroke-width="1" fill="none" />
+
+    <!-- THE metal ring — draws in on scroll (the assay) -->
+    <circle
+      cx="60" cy="60" r="46"
+      stroke={`url(#${gradId})`} stroke-width="2.5" fill="none" stroke-linecap="round"
+      class="med-ring"
+      data-draw="scroll"
+    />
+
+    <!-- Perimeter facet nodes — one per tier grade.
+         Bronze: 1 (top). Silver: 2 (top + bottom, directly across). Gold: 3
+         (top focal + evenly-spaced lower pair). -->
+    {level === 1 && (
+      <circle cx="60" cy="14" r="3.5" fill={`url(#${gradId})`} class="med-focal" />
+    )}
+    {level === 2 && (
+      <>
+        <circle cx="60" cy="14" r="3.5" fill={`url(#${gradId})`} class="med-focal" />
+        <circle cx="60" cy="106" r="3.5" fill={`url(#${gradId})`} class="med-focal" />
+      </>
+    )}
+    {level === 3 && (
+      <>
+        <circle cx="60" cy="14" r="3.5" fill={`url(#${gradId})`} class="med-focal pulse" />
+        <circle cx="99.8" cy="83" r="3" fill={`url(#${gradId})`} />
+        <circle cx="20.2" cy="83" r="3" fill={`url(#${gradId})`} />
+      </>
+    )}
+
+    <!-- Center facet — a faceted gem that gains sides with the tier. -->
+    {level === 1 && (
+      <circle cx="60" cy="60" r="12" stroke={`url(#${gradId})`} stroke-width="2" fill="rgba(255,255,255,0.03)" />
+    )}
+    {level === 2 && (
+      <g stroke={`url(#${gradId})`} stroke-width="2" stroke-linejoin="round" fill="rgba(255,255,255,0.03)">
+        <rect x="48" y="48" width="24" height="24" rx="3" transform="rotate(45 60 60)" />
+      </g>
+    )}
+    {level === 3 && (
+      <g class="med-gem" stroke={`url(#${gradId})`} stroke-width="2" stroke-linejoin="round" fill="rgba(255,232,154,0.05)">
+        <!-- hexagonal gem with inner facets -->
+        <path d="M60 46 L73 53.5 L73 66.5 L60 74 L47 66.5 L47 53.5 Z" />
+        <path d="M60 46 L60 74 M47 53.5 L73 66.5 M73 53.5 L47 66.5" stroke-width="1" opacity="0.7" />
+      </g>
+    )}
+  </svg>
+</div>
+
+<style>
+  .tier-medallion svg { display: block; }
+  /* Reduced motion / no-JS: the metal ring is fully present (draw handled by the
+     shared line-draw hook, which also completes under reduced motion via CSS). */
+  .med-focal.pulse {
+    animation: med-pulse 3s ease-in-out infinite;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  @keyframes med-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  .med-gem { transform-box: fill-box; transform-origin: center; }
+  @media (prefers-reduced-motion: reduce) {
+    .med-focal.pulse { animation: none; }
+  }
+</style>

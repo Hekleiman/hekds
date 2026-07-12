@@ -299,9 +299,16 @@ function initCountUp() {
     const target = parseInt(el.dataset.countup || '0', 10);
     if (!Number.isFinite(target)) return;
 
+    // Optional thousands-grouping so a price tally lands on "3,000" (matching the
+    // resting markup and the JSON-LD), not a bare "3000". Default stays raw so
+    // existing count-ups (all < 1000) are untouched.
+    const grouped = el.dataset.countupFormat === 'comma';
+    const fmt = (n: number) =>
+      grouped ? Math.round(n).toLocaleString('en-US') : String(Math.round(n));
+
     // Motion is allowed here (reduced-motion returns before this runs), so start
     // the tally from 0; the markup rendered the final value as its resting state.
-    el.textContent = '0';
+    el.textContent = fmt(0);
 
     ScrollTrigger.create({
       trigger: el,
@@ -314,10 +321,10 @@ function initCountUp() {
           duration: 1.2,
           ease: 'power2.out',
           onUpdate: () => {
-            el.textContent = String(Math.round(counter.v));
+            el.textContent = fmt(counter.v);
           },
           onComplete: () => {
-            el.textContent = String(target);
+            el.textContent = fmt(target);
           },
         });
       },
