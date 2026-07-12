@@ -1,4 +1,11 @@
 ---
+// Shared form control — rebuilt on the redesign system: fluid sizing (no fixed
+// 50px), ≥16px font so iOS Safari never zooms on focus, an animated label that
+// warms to bronze on focus, a drawn bronze focus ring that respects reduced
+// motion, a real custom chevron on selects (appearance is stripped, so the
+// native affordance was missing), and native :user-invalid styling wired to the
+// site's warm danger token. Only ContactForm consumes this today, but it's kept
+// generic so it stays a true shared control.
 interface Props {
   type?: 'text' | 'email' | 'textarea' | 'select';
   name: string;
@@ -7,6 +14,7 @@ interface Props {
   required?: boolean;
   options?: { value: string; label: string; disabled?: boolean }[];
   rows?: number;
+  autocomplete?: string;
   class?: string;
 }
 
@@ -18,56 +26,184 @@ const {
   required = false,
   options = [],
   rows = 4,
+  autocomplete,
   class: className,
   ...rest
 } = Astro.props;
-
-const inputStyles = 'w-full bg-background-secondary border border-border-primary rounded-input px-4 text-text-primary placeholder:text-text-placeholder focus:border-border-secondary focus:outline-none transition-colors duration-150';
-const inputHeight = 'h-[50px]';
-const textareaStyles = 'py-3 min-h-[120px] resize-y';
 ---
 
-<div class:list={['flex flex-col gap-2', className]} {...rest}>
+<div class:list={['field', className]} {...rest}>
   {label && (
-    <label for={name} class="text-sm font-medium text-text-secondary">
-      {label}
+    <label for={name} class="field-label">
+      {label}{required && <span class="field-req" aria-hidden="true">*</span>}
     </label>
   )}
 
-  {type === 'textarea' ? (
-    <textarea
-      id={name}
-      name={name}
-      placeholder={placeholder}
-      required={required}
-      rows={rows}
-      class:list={[inputStyles, textareaStyles]}
-    />
-  ) : type === 'select' ? (
-    <select
-      id={name}
-      name={name}
-      required={required}
-      class:list={[inputStyles, inputHeight, 'appearance-none cursor-pointer']}
-    >
-      {options.map((option) => (
-        <option
-          value={option.value}
-          disabled={option.disabled || option.value === ''}
-          selected={option.value === ''}
+  <div class:list={['field-wrap', type === 'select' && 'field-wrap--select']}>
+    {type === 'textarea' ? (
+      <textarea
+        id={name}
+        name={name}
+        placeholder={placeholder}
+        required={required}
+        rows={rows}
+        aria-required={required ? 'true' : undefined}
+        class="field-control field-control--textarea"
+        data-autogrow
+      />
+    ) : type === 'select' ? (
+      <>
+        <select
+          id={name}
+          name={name}
+          required={required}
+          aria-required={required ? 'true' : undefined}
+          class="field-control field-control--select"
         >
-          {option.label}
-        </option>
-      ))}
-    </select>
-  ) : (
-    <input
-      type={type}
-      id={name}
-      name={name}
-      placeholder={placeholder}
-      required={required}
-      class:list={[inputStyles, inputHeight]}
-    />
-  )}
+          {options.map((option) => (
+            <option
+              value={option.value}
+              disabled={option.disabled || option.value === ''}
+              selected={option.value === ''}
+            >
+              {option.label}
+            </option>
+          ))}
+        </select>
+        <svg class="field-chevron" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 5.25L7 9.25L11 5.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </>
+    ) : (
+      <input
+        type={type}
+        id={name}
+        name={name}
+        placeholder={placeholder}
+        required={required}
+        autocomplete={autocomplete}
+        aria-required={required ? 'true' : undefined}
+        class="field-control"
+      />
+    )}
+  </div>
 </div>
+
+<style>
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  /* Label warms to bronze and lifts a hair when the control is focused —
+     the "animated label" beat, robust across text / select / textarea. */
+  .field-label {
+    font-size: var(--text-caption);
+    font-weight: 500;
+    letter-spacing: 0.005em;
+    color: var(--color-text-secondary);
+    transition: color 0.3s var(--ease-out-soft), transform 0.3s var(--ease-out-soft);
+    transform-origin: left center;
+    width: fit-content;
+  }
+  .field:focus-within .field-label {
+    color: var(--color-accent-bronze-bright);
+    transform: translateX(2px);
+  }
+  .field-req {
+    color: var(--color-accent-bronze-bright);
+    margin-left: 2px;
+  }
+
+  .field-wrap {
+    position: relative;
+    display: flex;
+  }
+
+  /* Machined control surface — layered fill, hairline border, fluid height,
+     16px text (no iOS zoom). Focus lights a bronze ring drawn in via box-shadow;
+     :user-invalid (only after interaction) warms the border to the danger tone. */
+  .field-control {
+    width: 100%;
+    font-family: inherit;
+    font-size: 1rem; /* 16px — keep at/above this so mobile Safari won't zoom */
+    line-height: 1.5;
+    color: var(--color-text-primary);
+    background: linear-gradient(180deg, var(--color-surface-raised) 0%, var(--color-background-secondary) 100%);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--radius-input);
+    padding: 0 1rem;
+    height: var(--control-height);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+    transition: border-color 0.3s var(--ease-out-soft),
+      box-shadow 0.3s var(--ease-out-soft),
+      background-color 0.3s var(--ease-out-soft);
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .field-control::placeholder {
+    color: var(--color-text-placeholder);
+  }
+  .field-control:hover {
+    border-color: var(--color-border-secondary);
+  }
+  .field-control:focus,
+  .field-control:focus-visible {
+    outline: none;
+    border-color: var(--color-accent-bronze-bright);
+    box-shadow: var(--focus-ring), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+
+  /* Only flag invalid after the user has interacted (native :user-invalid). */
+  .field-control:user-invalid {
+    border-color: var(--color-danger);
+  }
+  .field-control:user-invalid:focus {
+    box-shadow: 0 0 0 3px var(--color-danger-soft), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+
+  .field-control--textarea {
+    height: auto;
+    min-height: 140px;
+    padding: 0.85rem 1rem;
+    resize: vertical;
+    overflow: hidden; /* auto-grow drives the height; scrollbar stays hidden */
+  }
+
+  /* Select: strip the native affordance, add room + a custom chevron. */
+  .field-control--select {
+    padding-right: 2.75rem;
+    cursor: pointer;
+  }
+  .field-control--select option {
+    background: var(--color-background-secondary);
+    color: var(--color-text-primary);
+  }
+  .field-chevron {
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+    color: var(--color-text-muted);
+    pointer-events: none;
+    transition: color 0.3s var(--ease-out-soft), transform 0.3s var(--ease-out-soft);
+  }
+  .field-wrap--select:focus-within .field-chevron {
+    color: var(--color-accent-bronze-bright);
+    transform: translateY(-50%) translateY(1px);
+  }
+
+  /* Reduced motion: keep the focus state (visible + legible), drop transitions. */
+  @media (prefers-reduced-motion: reduce) {
+    .field-label,
+    .field-control,
+    .field-chevron {
+      transition: none;
+    }
+    .field:focus-within .field-label,
+    .field-wrap--select:focus-within .field-chevron {
+      transform: none;
+    }
+  }
+</style>
