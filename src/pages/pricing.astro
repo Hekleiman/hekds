@@ -1,8 +1,9 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Section from '../components/ui/Section.astro';
 import PricingHero from '../components/pricing/PricingHero.astro';
 import PricingGrid from '../components/pricing/PricingGrid.astro';
+import PricingFactors from '../components/pricing/PricingFactors.astro';
+import PricingFaq from '../components/pricing/PricingFaq.astro';
 import CtaSection from '../components/home/CtaSection.astro';
 import { getPricingPageContent, type PricingPageContent, type PricingFactor, type PricingTier } from '../lib/sanity';
 
@@ -26,7 +27,9 @@ const defaultFactors: PricingFactor[] = [
   },
 ];
 
-// Default tiers (fallback)
+// Default tiers (fallback). Gold is flagged as the featured tier via the existing
+// PricingTier.highlighted field (already in the schema + GROQ query) — no new CMS
+// field invented; the Sanity singleton can set highlighted on any tier.
 const defaultTiers: PricingTier[] = [
   {
     name: 'Bronze Tier',
@@ -59,6 +62,7 @@ const defaultTiers: PricingTier[] = [
     price: 'Starting at $3,000',
     timeline: '3–5 weeks',
     accentColor: 'gold',
+    highlighted: true,
     features: [
       'Custom UX and UI design',
       'Front-end development',
@@ -66,6 +70,27 @@ const defaultTiers: PricingTier[] = [
       'Basic data handling',
       'Post-launch support',
     ],
+  },
+];
+
+// FAQ content — the SINGLE source for the visible accordion. Kept verbatim in
+// step with the FAQPage JSON-LD below so the two never drift (previously the
+// visible copy was a shortened paraphrase that didn't match the structured data).
+const faqs = [
+  {
+    question: 'How much does a website cost at HEK Design Studio?',
+    answer:
+      'HEK Design Studio offers three pricing tiers: Bronze ($500–$1,000) for 1–3 page websites, Silver ($1,500–$3,000) for full website designs with prototypes and design systems, and Gold (starting at $3,000) for custom UX/UI design with front-end development. Final pricing depends on project scope, design complexity, technical requirements, and timeline.',
+  },
+  {
+    question: 'Does HEK Design Studio offer fixed-price packages?',
+    answer:
+      "No, HEK Design Studio provides transparent, project-based pricing tailored to each client's specific needs and goals rather than fixed-price packages. The typical price ranges give a sense of investment levels, with actual cost depending on scope, complexity, and timeline.",
+  },
+  {
+    question: "What is included in HEK Design Studio's web design services?",
+    answer:
+      'Services include strategy and UX design, visual design systems, front-end development, responsive implementation, CMS setup, SEO-ready structure, analytics setup, and post-launch support. Design and development happen in tandem with direct collaboration — no handoffs or middlemen.',
   },
 ];
 
@@ -81,6 +106,25 @@ try {
 // Use CMS content or fall back to defaults
 const factors = content?.factors?.length ? content.factors : defaultFactors;
 const tiers = content?.tiers?.length ? content.tiers : defaultTiers;
+
+// Hero copy. The Sanity singleton still carries the pre-redesign hero seed — the
+// bare "Pricing" headline and the four-sentence subtext wall — which are byte-for-
+// byte the old hardcoded defaults, i.e. nobody deliberately authored them. Treat
+// those exact legacy strings as "uncustomized" so the tightened redesign copy
+// (PricingHero's own defaults) shows; any genuinely new Sanity value still wins.
+// TODO(Harrison): update pricingPage.heroHeadline / heroSubtext in Sanity to bake
+// the new copy in, then this guard can be removed.
+const LEGACY_HERO_HEADLINE = 'Pricing';
+const LEGACY_HERO_SUBTEXT =
+  "Every project is unique, so we don't offer fixed-price packages. Instead, we provide transparent, project-based pricing tailored to your specific needs and goals. Below are typical ranges to give you a sense of investment levels. The actual cost depends on scope, complexity, and timeline.";
+const heroHeadline =
+  content?.heroHeadline && content.heroHeadline.trim() !== LEGACY_HERO_HEADLINE
+    ? content.heroHeadline
+    : undefined;
+const heroSubtext =
+  content?.heroSubtext && content.heroSubtext.trim() !== LEGACY_HERO_SUBTEXT
+    ? content.heroSubtext
+    : undefined;
 ---
 
 <Layout
@@ -165,48 +209,27 @@ const tiers = content?.tiers?.length ? content.tiers : defaultTiers;
     ]
   }</script>
 
+  <!-- Hero — the three metals introduced above the fold -->
   <PricingHero
-    headline={content?.heroHeadline || 'Pricing'}
-    subtext={content?.heroSubtext || "Every project is unique, so we don't offer fixed-price packages. Instead, we provide transparent, project-based pricing tailored to your specific needs and goals. Below are typical ranges to give you a sense of investment levels. The actual cost depends on scope, complexity, and timeline."}
+    headline={heroHeadline}
+    subtext={heroSubtext}
   />
 
-  <!-- What Affects Pricing Section -->
-  <Section>
-    <h2 class="text-h2 mb-8">{content?.factorsHeadline || 'What Affects Pricing'}</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6" data-animate="stagger">
-      {factors.map((factor) => (
-        <div class="border border-zinc-800/50 rounded-xl p-6">
-          <h3 class="font-bold text-white mb-2">{factor.title}</h3>
-          <p class="text-zinc-400">{factor.description}</p>
-        </div>
-      ))}
-    </div>
-  </Section>
-
+  <!-- Tier row — the page's centerpiece, right after the hero -->
   <PricingGrid
     headline={content?.tiersHeadline}
     tiers={tiers}
     disclaimer={content?.tiersNote}
   />
 
-  <!-- FAQ Section -->
-  <Section>
-    <h2 class="text-h2 mb-10">Frequently Asked Questions</h2>
-    <div class="space-y-8 max-w-3xl" data-animate="stagger">
-      <div>
-        <h3 class="font-bold text-white mb-2">How much does a website cost?</h3>
-        <p class="text-zinc-400">Our projects typically range from $500 to $3,000+, depending on scope, design complexity, technical requirements, and timeline. We provide a detailed proposal after an initial conversation.</p>
-      </div>
-      <div>
-        <h3 class="font-bold text-white mb-2">Do you offer fixed-price packages?</h3>
-        <p class="text-zinc-400">We don't offer fixed packages. Every project gets transparent, tailored pricing based on your specific needs and goals.</p>
-      </div>
-      <div>
-        <h3 class="font-bold text-white mb-2">What's included in each tier?</h3>
-        <p class="text-zinc-400">Bronze ($500–$1K) covers 1–3 page websites with custom design, responsive build, and basic CMS. Silver ($1.5K–$3K) adds interactive prototypes, design system foundations, and analytics. Gold ($3K+) includes custom UX/UI design, front-end development, and post-launch support.</p>
-      </div>
-    </div>
-  </Section>
+  <!-- The honest explainer, beneath the numbers -->
+  <PricingFactors
+    headline={content?.factorsHeadline}
+    factors={factors}
+  />
+
+  <!-- FAQ (verbatim with the FAQPage JSON-LD above) -->
+  <PricingFaq faqs={faqs} />
 
   <CtaSection
     headline={content?.ctaHeadline || "Let's Discuss Your Project"}
