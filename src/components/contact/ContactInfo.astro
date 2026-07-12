@@ -3,6 +3,8 @@
 // email is the hero (big, metallic, click-to-copy). Each card carries a bespoke
 // programmatic SVG mark (same family as ServiceIllustration / TierMedallion), and
 // a two-person card makes the honest "no handoffs" positioning explicit.
+import { CONTACT_EMAIL } from '../../lib/site';
+
 interface SocialLinks {
   linkedin?: string;
   instagram?: string;
@@ -22,7 +24,7 @@ interface Props {
 }
 
 const {
-  email = 'harry@hekdesigns.com',
+  email = CONTACT_EMAIL,
   emailLabel = 'Email us directly',
   responseTime = 'Within 24 hours',
   responseTimeLabel = 'Response time',

@@ -1,6 +1,7 @@
 ---
 import Input from '../ui/Input.astro';
 import Button from '../ui/Button.astro';
+import { CONTACT_EMAIL } from '../../lib/site';
 
 interface Props {
   successHeadline?: string;
@@ -14,7 +15,7 @@ const {
   successHeadline = 'Message on its way.',
   successMessage = "Thanks for reaching out — the two of us read every message. We'll review your project and get back to you within a day.",
   errorMessage = 'Something went wrong sending that. Please try again, or email us directly at',
-  contactEmail = 'harry@hekdesigns.com',
+  contactEmail = CONTACT_EMAIL,
   class: className,
 } = Astro.props;
 

@@ -3,6 +3,7 @@ import '../styles/global.css';
 import Navigation from '../components/Navigation.astro';
 import Footer from '../components/Footer.astro';
 import { getSiteSettings } from '../lib/sanity';
+import { SITE_URL, CONTACT_EMAIL } from '../lib/site';
 
 interface Props {
   title: string;
@@ -30,7 +31,7 @@ const {
 
 const settings = await getSiteSettings();
 
-const siteUrl = 'https://www.hekdesigns.com';
+const siteUrl = SITE_URL;
 const canonicalUrl = `${siteUrl}${canonicalPath}`;
 const currentPath = Astro.url.pathname;
 const siteName = settings?.siteName || 'HEK Design Studio';
@@ -44,7 +45,7 @@ const organizationSchema = {
       "name": "HEK Design Studio",
       "url": siteUrl,
       "logo": `${siteUrl}/favicon.svg`,
-      "email": "hello@hekdesign.studio",
+      "email": CONTACT_EMAIL,
       "description": "HEK Design Studio is a boutique web design and development studio serving small businesses and nonprofits. We offer end-to-end design and development from $500 to $3,000+.",
       "founder": [
         { "@id": `${siteUrl}/#harrison-kipper` },
