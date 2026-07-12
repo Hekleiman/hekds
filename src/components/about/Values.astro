@@ -22,32 +22,100 @@ const {
   howWeWorkParagraphs = defaultHowWeWorkParagraphs,
   class: className,
 } = Astro.props;
+
+// Metallic focal on the final word of the "different" headline.
+const wmudText = (whatMakesUsDifferentHeadline ?? '').trim() || 'What makes us different?';
+const wmudMatch = wmudText.match(/^([\s\S]*\S)\s+(\S+?)([.!?…]*)$/);
+const wmudLead = wmudMatch ? wmudMatch[1] : '';
+const wmudAccent = wmudMatch ? wmudMatch[2] : wmudText;
+const wmudPunct = wmudMatch ? wmudMatch[3] : '';
+
+// Compact differentiator points — reinforce the prose ("small team, focused
+// attention, no handoffs"). Not CMS-backed; component-level defaults.
+const points = [
+  {
+    title: 'Direct collaboration',
+    description: 'You work with the people doing the work — no account managers or middlemen relaying messages.',
+  },
+  {
+    title: 'No handoffs',
+    description: 'Design and development happen in tandem, so nothing gets lost in translation between teams.',
+  },
+  {
+    title: 'Small & senior',
+    description: 'A deliberately tiny studio means senior attention on every detail, from first call to launch.',
+  },
+];
+
+// "How we work" prose → numbered principles (HowWeWork.astro treatment). Titles
+// are paired by index; the CMS paragraph is preserved verbatim as the body.
+const principleTitles = ['Collaboration over silos', 'Intentionally small', 'Outcomes over outputs'];
+const principles = howWeWorkParagraphs.map((paragraph, index) => ({
+  number: String(index + 1).padStart(2, '0'),
+  title: principleTitles[index] || `Principle ${String(index + 1).padStart(2, '0')}`,
+  description: paragraph,
+}));
 ---
 
-<div class:list={['space-y-24', className]}>
+<div class:list={['space-y-24 lg:space-y-32', className]}>
   <!-- What makes us different? -->
   <Section>
-    <div class="border-t border-zinc-800 pt-16" data-animate="fade-up">
-      <h2 class="text-h2 mb-6">
-        {whatMakesUsDifferentHeadline}
+    <div class="max-w-[760px]" data-animate="fade-up">
+      <span class="text-caption uppercase tracking-[0.2em] text-accent-bronze-bright/80">Our difference</span>
+      <h2 class="text-h2 mt-3 mb-5">
+        {wmudLead && <>{wmudLead}{' '}</>}<span class="text-metallic-bronze">{wmudAccent}</span>{wmudPunct}
       </h2>
-      <p class="text-body-lg text-text-secondary max-w-[800px]">
-        {whatMakesUsDifferentText}
-      </p>
+      <p class="text-body-lg text-text-secondary">{whatMakesUsDifferentText}</p>
+    </div>
+
+    <!-- Differentiator points -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12" data-animate="stagger">
+      {points.map((point, i) => (
+        <div class="group relative flex flex-col pt-8">
+          <!-- Hairline that brightens on hover -->
+          <span class="absolute top-0 left-0 h-px w-full bg-border-primary overflow-hidden">
+            <span class="block h-full w-full origin-left scale-x-0 bg-gradient-to-r from-accent-bronze-bright to-transparent transition-transform duration-500 ease-out group-hover:scale-x-100"></span>
+          </span>
+          <span class="text-metallic block text-[40px] leading-none font-semibold tabular-nums mb-4">
+            {String(i + 1).padStart(2, '0')}
+          </span>
+          <h3 class="text-h3 font-medium text-white mb-2">{point.title}</h3>
+          <p class="text-body text-text-secondary">{point.description}</p>
+        </div>
+      ))}
     </div>
   </Section>
 
-  <!-- How We Work -->
-  <Section>
-    <div class="border-t border-zinc-800 pt-16" data-animate="fade-up">
-      <h2 class="text-h2 mb-6">
-        {howWeWorkHeadline}
-      </h2>
-      <div class="space-y-6 max-w-[800px]">
-        {howWeWorkParagraphs.map((paragraph) => (
-          <p class="text-body-lg text-text-secondary">
-            {paragraph}
-          </p>
+  <!-- How We Work — numbered principles (echoes home/HowWeWork.astro) -->
+  <Section class="relative overflow-hidden">
+    <!-- Blueprint connector spine (draws in on scroll; dashed under reduced motion) -->
+    <div class="absolute inset-0 pointer-events-none opacity-40 hidden lg:block" aria-hidden="true" data-draw-trigger>
+      <svg class="w-full h-full" viewBox="0 0 1440 600" fill="none" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <path d="M-40 120 C 320 60, 620 200, 900 120 S 1220 30, 1500 110" stroke="var(--color-border-secondary)" stroke-width="1" data-draw="scroll"/>
+      </svg>
+    </div>
+
+    <div class="relative z-10">
+      <div class="mb-14 max-w-[600px]" data-animate="fade-up">
+        <span class="text-caption uppercase tracking-[0.2em] text-accent-bronze-bright/80">How we work</span>
+        <h2 class="text-h2 mt-3 mb-4">{howWeWorkHeadline}</h2>
+        <p class="text-body-lg text-text-secondary">
+          A small studio's principles, applied to every project.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-14" data-animate="stagger">
+        {principles.map((principle) => (
+          <div class="group relative flex flex-col pt-8">
+            <span class="absolute top-0 left-0 h-px w-full bg-border-primary overflow-hidden">
+              <span class="block h-full w-full origin-left scale-x-0 bg-gradient-to-r from-accent-bronze-bright to-transparent transition-transform duration-500 ease-out group-hover:scale-x-100"></span>
+            </span>
+            <span class="text-metallic block text-[56px] leading-none font-semibold tabular-nums mb-5">
+              {principle.number}
+            </span>
+            <h3 class="text-h3 font-medium text-white mb-2">{principle.title}</h3>
+            <p class="text-body text-text-secondary max-w-[440px]">{principle.description}</p>
+          </div>
         ))}
       </div>
     </div>

@@ -234,8 +234,11 @@ function initProgressLine() {
           // The timeline sits in the hero; fill it as it scrolls up and through,
           // so the first step reads as visible/empty on load and fills as you go.
           start: 'top 55%',
-          end: 'bottom 60%',
-          scrub: true,
+          end: 'bottom 35%',
+          // Numeric scrub: GSAP smoothly glides the fill toward the scroll
+          // position (0.8s catch-up) instead of snapping 1:1, so momentum/chunky
+          // mobile scrolling no longer makes the line jerk between spots.
+          scrub: 0.8,
           onRefresh: () => measure(),
           onUpdate: (self) => paint(self.progress),
         },

@@ -12,6 +12,9 @@ interface TeamMemberData {
 }
 
 interface Props {
+  eyebrow?: string;
+  headline?: string;
+  subtext?: string;
   members?: TeamMemberData[];
   class?: string;
 }
@@ -19,7 +22,7 @@ interface Props {
 const defaultMembers: TeamMemberData[] = [
   {
     name: 'Harrison Kipper',
-    role: 'Design Lead',
+    role: 'Design Lead · 8+ years',
     bio: 'Harrison brings over 8 years of experience in digital design, specializing in user experience and visual systems. He believes great design is invisible—it just works. His approach combines strategic thinking with meticulous attention to detail.',
     areasOfFocus: [
       'User experience design',
@@ -27,11 +30,11 @@ const defaultMembers: TeamMemberData[] = [
       'Brand identity',
       'Design strategy',
     ],
-    image: '/images/team/Harry_Headshot.jpg',
+    image: '/images/team/Harry_Headshot.webp',
   },
   {
     name: 'Erik Kleiman',
-    role: 'Development Lead',
+    role: 'Development Lead · 10+ years',
     bio: 'Erik has been building for the web for over a decade. He is passionate about clean code, performance, and accessibility. His development philosophy centers on creating maintainable, scalable solutions that last.',
     areasOfFocus: [
       'Frontend development',
@@ -39,28 +42,111 @@ const defaultMembers: TeamMemberData[] = [
       'Performance optimization',
       'Accessibility',
     ],
-    image: '/images/team/Erik_Headshot.jpg',
+    image: '/images/team/Erik_Headshot.webp',
     photoPosition: 'object-[center_30%]',
   },
 ];
 
 const {
+  eyebrow = 'The two of us',
+  headline = 'One team, no handoffs.',
+  subtext = "We're not an agency with account managers between you and the work. You talk to the two people actually designing and building your project — design and development, one continuous line.",
   members = defaultMembers,
   class: className,
 } = Astro.props;
+
+// Metallic accent on the final word of the headline (matches Home/Services/CTA).
+const headlineText = (headline ?? '').trim() || 'One team, no handoffs.';
+const headlineMatch = headlineText.match(/^([\s\S]*\S)\s+(\S+?)([.!?…]*)$/);
+const headlineLead = headlineMatch ? headlineMatch[1] : '';
+const headlineAccent = headlineMatch ? headlineMatch[2] : headlineText;
+const headlinePunct = headlineMatch ? headlineMatch[3] : '';
+
+// Disciplines drive the "design ↔ development" connector story.
+const withMeta = members.map((member, index) => ({
+  ...member,
+  number: String(index + 1).padStart(2, '0'),
+  discipline: index === 0 ? 'Design' : index === 1 ? 'Development' : undefined,
+}));
 ---
 
 <Section class={className}>
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-8" data-animate="stagger">
-    {members.map((member) => (
-      <TeamMember
-        name={member.name}
-        role={member.role}
-        bio={member.bio}
-        areasOfFocus={member.areasOfFocus}
-        image={member.image}
-        photoPosition={member.photoPosition}
-      />
-    ))}
+  <!-- Header -->
+  <div class="mb-14 max-w-[640px]" data-animate="fade-up">
+    <span class="text-caption uppercase tracking-[0.2em] text-accent-bronze-bright/80">{eyebrow}</span>
+    <h2 class="text-h2 mt-3 mb-4">
+      {headlineLead && <>{headlineLead}{' '}</>}<span class="text-metallic-bronze">{headlineAccent}</span>{headlinePunct}
+    </h2>
+    <p class="text-body-lg text-text-secondary">{subtext}</p>
+  </div>
+
+  <!-- Duo with the "no handoffs" connector.
+       lg: two cards flank a narrow centre column carrying a seam-free line +
+       a "no handoffs" chip. Stacked below lg, the connector runs vertically. -->
+  <div
+    class="relative grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-8 lg:gap-0 items-stretch"
+    data-animate="stagger"
+    data-draw-trigger
+  >
+    <TeamMember
+      name={withMeta[0].name}
+      role={withMeta[0].role}
+      bio={withMeta[0].bio}
+      areasOfFocus={withMeta[0].areasOfFocus}
+      image={withMeta[0].image}
+      photoPosition={withMeta[0].photoPosition}
+      index={withMeta[0].number}
+      discipline={withMeta[0].discipline}
+    />
+
+    <!-- Connector: design ↔ development, one unbroken line = no handoffs -->
+    <div
+      class="no-handoffs relative flex lg:flex-col items-center justify-center lg:w-40 py-2 lg:py-0"
+      aria-hidden="true"
+    >
+      <!-- The line (horizontal on lg, vertical when stacked). Draws in on scroll;
+           shows as a dashed line under reduced motion (no JS draw). -->
+      <svg
+        class="hidden lg:block absolute inset-0 w-full h-full"
+        preserveAspectRatio="none"
+      >
+        <line
+          x1="0" y1="50%" x2="100%" y2="50%"
+          stroke="var(--color-accent-bronze-bright)" stroke-width="1.5"
+          stroke-dasharray="5 6" opacity="0.85"
+          data-draw="scroll"
+        />
+      </svg>
+      <svg
+        class="lg:hidden absolute inset-0 w-full h-full"
+        preserveAspectRatio="none"
+      >
+        <line
+          x1="50%" y1="0" x2="50%" y2="100%"
+          stroke="var(--color-accent-bronze-bright)" stroke-width="1.5"
+          stroke-dasharray="5 6" opacity="0.85"
+          data-draw="scroll"
+        />
+      </svg>
+
+      <!-- Centre chip -->
+      <span
+        class="relative z-10 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-border-secondary bg-background-primary/90 backdrop-blur-sm whitespace-nowrap"
+      >
+        <span class="h-1.5 w-1.5 rounded-full bg-accent-bronze-bright"></span>
+        <span class="text-caption text-text-secondary tracking-wide">no handoffs</span>
+      </span>
+    </div>
+
+    <TeamMember
+      name={withMeta[1].name}
+      role={withMeta[1].role}
+      bio={withMeta[1].bio}
+      areasOfFocus={withMeta[1].areasOfFocus}
+      image={withMeta[1].image}
+      photoPosition={withMeta[1].photoPosition}
+      index={withMeta[1].number}
+      discipline={withMeta[1].discipline}
+    />
   </div>
 </Section>

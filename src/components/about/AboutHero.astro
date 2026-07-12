@@ -1,19 +1,164 @@
 ---
-import Section from '../ui/Section.astro';
+// About hero — a sibling of the Home/Work/Services heroes: same layered
+// vocabulary (aura glow, parallax blueprint contours, cursor spotlight,
+// clip-reveal headline with a metallic focal line, the xl: single-line re-fit).
+// Carries a small count-up stat strip as its substance element (the way the
+// Services hero carries the process timeline).
+interface Stat {
+  value: string;
+  countTo?: number;
+  suffix?: string;
+  label: string;
+}
 
 interface Props {
+  eyebrow?: string;
+  eyebrowShort?: string;
   headline?: string;
+  headlineLine1?: string;
+  headlineLine2?: string;
+  subtext?: string;
+  stats?: Stat[];
   class?: string;
 }
 
 const {
-  headline = 'Who are we?',
+  eyebrow = 'About — the two of us',
+  eyebrowShort = 'About us',
+  headline,
+  headlineLine1 = 'Two people,',
+  headlineLine2 = 'one continuous line.',
+  subtext = 'HEK is a boutique studio of two: a designer and a developer working shoulder to shoulder. No account managers, no handoffs — just the people making your project, start to finish.',
+  stats = [
+    { value: '8', countTo: 8, suffix: '+', label: 'Years in design' },
+    { value: '10', countTo: 10, suffix: '+', label: 'Years in development' },
+    { value: '18', countTo: 18, suffix: '', label: 'Years combined' },
+    { value: '0', countTo: 0, suffix: '', label: 'Handoffs' },
+  ],
   class: className,
 } = Astro.props;
+
+// A CMS-provided single-string headline overrides the two-line default: the
+// final word takes the metallic focal treatment (matches Home/Work/Services).
+let line1 = headlineLine1;
+let line2 = headlineLine2;
+if (headline && headline.trim()) {
+  const m = headline.trim().match(/^([\s\S]*\S)\s+(\S+[.!?…]*)$/);
+  if (m) {
+    line1 = m[1];
+    line2 = m[2];
+  } else {
+    line1 = '';
+    line2 = headline.trim();
+  }
+}
 ---
 
-<Section class:list={[className]}>
-  <h1 class="text-h1" data-animate="fade-up">
-    {headline}
-  </h1>
-</Section>
+<section
+  class:list={['about-hero relative overflow-hidden -mt-12 sm:mt-0', className]}
+  data-animate="hero"
+  data-spotlight
+>
+  <!-- Depth glow -->
+  <div class="aura w-[620px] h-[440px] top-[-6%] left-1/2 -translate-x-1/2 bg-accent-bronze/[0.10]"></div>
+
+  <!-- Living-blueprint contour layer (parallax + draw-in on load) -->
+  <div
+    class="absolute inset-0 pointer-events-none opacity-[0.45]"
+    aria-hidden="true"
+    data-parallax
+    data-parallax-speed="-0.1"
+  >
+    <svg class="w-full h-full" viewBox="0 0 1440 640" fill="none" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <path d="M-40 220 C 260 160, 460 280, 720 220 S 1140 120, 1500 200" stroke="var(--color-border-secondary)" stroke-width="1" data-draw="hero" />
+      <path d="M-40 300 C 300 240, 500 360, 780 290 S 1180 180, 1500 270" stroke="var(--color-border-primary)" stroke-width="1" data-draw="hero" />
+      <path d="M-40 150 C 240 110, 520 200, 760 150 S 1120 60, 1500 130" stroke="var(--color-border-primary)" stroke-width="1" data-draw="hero" />
+    </svg>
+  </div>
+
+  <!-- Cursor spotlight -->
+  <div
+    class="absolute w-[600px] h-[600px] rounded-full opacity-0 pointer-events-none mix-blend-screen -ml-[300px] -mt-[300px]"
+    style="background: radial-gradient(circle, rgba(224,162,96,0.12) 0%, rgba(224,162,96,0.05) 35%, transparent 70%);"
+    aria-hidden="true"
+    data-spotlight-light
+  >
+  </div>
+
+  <!-- Content -->
+  <div class="relative z-10 container-main flex flex-col items-center text-center pt-4 pb-6 sm:pt-16 md:pt-24">
+    <!-- Eyebrow pill -->
+    <div
+      class="inline-flex items-center gap-2 mb-8 px-4 py-1.5 rounded-full border border-border-primary bg-background-secondary/60 backdrop-blur-sm"
+      data-hero="eyebrow"
+    >
+      <span class="w-1.5 h-1.5 shrink-0 rounded-full bg-accent-bronze-bright"></span>
+      <span class="text-caption text-text-secondary tracking-wide whitespace-nowrap">
+        <span class="sm:hidden">{eyebrowShort}</span>
+        <span class="hidden sm:inline">{eyebrow}</span>
+      </span>
+    </div>
+
+    <!-- Clip-reveal headline; second line metallic. Collapses to one line on xl. -->
+    <h1 class="about-headline mb-7" data-hero="headline">
+      {line1 && <span class="line"><span class="line-inner text-white">{line1}</span></span>}<span class="line"><span class="line-inner text-metallic metallic-shimmer">{line2}</span></span>
+    </h1>
+
+    <!-- Subtext -->
+    <p class="text-body-lg text-text-secondary max-w-[620px] mb-10 sm:mb-12" data-hero="subtext">
+      {subtext}
+    </p>
+
+    <!-- Count-up stat strip -->
+    <div
+      class="w-full max-w-[860px] grid grid-cols-2 md:grid-cols-4 gap-px rounded-2xl overflow-hidden bg-border-primary/60 surface-elevated"
+      data-hero="visual"
+    >
+      {stats.map((stat) => (
+        <div class="flex flex-col items-center justify-center gap-1.5 bg-background-primary/40 px-4 py-6 sm:py-7">
+          <span class="text-metallic text-[40px] sm:text-[48px] leading-none font-semibold tabular-nums">
+            {stat.countTo !== undefined ? (
+              <><span data-countup={stat.countTo}>{stat.value}</span>{stat.suffix}</>
+            ) : (
+              <>{stat.value}{stat.suffix}</>
+            )}
+          </span>
+          <span class="text-caption text-text-muted tracking-wide">{stat.label}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .about-headline {
+    font-weight: 600;
+    font-size: clamp(2rem, 1.0rem + 4.2vw, 4rem);
+    line-height: 1.1;
+    letter-spacing: -0.035em;
+  }
+  .about-headline .line {
+    display: block;
+    overflow: hidden;
+    padding-bottom: 0.06em;
+  }
+  .about-headline .line-inner {
+    display: block;
+  }
+
+  /* Wide desktop: single line, capped so the full string fits the content column. */
+  @media (min-width: 1280px) {
+    .about-headline {
+      font-size: clamp(2.75rem, 1.6rem + 1.9vw, 3.5rem);
+      white-space: nowrap;
+    }
+    .about-headline .line {
+      display: inline-block;
+      vertical-align: top;
+      padding-bottom: 0.12em;
+    }
+    .about-headline .line + .line {
+      margin-left: 0.28em;
+    }
+  }
+</style>
