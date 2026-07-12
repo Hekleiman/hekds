@@ -59,8 +59,9 @@ const level = accent === 'bronze' ? 1 : accent === 'silver' ? 2 : 3;
       data-draw="scroll"
     />
 
-    <!-- Escalating facet marks. Node count = tier level, arranged on the ring. -->
-    {level >= 1 && (
+    <!-- Perimeter facet dots — one per tier grade: Bronze 1 (top), Silver 2
+         (lower pair), Gold 3 (top + pair). -->
+    {(level === 1 || level === 3) && (
       <circle cx="60" cy="14" r="3.5" fill={`url(#${gradId})`} class={accent === 'gold' ? 'med-focal pulse' : 'med-focal'} />
     )}
     {level >= 2 && (

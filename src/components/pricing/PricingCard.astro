@@ -7,7 +7,6 @@ interface Props {
   timeline?: string;
   features: string[];
   accentColor: 'bronze' | 'silver' | 'gold';
-  highlighted?: boolean;
   ctaText?: string;
   ctaLink?: string;
   class?: string;
@@ -19,22 +18,23 @@ const {
   timeline,
   features,
   accentColor,
-  highlighted = false,
   ctaText,
   ctaLink,
   class: className,
 } = Astro.props;
 
 // ── Price parsing ──────────────────────────────────────────────────────────
-// Keep tier.price authoritative: the rendered text always equals the source
-// string. We only split it typographically — a big metallic lead figure + a
-// smaller supporting remainder — and wrap numeric runs so they can count up and
-// land on the exact comma-formatted figures. Anything unparseable renders plain.
+// tier.price stays authoritative — we only split it typographically into a big
+// metallic lead figure and a smaller supporting remainder, wrapping numeric runs
+// so they can count up and land on the exact comma-formatted figures. A "from"
+// price ("Starting at $3,000") renders as "$3,000+" so all three cards share one
+// clean shape: a big metal figure with a short qualifier.
 const raw = (price ?? '').trim();
 const leadMatch = raw.match(/\$\s?[\d,]+/);
 const prefix = leadMatch ? raw.slice(0, leadMatch.index).trim() : '';
 const leadStr = leadMatch ? leadMatch[0] : raw;
 const restStr = leadMatch ? raw.slice((leadMatch.index || 0) + leadStr.length).trim() : '';
+const isFrom = prefix.length > 0; // e.g. "Starting at" → render a trailing "+"
 
 // Split a string into text / number segments (numbers become count-up spans).
 type Seg = { t: string } | { n: number; plain: string };
@@ -52,48 +52,31 @@ function segmentize(str: string): Seg[] {
   return parts;
 }
 const leadSegs = segmentize(leadStr);
-const restSegs = restStr ? segmentize(restStr) : [];
+// The high end of a range (for the "to $X" qualifier line), if present.
+const highSeg = restStr ? segmentize(restStr).find((s): s is { n: number; plain: string } => 'n' in s) : undefined;
 
-// Per-tier metal (matches the medallion + the global gradients). The check-mark
-// colour is a legible bright tone of the same metal (metallic text gradients can
-// crush contrast on small marks, so checks use a solid accent instead).
+// Per-tier metal (matches the medallion + the global gradients). Check-mark
+// colour is a legible bright tone of the same metal.
 const metal = {
   bronze: { text: 'text-metallic-bronze', check: '#e0a260', gradient: 'var(--gradient-bronze)' },
   silver: { text: 'text-metallic-silver', check: '#d4d4d8', gradient: 'var(--gradient-silver)' },
   gold: { text: 'text-metallic-gold', check: '#ffe89a', gradient: 'var(--gradient-gold)' },
 }[accentColor];
 
-// Escalating elevation: gold sits raised and taller on lg (the featured break-out);
-// all three collapse to a clean equal stack on mobile.
-const featured = highlighted;
+// Gold reads as the top tier through its metal — a shimmering gold edge — while
+// every card keeps the same height and structure (no pill, no offset).
+const isGold = accentColor === 'gold';
 ---
 
 <article
   class:list={[
-    'tier-card group relative flex flex-col surface-elevated lift tier-sheen overflow-hidden',
-    'p-7 sm:p-8',
-    featured
-      ? 'lg:-translate-y-6 lg:pt-10 lg:pb-10 lg:shadow-[var(--shadow-elevated-lg)]'
-      : '',
+    'tier-card group relative flex flex-col h-full surface-elevated lift tier-sheen overflow-hidden p-7 sm:p-8',
     className,
   ]}
   style={`--tier-gradient:${metal.gradient}`}
   data-tier={accentColor}
 >
-  {featured && (
-    <span class="tier-edge metallic-shimmer" aria-hidden="true"></span>
-  )}
-
-  <!-- Featured marker — descriptive, not a popularity claim (Gold is the
-       full end-to-end offering). -->
-  {featured && (
-    <span
-      class="relative z-10 self-start mb-5 inline-flex items-center gap-1.5 rounded-full border border-border-secondary bg-background-primary/70 px-3 py-1 text-caption text-metallic-gold"
-    >
-      <span class="w-1.5 h-1.5 rounded-full" style="background:#ffe89a"></span>
-      Full-service
-    </span>
-  )}
+  {isGold && <span class="tier-edge metallic-shimmer" aria-hidden="true"></span>}
 
   <!-- Medallion -->
   <div class="relative z-10 w-14 h-14 sm:w-16 sm:h-16 mb-6">
@@ -103,12 +86,12 @@ const featured = highlighted;
   <!-- Tier name -->
   <h3 class="relative z-10 text-h3 font-medium text-white mb-4">{name}</h3>
 
-  <!-- Price — big metallic lead figure + smaller supporting remainder. -->
-  <div class="relative z-10 mb-1.5">
-    {prefix && (
-      <span class="block text-caption uppercase tracking-[0.14em] text-text-muted mb-1">{prefix}</span>
-    )}
-    <span class:list={['text-price', metal.text]}>
+  <!-- Price + timeline block — a fixed two-line shape across all three tiers
+       (big metal figure, then a short qualifier) so the divider and features
+       line up card-to-card. -->
+  <div class="relative z-10 mb-7">
+    <!-- Line 1: the big metal figure -->
+    <span class:list={['text-price block', metal.text]}>
       {leadSegs.map((seg) =>
         'n' in seg ? (
           <span class="tabular-nums" data-countup={seg.n} data-countup-format="comma">{seg.plain}</span>
@@ -117,23 +100,29 @@ const featured = highlighted;
         )
       )}
     </span>
-    {restSegs.length > 0 && (
-      <span class="ml-1 text-body-lg text-text-secondary align-baseline">
-        {restSegs.map((seg) =>
-          'n' in seg ? (
-            <span class="tabular-nums" data-countup={seg.n} data-countup-format="comma">{seg.plain}</span>
-          ) : (
-            <span>{seg.t}</span>
-          )
-        )}
-      </span>
+
+    <!-- Line 2: qualifier — "to $X" for a range, "and up" for a from-price -->
+    <span class="block mt-1.5 text-body text-text-secondary">
+      {highSeg ? (
+        <>to $<span class="tabular-nums" data-countup={highSeg.n} data-countup-format="comma">{highSeg.plain}</span></>
+      ) : isFrom ? (
+        <>and up</>
+      ) : (
+        <>&nbsp;</>
+      )}
+    </span>
+
+    <!-- Line 3: timeline -->
+    {timeline && (
+      <div class="mt-3 flex items-center gap-2 text-caption text-text-muted">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true" class="shrink-0">
+          <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5" />
+          <path d="M12 7.5V12l3 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <span>{timeline}</span>
+      </div>
     )}
   </div>
-
-  <!-- Timeline -->
-  {timeline && (
-    <p class="relative z-10 text-caption text-text-muted mb-7">{timeline}</p>
-  )}
 
   <!-- Divider -->
   <span class="relative z-10 h-px w-full bg-border-primary mb-7" aria-hidden="true"></span>
@@ -142,10 +131,7 @@ const featured = highlighted;
   <ul class="relative z-10 flex flex-col gap-3.5 flex-1" style={`color:${metal.check}`}>
     {features.map((feature) => (
       <li class="flex items-start gap-3 text-body text-text-secondary">
-        <svg
-          class="mt-0.5 shrink-0" width="18" height="18" viewBox="0 0 20 20" fill="none"
-          aria-hidden="true"
-        >
+        <svg class="mt-0.5 shrink-0" width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
           <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.25" opacity="0.35" />
           <path d="M6 10.5 L9 13.5 L14.5 7" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
         </svg>

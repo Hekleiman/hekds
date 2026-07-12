@@ -37,15 +37,6 @@ const hm = headingText.match(/^([\s\S]*\S)\s+(\S+?)([.!?…]*)$/);
 const headLead = hm ? hm[1] : '';
 const headAccent = hm ? hm[2] : headingText;
 const headPunct = hm ? hm[3] : '';
-
-// Featured tier: honor an explicit CMS `highlighted` flag if one is set on any
-// tier; otherwise Gold is the featured (full-service) tier by design. This keeps
-// accentColor authoritative and needs no new CMS field.
-const anyHighlighted = tiers.some((t) => t.highlighted);
-const tiersWithFeature = tiers.map((tier) => ({
-  ...tier,
-  featured: tier.highlighted === true || (!anyHighlighted && tier.accentColor === 'gold'),
-}));
 ---
 
 <Section class:list={['relative overflow-hidden', className]}>
@@ -69,22 +60,20 @@ const tiersWithFeature = tiers.map((tier) => ({
     </div>
 
     <!-- Tier row: single column → lg:3-up (skips the awkward md 2+1 orphan).
-         The row is a draw-trigger so each medallion's metal ring draws in as the
-         tiers reveal (bronze → silver → gold), and lg:items-start lets the
-         featured Gold card break out taller + raised without stretching. -->
+         Cards stretch to equal height; the row is a draw-trigger so each
+         medallion's metal ring draws in as the tiers reveal (bronze→silver→gold). -->
     <div
-      class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-7 lg:items-start"
+      class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-7 items-stretch max-w-[460px] mx-auto lg:max-w-none lg:mx-0"
       data-animate="stagger"
       data-draw-trigger
     >
-      {tiersWithFeature.map((tier) => (
+      {tiers.map((tier) => (
         <PricingCard
           name={tier.name}
           price={tier.price}
           timeline={tier.timeline}
           features={tier.features}
           accentColor={tier.accentColor}
-          highlighted={tier.featured}
           ctaText={tier.ctaText}
           ctaLink={tier.ctaLink}
         />
