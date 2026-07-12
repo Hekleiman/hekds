@@ -39,13 +39,13 @@ const siteSettings = {
   _type: 'siteSettings',
   siteName: 'HEK Design Studio',
   tagline: 'Design and development for modern web.',
-  contactEmail: 'hello@hekdesign.studio',
+  contactEmail: 'contact@hekdesigns.com',
   location: 'Remote / Worldwide',
   footerCopyright: '© 2026 HEK Design Studio. All rights reserved.',
   socialLinks: {
     twitter: 'https://twitter.com/',
     linkedin: 'https://linkedin.com/',
-    email: 'mailto:hello@hekdesign.studio',
+    email: 'mailto:contact@hekdesigns.com',
   },
 };
 
@@ -350,7 +350,7 @@ const contactPage = {
   heroHeadline: 'Get in Touch',
   heroSubtext:
     "Have a project in mind? We'd love to hear about it. Fill out the form below and we'll get back to you within 24 hours.",
-  email: 'hello@hekdesign.studio',
+  email: 'contact@hekdesigns.com',
   emailLabel: 'Email us',
   responseTime: 'Within 24 hours',
   responseTimeLabel: 'Response time',

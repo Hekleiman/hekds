@@ -1,4 +1,6 @@
 ---
+import { CONTACT_EMAIL } from '../lib/site';
+
 interface Props {
   siteName?: string;
   tagline?: string;
@@ -16,7 +18,7 @@ interface Props {
 const {
   siteName = 'HEK Design Studio',
   tagline = 'Design and development for modern web.',
-  contactEmail = 'hello@hekdesign.studio',
+  contactEmail = CONTACT_EMAIL,
   copyright = '© 2026 HEK Design Studio. All rights reserved.',
   socialLinks,
   class: className,
@@ -34,8 +36,16 @@ const contactLinks = [
   { href: '/contact', label: 'Get in Touch' },
 ];
 
+// Drive the email from the single contactEmail value and normalize to exactly
+// one `mailto:` prefix. The Sanity settings field has historically stored the
+// address *with* a mailto: prefix, which doubled up (mailto:mailto:…) when
+// re-prefixed here; the redundant socialLinks.email is no longer consulted.
+const emailHref = contactEmail.startsWith('mailto:')
+  ? contactEmail
+  : `mailto:${contactEmail}`;
+
 const connectLinks = [
-  { href: `mailto:${socialLinks?.email || contactEmail}`, label: 'Email' },
+  { href: emailHref, label: 'Email' },
   { href: socialLinks?.instagram || 'https://www.instagram.com/hekdesignstudio', label: 'Instagram', external: true },
   { href: socialLinks?.linkedin || 'https://www.linkedin.com/company/hekdesigns', label: 'LinkedIn', external: true },
   { href: socialLinks?.tiktok || 'https://www.tiktok.com/@hekdesignstudio', label: 'TikTok', external: true },
