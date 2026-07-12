@@ -71,14 +71,12 @@ const navLinks = [
       <button
         id="mobile-menu-toggle"
         type="button"
-        class="md:hidden flex items-center justify-center w-9 h-9 -mr-0.5 text-text-secondary hover:text-white transition-colors duration-150"
+        class="md:hidden flex items-center justify-center w-9 h-9 -mr-0.5 transition-opacity duration-150 hover:opacity-80"
         aria-label="Open menu"
         aria-expanded="false"
         aria-controls="mobile-menu"
       >
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M2.5 5H15.5M2.5 9H15.5M2.5 13H15.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" />
-        </svg>
+        <span class="hek-burger w-[18px] h-[18px]" aria-hidden="true"></span>
       </button>
     </div>
   </nav>
@@ -94,22 +92,41 @@ const navLinks = [
      stay pixel-identical; the gradient simply shows through them. A slow sheen
      drifts across it (paused on touch + reduced motion so it never costs frames
      on phones). */
-  .hek-logo {
+  /* Logo + hamburger share one metallic treatment: the champagne/bronze gradient
+     fill (masked to each shape's own silhouette) with a slow sheen drifting
+     across, so the two marks read as the same material. */
+  .hek-logo,
+  .hek-burger {
     display: inline-block;
-    aspect-ratio: 265 / 96;
     background-image: var(--gradient-metallic);
     background-size: 200% 100%;
     background-position: 0% 50%;
-    -webkit-mask: url('/images/hek-logo.webp') center / contain no-repeat;
-    mask: url('/images/hek-logo.webp') center / contain no-repeat;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
     animation: hek-logo-sheen 7s var(--ease-out-soft) infinite;
+  }
+  .hek-logo {
+    aspect-ratio: 265 / 96;
+    -webkit-mask-image: url('/images/hek-logo.webp');
+    mask-image: url('/images/hek-logo.webp');
+  }
+  /* Hamburger: the three-line icon as a mask so it takes the same metallic fill
+     as the logo (was a flat grey stroke before). */
+  .hek-burger {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18'%3E%3Cpath d='M2.5 5H15.5M2.5 9H15.5M2.5 13H15.5' stroke='%23000' stroke-width='1.75' stroke-linecap='round'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18'%3E%3Cpath d='M2.5 5H15.5M2.5 9H15.5M2.5 13H15.5' stroke='%23000' stroke-width='1.75' stroke-linecap='round'/%3E%3C/svg%3E");
   }
   @keyframes hek-logo-sheen {
     0%, 100% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
   }
   @media (hover: none), (prefers-reduced-motion: reduce) {
-    .hek-logo { animation: none; }
+    .hek-logo,
+    .hek-burger { animation: none; }
   }
 
   /* Machined scrolled state — the bar resolves in a touch more presence as the
