@@ -43,7 +43,7 @@ if (headline && headline.trim()) {
 ---
 
 <section
-  class:list={['contact-hero relative overflow-hidden -mt-36 pt-44 pb-8 sm:pt-48 sm:pb-10 md:pt-52 md:pb-14', className]}
+  class:list={['contact-hero relative overflow-hidden -mt-36 pt-32 sm:pt-40 md:pt-44', className]}
   data-animate="hero"
   data-spotlight
 >
@@ -118,7 +118,7 @@ if (headline && headline.trim()) {
     </div>
 
     <!-- Clip-reveal headline; second line metallic. Collapses to one line on xl. -->
-    <h1 class="contact-headline mb-6" data-hero="headline">
+    <h1 class="contact-headline mb-7" data-hero="headline">
       {line1 && <span class="line"><span class="line-inner text-white">{line1}</span></span>}<span class="line"><span class="line-inner text-metallic metallic-shimmer">{line2}</span></span>
     </h1>
 
@@ -126,15 +126,6 @@ if (headline && headline.trim()) {
     <p class="text-body-lg text-text-secondary max-w-[620px]" data-hero="subtext">
       {subtext}
     </p>
-
-    <!-- Blueprint spine — drops from the hero toward the form, terminating the
-         site-wide "living blueprint" here. Draws in on scroll. -->
-    <div class="relative w-full flex justify-center mt-10 sm:mt-12" data-hero="cta" data-draw-trigger aria-hidden="true">
-      <svg class="spine" width="2" height="72" viewBox="0 0 2 72" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <line x1="1" y1="0" x2="1" y2="72" stroke="var(--color-border-secondary)" stroke-width="1.5" stroke-dasharray="5 6" data-draw="scroll" />
-      </svg>
-      <span class="spine-node"></span>
-    </div>
   </div>
 </section>
 
@@ -157,7 +148,7 @@ if (headline && headline.trim()) {
 
   .contact-headline {
     font-weight: 600;
-    font-size: clamp(2.1rem, 1.1rem + 4.2vw, 4rem);
+    font-size: clamp(2rem, 1.0rem + 4.2vw, 4rem);
     line-height: 1.1;
     letter-spacing: -0.035em;
   }
@@ -170,24 +161,10 @@ if (headline && headline.trim()) {
     display: block;
   }
 
-  /* The spine: a node where it meets the fold, faintly bronze. */
-  .spine { display: block; }
-  .spine-node {
-    position: absolute;
-    bottom: -4px;
-    left: 50%;
-    width: 9px;
-    height: 9px;
-    margin-left: -4.5px;
-    border-radius: 9999px;
-    background: var(--gradient-bronze);
-    box-shadow: 0 0 0 4px var(--color-background-primary), 0 0 12px rgba(224, 162, 96, 0.4);
-  }
-
   /* Wide desktop: single line, capped so the full string fits the content column. */
   @media (min-width: 1280px) {
     .contact-headline {
-      font-size: clamp(2.75rem, 1.6rem + 1.9vw, 3.75rem);
+      font-size: clamp(2.75rem, 1.6rem + 1.9vw, 3.5rem);
       white-space: nowrap;
     }
     .contact-headline .line {
