@@ -20,7 +20,7 @@ try {
 
 <Layout
   title="Contact | HEK Design Studio"
-  description="Start a project with HEK Design Studio. Get in touch to discuss your web design and development needs. Email: hello@hekdesign.studio."
+  description="Start a project with HEK Design Studio. Get in touch to discuss your web design and development needs. Email: harry@hekdesigns.com."
   canonicalPath="/contact"
   backgroundImage="/images/backgrounds/HEK_Contact_Background.webp"
 >
@@ -39,14 +39,15 @@ try {
     subtext={content?.heroSubtext}
   />
 
-  <Section>
-    <div class="grid grid-cols-1 lg:grid-cols-5 gap-12 items-start">
-      <!-- Form Column (wider) -->
+  <Section class="pt-0">
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 items-start">
+      <!-- Form Column (wider) — the unmistakable center of gravity -->
       <div class="lg:col-span-3">
         <ContactForm
           successHeadline={content?.formSuccessHeadline}
           successMessage={content?.formSuccessMessage}
           errorMessage={content?.formErrorMessage}
+          contactEmail={content?.email || siteSettings?.contactEmail}
         />
       </div>
 
