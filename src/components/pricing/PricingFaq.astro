@@ -1,0 +1,89 @@
+---
+import Section from '../ui/Section.astro';
+
+interface Faq {
+  question: string;
+  answer: string;
+}
+
+interface Props {
+  headline?: string;
+  eyebrow?: string;
+  faqs: Faq[];
+  class?: string;
+}
+
+const {
+  headline = 'Questions, answered',
+  eyebrow = 'FAQ',
+  faqs,
+  class: className,
+} = Astro.props;
+
+// Metallic focal on the final word of the headline.
+const headingText = (headline ?? '').trim() || 'Questions, answered';
+const hm = headingText.match(/^([\s\S]*\S)\s+(\S+?)([.!?…]*)$/);
+const headLead = hm ? hm[1] : '';
+const headAccent = hm ? hm[2] : headingText;
+const headPunct = hm ? hm[3] : '';
+---
+
+<Section class:list={['relative overflow-hidden', className]}>
+  <!-- Blueprint spine backdrop (continues the page line, draws in on scroll) -->
+  <div class="absolute inset-0 pointer-events-none opacity-35 hidden lg:block" aria-hidden="true" data-draw-trigger>
+    <svg class="w-full h-full" viewBox="0 0 1440 500" fill="none" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <path d="M-40 150 C 320 90, 620 220, 900 140 S 1220 50, 1500 130" stroke="var(--color-border-secondary)" stroke-width="1" data-draw="scroll" />
+    </svg>
+  </div>
+
+  <div class="relative z-10 grid grid-cols-1 lg:grid-cols-[minmax(0,340px)_1fr] gap-10 lg:gap-16">
+    <!-- Header column -->
+    <div data-animate="fade-up">
+      <span class="text-caption uppercase tracking-[0.2em] text-accent-bronze-bright/80">{eyebrow}</span>
+      <h2 class="text-h2 mt-3">
+        {headLead && <>{headLead}{' '}</>}<span class="text-metallic-bronze">{headAccent}</span>{headPunct}
+      </h2>
+    </div>
+
+    <!-- Accordion — native <details>/<summary>: keyboard-accessible, answer text
+         always present in the DOM (matches the FAQPage JSON-LD, good for SEO). -->
+    <div class="border-t border-border-primary" data-animate="stagger">
+      {faqs.map((faq) => (
+        <details class="faq-item group border-b border-border-primary">
+          <summary class="flex items-start justify-between gap-6 cursor-pointer list-none py-6 min-h-[44px]">
+            <h3 class="text-h3 font-medium text-white transition-colors duration-300 group-hover:text-accent-bronze-bright">
+              {faq.question}
+            </h3>
+            <span class="faq-icon relative mt-1 shrink-0 w-5 h-5 text-accent-bronze-bright" aria-hidden="true">
+              <span class="absolute top-1/2 left-0 w-full h-px -translate-y-1/2 bg-current"></span>
+              <span class="faq-icon-v absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-current"></span>
+            </span>
+          </summary>
+          <p class="text-body text-text-secondary max-w-[640px] pb-6 -mt-1">
+            {faq.answer}
+          </p>
+        </details>
+      ))}
+    </div>
+  </div>
+</Section>
+
+<style>
+  /* Remove the default disclosure triangle across engines. */
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item summary::marker { content: ""; }
+
+  /* Plus → minus: the vertical bar collapses when open. */
+  .faq-icon-v {
+    transition: transform 0.3s var(--ease-out-expo), opacity 0.3s var(--ease-out-expo);
+    transform-origin: center;
+  }
+  .faq-item[open] .faq-icon-v {
+    transform: translateX(-50%) scaleY(0);
+    opacity: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .faq-icon-v { transition: none; }
+  }
+</style>

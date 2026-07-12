@@ -1,27 +1,192 @@
 ---
-import Section from '../ui/Section.astro';
+import TierMedallion from './TierMedallion.astro';
 
+// Pricing hero — a sibling of the Home/Work/Services/About heroes: same layered
+// vocabulary (aura glow, parallax blueprint contours, cursor spotlight + masked
+// blueprint-detail easter egg, clip-reveal headline with a metallic focal word,
+// the xl: single-line re-fit). Its substance element is the three tier medallions
+// — bronze → silver → gold with their price floors — so the metal (and the
+// numbers) read above the fold, the way the Services hero carries its timeline.
 interface Props {
   headline?: string;
   subtext?: string;
+  eyebrow?: string;
+  eyebrowShort?: string;
   class?: string;
 }
 
 const {
-  headline = 'Pricing',
-  subtext = "Every project is unique, so we don't offer fixed-price packages. Instead, we provide transparent, project-based pricing tailored to your specific needs and goals. Below are typical ranges to give you a sense of investment levels. The actual cost depends on scope, complexity, and timeline.",
+  headline = 'Pricing, clear and honest',
+  subtext = "No fixed packages — just transparent, project-based ranges, so you know the investment before we start.",
+  eyebrow = 'Transparent, project-based pricing',
+  eyebrowShort = 'Transparent pricing',
   class: className,
 } = Astro.props;
+
+// Split the (CMS-editable) headline so the final word takes the metallic focal
+// treatment — matches Home/Work/Services/About.
+const text = (headline ?? '').trim() || 'Pricing, clear and honest';
+const m = text.match(/^([\s\S]*\S)\s+(\S+[.!?…]*)$/);
+const line1 = m ? m[1] : '';
+const line2 = m ? m[2] : text;
+
+// The three metals, teased with their honest price floors (decorative preview of
+// the tier row below — not CMS-backed).
+const metals = [
+  { accent: 'bronze' as const, name: 'Bronze', floor: '$500+', text: 'text-metallic-bronze' },
+  { accent: 'silver' as const, name: 'Silver', floor: '$1,500+', text: 'text-metallic-silver' },
+  { accent: 'gold' as const, name: 'Gold', floor: '$3,000+', text: 'text-metallic-gold' },
+];
 ---
 
-<Section class:list={[className]}>
-  <div class="flex flex-col items-start" data-animate="fade-up">
-    <h1 class="text-h1 mb-6">
-      {headline}
+<!-- Full-viewport hero on md+ (matches About/Services): -mt-36 cancels the nav
+     offset, min-h-[100svh] fills the screen, content vertically centred. Below md
+     it flows naturally so the medallion trio extends toward the fold. -->
+<section
+  class:list={['pricing-hero relative overflow-hidden -mt-12 sm:mt-0 md:-mt-36 md:min-h-[100svh] md:flex md:flex-col', className]}
+  data-animate="hero"
+  data-spotlight
+>
+  <!-- Depth glow -->
+  <div class="aura w-[620px] h-[460px] top-[-4%] left-1/2 -translate-x-1/2 bg-accent-bronze/[0.10]"></div>
+
+  <!-- Living-blueprint contour layer (parallax + draw-in on load) -->
+  <div
+    class="absolute inset-0 pointer-events-none opacity-[0.45]"
+    aria-hidden="true"
+    data-parallax
+    data-parallax-speed="-0.1"
+  >
+    <svg class="w-full h-full" viewBox="0 0 1440 760" fill="none" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <path d="M-40 260 C 260 200, 460 320, 720 260 S 1140 160, 1500 240" stroke="var(--color-border-secondary)" stroke-width="1" data-draw="hero" />
+      <path d="M-40 340 C 300 280, 500 400, 780 330 S 1180 220, 1500 310" stroke="var(--color-border-primary)" stroke-width="1" data-draw="hero" />
+      <path d="M-40 190 C 240 150, 520 240, 760 190 S 1120 100, 1500 170" stroke="var(--color-border-primary)" stroke-width="1" data-draw="hero" />
+    </svg>
+  </div>
+
+  <!-- Easter egg: blueprint annotations that reveal only under the cursor
+       spotlight (masked to the pointer) — same technique as ServicesHero. Each is
+       a self-contained schematic anchored near the contour curves above. -->
+  <div class="blueprint-detail absolute inset-0 pointer-events-none" aria-hidden="true">
+    <svg class="w-full h-full" viewBox="0 0 1440 760" fill="none" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <g class="bd-ink">
+        <!-- Left: a dimension bracket measuring the gap between two contours. -->
+        <circle cx="210" cy="205" r="3" fill="currentColor" stroke="none" />
+        <circle cx="210" cy="268" r="3" fill="currentColor" stroke="none" />
+        <path d="M202 205 h16 M202 268 h16" />
+        <path d="M210 207 V266" />
+        <rect x="220" y="228" width="42" height="9" rx="2" fill="currentColor" stroke="none" opacity="0.4" />
+
+        <!-- Right: an annotated callout on a contour node. -->
+        <circle cx="1030" cy="222" r="4.5" fill="currentColor" stroke="none" />
+        <circle cx="1030" cy="222" r="15" stroke-dasharray="3 5" />
+        <path d="M1042 213 L1104 190" />
+        <rect x="1108" y="182" width="76" height="10" rx="2" fill="currentColor" stroke="none" opacity="0.5" />
+        <rect x="1108" y="198" width="48" height="7" rx="2" fill="currentColor" stroke="none" opacity="0.3" />
+
+        <!-- Upper-mid: a registration target. -->
+        <circle cx="720" cy="150" r="10" stroke-dasharray="2 4" />
+        <path d="M720 134 v-9 M720 166 v9 M704 150 h-9 M736 150 h9" />
+        <circle cx="720" cy="150" r="2" fill="currentColor" stroke="none" />
+      </g>
+    </svg>
+  </div>
+
+  <!-- Cursor spotlight -->
+  <div
+    class="absolute w-[600px] h-[600px] rounded-full opacity-0 pointer-events-none mix-blend-screen -ml-[300px] -mt-[300px]"
+    style="background: radial-gradient(circle, rgba(224,162,96,0.12) 0%, rgba(224,162,96,0.05) 35%, transparent 70%);"
+    aria-hidden="true"
+    data-spotlight-light
+  >
+  </div>
+
+  <!-- Content — vertically centred within the full-height hero on md+. -->
+  <div class="relative z-10 container-main flex flex-col items-center text-center pt-4 pb-6 sm:pt-16 md:pt-28 md:pb-10 md:flex-1 md:justify-center">
+    <!-- Eyebrow pill -->
+    <div
+      class="inline-flex items-center gap-2 mb-8 px-4 py-1.5 rounded-full border border-border-primary bg-background-secondary/60 backdrop-blur-sm"
+      data-hero="eyebrow"
+    >
+      <span class="w-1.5 h-1.5 shrink-0 rounded-full bg-accent-bronze-bright"></span>
+      <span class="text-caption text-text-secondary tracking-wide whitespace-nowrap">
+        <span class="sm:hidden">{eyebrowShort}</span>
+        <span class="hidden sm:inline">{eyebrow}</span>
+      </span>
+    </div>
+
+    <!-- Clip-reveal headline; final word metallic. Collapses to one line on xl. -->
+    <h1 class="pricing-headline mb-7" data-hero="headline">
+      {line1 && <span class="line"><span class="line-inner text-white">{line1}</span></span>}<span class="line"><span class="line-inner text-metallic metallic-shimmer">{line2}</span></span>
     </h1>
 
-    <p class="text-body-lg text-text-secondary max-w-[800px]">
+    <!-- Subtext -->
+    <p class="text-body-lg text-text-secondary max-w-[600px] mb-10 sm:mb-12" data-hero="subtext">
       {subtext}
     </p>
+
+    <!-- Substance element: the three metals + their price floors (preview of the
+         tier row). Fades in with the hero. -->
+    <div class="w-full max-w-[560px]" data-hero="visual">
+      <div class="grid grid-cols-3 gap-4 sm:gap-8">
+        {metals.map((metal) => (
+          <div class="flex flex-col items-center">
+            <div class="w-14 h-14 sm:w-[72px] sm:h-[72px] mb-3">
+              <TierMedallion accent={metal.accent} class="w-full h-full" />
+            </div>
+            <span class="text-caption text-text-secondary">{metal.name}</span>
+            <span class:list={['text-body-lg font-semibold tabular-nums', metal.text]}>{metal.floor}</span>
+          </div>
+        ))}
+      </div>
+    </div>
   </div>
-</Section>
+</section>
+
+<style>
+  /* Blueprint-detail easter egg: only the disc under the cursor is unmasked. */
+  .blueprint-detail {
+    color: var(--color-accent-bronze-bright);
+    -webkit-mask: radial-gradient(circle 130px at var(--spot-x, -999px) var(--spot-y, -999px), #000 0%, #000 32%, transparent 70%);
+    mask: radial-gradient(circle 130px at var(--spot-x, -999px) var(--spot-y, -999px), #000 0%, #000 32%, transparent 70%);
+  }
+  .blueprint-detail .bd-ink {
+    stroke: currentColor;
+    stroke-width: 1.5;
+    fill: none;
+  }
+  @media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
+    .blueprint-detail { display: none; }
+  }
+
+  .pricing-headline {
+    font-weight: 600;
+    font-size: clamp(2rem, 1.0rem + 4.2vw, 4rem);
+    line-height: 1.1;
+    letter-spacing: -0.035em;
+  }
+  .pricing-headline .line {
+    display: block;
+    overflow: hidden;
+    padding-bottom: 0.06em;
+  }
+  .pricing-headline .line-inner {
+    display: block;
+  }
+
+  /* Wide desktop: single line, capped so the full string fits the content column. */
+  @media (min-width: 1280px) {
+    .pricing-headline {
+      font-size: clamp(2.75rem, 1.6rem + 1.9vw, 3.5rem);
+      white-space: nowrap;
+    }
+    .pricing-headline .line {
+      display: inline-block;
+      vertical-align: top;
+      padding-bottom: 0.12em;
+    }
+    .pricing-headline .line + .line {
+      margin-left: 0.28em;
+    }
+  }
+</style>

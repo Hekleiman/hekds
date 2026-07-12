@@ -8,49 +8,93 @@ interface Tier {
   timeline?: string;
   features: string[];
   accentColor: 'bronze' | 'silver' | 'gold';
-  icon?: string;
+  highlighted?: boolean;
+  ctaText?: string;
+  ctaLink?: string;
 }
 
 interface Props {
   headline?: string;
+  eyebrow?: string;
+  intro?: string;
   tiers: Tier[];
   disclaimer?: string;
   class?: string;
 }
 
-// Icon mapping based on accent color
-const tierIcons: Record<string, string> = {
-  bronze: '/images/pricing/Bronze_Circle.png',
-  silver: '/images/pricing/Silver_Circle.png',
-  gold: '/images/pricing/Gold_Circle.png',
-};
-
 const {
-  headline,
+  headline = 'Three tiers, one clear path',
+  eyebrow = 'Investment levels',
+  intro = 'Every project is scoped individually — these are the ranges most land in. Same hands, start to finish, whichever tier fits.',
   tiers,
-  disclaimer = "These are approximate ranges. We'll provide a detailed proposal after discussing your specific project.",
+  disclaimer = "Approximate ranges. We'll send a detailed proposal after we talk through your specific project.",
   class: className,
 } = Astro.props;
+
+// Metallic focal on the final word of the headline (matches Home/Services/CTA).
+const headingText = (headline ?? '').trim() || 'Three tiers, one clear path';
+const hm = headingText.match(/^([\s\S]*\S)\s+(\S+?)([.!?…]*)$/);
+const headLead = hm ? hm[1] : '';
+const headAccent = hm ? hm[2] : headingText;
+const headPunct = hm ? hm[3] : '';
+
+// Featured tier: honor an explicit CMS `highlighted` flag if one is set on any
+// tier; otherwise Gold is the featured (full-service) tier by design. This keeps
+// accentColor authoritative and needs no new CMS field.
+const anyHighlighted = tiers.some((t) => t.highlighted);
+const tiersWithFeature = tiers.map((tier) => ({
+  ...tier,
+  featured: tier.highlighted === true || (!anyHighlighted && tier.accentColor === 'gold'),
+}));
 ---
 
-<Section class:list={[className]}>
-  {headline && <h2 class="text-h2 mb-8">{headline}</h2>}
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" data-animate="stagger">
-    {tiers.map((tier) => (
-      <PricingCard
-        name={tier.name}
-        price={tier.price}
-        timeline={tier.timeline}
-        features={tier.features}
-        accentColor={tier.accentColor}
-        icon={tier.icon || tierIcons[tier.accentColor]}
-      />
-    ))}
+<Section class:list={['relative overflow-hidden', className]}>
+  <!-- Blueprint spine backdrop — draws in on scroll, stitching this section into
+       the page's living-blueprint line (same vocabulary as Home/Services/About). -->
+  <div class="absolute inset-0 pointer-events-none opacity-40 hidden lg:block" aria-hidden="true" data-draw-trigger>
+    <svg class="w-full h-full" viewBox="0 0 1440 700" fill="none" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <path d="M-40 180 C 320 110, 620 250, 900 170 S 1220 70, 1500 160" stroke="var(--color-border-secondary)" stroke-width="1" data-draw="scroll" />
+      <path d="M-40 540 C 300 470, 600 600, 900 520 S 1220 420, 1500 510" stroke="var(--color-border-primary)" stroke-width="1" data-draw="scroll" />
+    </svg>
   </div>
 
-  {disclaimer && (
-    <p class="text-zinc-400 text-sm text-center mt-12">
-      {disclaimer}
-    </p>
-  )}
+  <div class="relative z-10">
+    <!-- Header -->
+    <div class="mb-14 max-w-[640px]" data-animate="fade-up">
+      <span class="text-caption uppercase tracking-[0.2em] text-accent-bronze-bright/80">{eyebrow}</span>
+      <h2 class="text-h2 mt-3 mb-4">
+        {headLead && <>{headLead}{' '}</>}<span class="text-metallic metallic-shimmer">{headAccent}</span>{headPunct}
+      </h2>
+      <p class="text-body-lg text-text-secondary">{intro}</p>
+    </div>
+
+    <!-- Tier row: single column → lg:3-up (skips the awkward md 2+1 orphan).
+         The row is a draw-trigger so each medallion's metal ring draws in as the
+         tiers reveal (bronze → silver → gold), and lg:items-start lets the
+         featured Gold card break out taller + raised without stretching. -->
+    <div
+      class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-7 lg:items-start"
+      data-animate="stagger"
+      data-draw-trigger
+    >
+      {tiersWithFeature.map((tier) => (
+        <PricingCard
+          name={tier.name}
+          price={tier.price}
+          timeline={tier.timeline}
+          features={tier.features}
+          accentColor={tier.accentColor}
+          highlighted={tier.featured}
+          ctaText={tier.ctaText}
+          ctaLink={tier.ctaLink}
+        />
+      ))}
+    </div>
+
+    {disclaimer && (
+      <p class="text-caption text-text-muted text-center mt-14 max-w-[560px] mx-auto">
+        {disclaimer}
+      </p>
+    )}
+  </div>
 </Section>

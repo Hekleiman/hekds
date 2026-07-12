@@ -1,11 +1,15 @@
 ---
+import TierMedallion from './TierMedallion.astro';
+
 interface Props {
   name: string;
   price: string;
   timeline?: string;
   features: string[];
   accentColor: 'bronze' | 'silver' | 'gold';
-  icon?: string;
+  highlighted?: boolean;
+  ctaText?: string;
+  ctaLink?: string;
   class?: string;
 }
 
@@ -15,62 +19,149 @@ const {
   timeline,
   features,
   accentColor,
-  icon,
+  highlighted = false,
+  ctaText,
+  ctaLink,
   class: className,
 } = Astro.props;
 
-const circleColors = {
-  bronze: 'bg-amber-700',
-  silver: 'bg-zinc-400',
-  gold: 'bg-yellow-600',
-};
+// ── Price parsing ──────────────────────────────────────────────────────────
+// Keep tier.price authoritative: the rendered text always equals the source
+// string. We only split it typographically — a big metallic lead figure + a
+// smaller supporting remainder — and wrap numeric runs so they can count up and
+// land on the exact comma-formatted figures. Anything unparseable renders plain.
+const raw = (price ?? '').trim();
+const leadMatch = raw.match(/\$\s?[\d,]+/);
+const prefix = leadMatch ? raw.slice(0, leadMatch.index).trim() : '';
+const leadStr = leadMatch ? leadMatch[0] : raw;
+const restStr = leadMatch ? raw.slice((leadMatch.index || 0) + leadStr.length).trim() : '';
+
+// Split a string into text / number segments (numbers become count-up spans).
+type Seg = { t: string } | { n: number; plain: string };
+function segmentize(str: string): Seg[] {
+  const parts: Seg[] = [];
+  const re = /\d[\d,]*/g;
+  let last = 0;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(str))) {
+    if (m.index > last) parts.push({ t: str.slice(last, m.index) });
+    parts.push({ n: parseInt(m[0].replace(/,/g, ''), 10), plain: m[0] });
+    last = m.index + m[0].length;
+  }
+  if (last < str.length) parts.push({ t: str.slice(last) });
+  return parts;
+}
+const leadSegs = segmentize(leadStr);
+const restSegs = restStr ? segmentize(restStr) : [];
+
+// Per-tier metal (matches the medallion + the global gradients). The check-mark
+// colour is a legible bright tone of the same metal (metallic text gradients can
+// crush contrast on small marks, so checks use a solid accent instead).
+const metal = {
+  bronze: { text: 'text-metallic-bronze', check: '#e0a260', gradient: 'var(--gradient-bronze)' },
+  silver: { text: 'text-metallic-silver', check: '#d4d4d8', gradient: 'var(--gradient-silver)' },
+  gold: { text: 'text-metallic-gold', check: '#ffe89a', gradient: 'var(--gradient-gold)' },
+}[accentColor];
+
+// Escalating elevation: gold sits raised and taller on lg (the featured break-out);
+// all three collapse to a clean equal stack on mobile.
+const featured = highlighted;
 ---
 
-<div class:list={[
-  'flex flex-col p-6 rounded-xl border border-zinc-800/50',
-  className,
-]}>
-  <!-- Tier Icon -->
-  {icon ? (
-    <img
-      src={icon}
-      alt={`${name} icon`}
-      width="48"
-      height="48"
-      class="w-12 h-12 mb-4"
-      loading="lazy"
-    />
-  ) : (
-    <div class:list={[
-      'w-8 h-8 rounded-full mb-4',
-      circleColors[accentColor]
-    ]}></div>
+<article
+  class:list={[
+    'tier-card group relative flex flex-col surface-elevated lift tier-sheen overflow-hidden',
+    'p-7 sm:p-8',
+    featured
+      ? 'lg:-translate-y-6 lg:pt-10 lg:pb-10 lg:shadow-[var(--shadow-elevated-lg)]'
+      : '',
+    className,
+  ]}
+  style={`--tier-gradient:${metal.gradient}`}
+  data-tier={accentColor}
+>
+  {featured && (
+    <span class="tier-edge metallic-shimmer" aria-hidden="true"></span>
   )}
 
-  <!-- Tier Name -->
-  <span class="text-base font-bold text-white mb-3">
-    {name}
-  </span>
-
-  <!-- Price -->
-  <span class="text-2xl font-bold text-white mb-1">
-    {price}
-  </span>
-
-  <!-- Timeline -->
-  {timeline && (
-    <span class="text-sm text-zinc-400 mb-6">
-      {timeline}
+  <!-- Featured marker — descriptive, not a popularity claim (Gold is the
+       full end-to-end offering). -->
+  {featured && (
+    <span
+      class="relative z-10 self-start mb-5 inline-flex items-center gap-1.5 rounded-full border border-border-secondary bg-background-primary/70 px-3 py-1 text-caption text-metallic-gold"
+    >
+      <span class="w-1.5 h-1.5 rounded-full" style="background:#ffe89a"></span>
+      Full-service
     </span>
   )}
 
-  <!-- Features List -->
-  <ul class="flex flex-col gap-3 flex-1">
+  <!-- Medallion -->
+  <div class="relative z-10 w-14 h-14 sm:w-16 sm:h-16 mb-6">
+    <TierMedallion accent={accentColor} class="w-full h-full" />
+  </div>
+
+  <!-- Tier name -->
+  <h3 class="relative z-10 text-h3 font-medium text-white mb-4">{name}</h3>
+
+  <!-- Price — big metallic lead figure + smaller supporting remainder. -->
+  <div class="relative z-10 mb-1.5">
+    {prefix && (
+      <span class="block text-caption uppercase tracking-[0.14em] text-text-muted mb-1">{prefix}</span>
+    )}
+    <span class:list={['text-price', metal.text]}>
+      {leadSegs.map((seg) =>
+        'n' in seg ? (
+          <span class="tabular-nums" data-countup={seg.n} data-countup-format="comma">{seg.plain}</span>
+        ) : (
+          <span>{seg.t}</span>
+        )
+      )}
+    </span>
+    {restSegs.length > 0 && (
+      <span class="ml-1 text-body-lg text-text-secondary align-baseline">
+        {restSegs.map((seg) =>
+          'n' in seg ? (
+            <span class="tabular-nums" data-countup={seg.n} data-countup-format="comma">{seg.plain}</span>
+          ) : (
+            <span>{seg.t}</span>
+          )
+        )}
+      </span>
+    )}
+  </div>
+
+  <!-- Timeline -->
+  {timeline && (
+    <p class="relative z-10 text-caption text-text-muted mb-7">{timeline}</p>
+  )}
+
+  <!-- Divider -->
+  <span class="relative z-10 h-px w-full bg-border-primary mb-7" aria-hidden="true"></span>
+
+  <!-- Features -->
+  <ul class="relative z-10 flex flex-col gap-3.5 flex-1" style={`color:${metal.check}`}>
     {features.map((feature) => (
-      <li class="flex items-start gap-3 text-sm text-zinc-400">
-        <span class="text-zinc-400 flex-shrink-0">✓</span>
+      <li class="flex items-start gap-3 text-body text-text-secondary">
+        <svg
+          class="mt-0.5 shrink-0" width="18" height="18" viewBox="0 0 20 20" fill="none"
+          aria-hidden="true"
+        >
+          <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.25" opacity="0.35" />
+          <path d="M6 10.5 L9 13.5 L14.5 7" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
         <span>{feature}</span>
       </li>
     ))}
   </ul>
-</div>
+
+  <!-- Optional per-tier CTA (only when the CMS supplies one; the shared closing
+       CtaSection remains the primary conversion path). -->
+  {ctaText && ctaLink && (
+    <a
+      href={ctaLink}
+      class="relative z-10 mt-7 inline-flex items-center justify-center rounded-full border border-border-secondary h-10 px-5 text-caption font-medium text-white transition-colors duration-300 hover:border-accent-bronze-bright/60"
+    >
+      {ctaText}
+    </a>
+  )}
+</article>
