@@ -168,6 +168,13 @@
   --text-caption: 0.875rem; /* 14px */
   --text-caption--line-height: 1.45;
 
+  /* Price numeral scale — the hero of each pricing tier card. Its own fluid
+     clamp so the lead figure reads big on desktop without overflowing a ~296px
+     tier card at lg (3-up) or wrapping at 375px. 36 → 56px. */
+  --text-price: clamp(2.25rem, 1.4rem + 3.4vw, 3.5rem);
+  --text-price--line-height: 1.0;
+  --text-price--letter-spacing: -0.03em;
+
   /* Spacing */
   --spacing-section: 100px;
   --spacing-container: 100px;
@@ -333,6 +340,60 @@ body {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+/* Price numeral — big, fluid, metallic. Pairs with .text-metallic* on the same
+   element for the tier's metal. tabular-nums keeps the count-up from jittering. */
+.text-price {
+  font-size: var(--text-price);
+  line-height: var(--text-price--line-height);
+  letter-spacing: var(--text-price--letter-spacing);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Metallic gradient edge for the featured tier — a full metal border via the
+   same mask trick as .surface-elevated::before, but as a real child element so
+   it never collides with the card's own ::before/::after. Add .metallic-shimmer
+   to let the gold edge stay quietly alive. */
+.tier-edge {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: var(--tier-gradient, var(--gradient-metallic));
+  background-size: 200% 100%;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/* One-shot sheen that sweeps a tier card's own metal on hover (reuses the
+   .btn::after sweep vocabulary, tinted by the tier gradient's warmth). */
+.tier-sheen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  z-index: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.06) 48%,
+    rgba(224, 162, 96, 0.10) 52%,
+    transparent 70%
+  );
+  transform: translateX(-120%);
+  transition: transform 0.9s var(--ease-out-expo);
+  pointer-events: none;
+}
+.tier-sheen:hover::after {
+  transform: translateX(120%);
+}
+@media (prefers-reduced-motion: reduce) {
+  .tier-sheen::after { display: none; }
 }
 
 /* Slow metallic shimmer for revealed accents */
