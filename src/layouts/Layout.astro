@@ -100,6 +100,28 @@ const pageSchema = {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
+
+    <!-- Preload the Inter weights used above the fold so text doesn't reflow as
+         the font swaps in mid-animation — a key source of entrance "stutter". -->
+    <link rel="preload" href="/fonts/inter-latin-400.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/inter-latin-500.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/inter-latin-600.woff2" as="font" type="font/woff2" crossorigin />
+
+    <!-- Entrance guard: hide the elements that animate in *before* first paint so
+         they don't flash visible and then jump when GSAP takes over (the mobile
+         stutter). Runs synchronously, only when motion is allowed, and arms a
+         failsafe so content is never left hidden if the animation bundle fails. -->
+    <script is:inline>
+      (function () {
+        try {
+          if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+          var el = document.documentElement;
+          el.classList.add('anim');
+          window.__animReveal = function () { el.classList.remove('anim'); };
+          window.__animFailsafe = setTimeout(window.__animReveal, 2000);
+        } catch (e) {}
+      })();
+    </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="canonical" href={canonicalUrl} />
     <meta name="generator" content={Astro.generator} />

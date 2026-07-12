@@ -418,6 +418,18 @@ body {
   50% { background-position: 100% 50%; }
 }
 
+/* Touch devices: the shimmer animates a text-clipped gradient, which repaints
+   the glyphs every frame — a constant frame-drain on phones that competes with
+   the entrance animation. Drop it there (the static metallic fill remains). */
+@media (hover: none) {
+  .metallic-shimmer { animation: none; }
+}
+/* Soften the big blurred auras on small screens — an 80px blur over a large
+   surface is expensive to composite alongside animating layers on phone GPUs. */
+@media (max-width: 640px) {
+  .aura { filter: blur(56px); }
+}
+
 /* Elevated surface: layered fill + top border-highlight + dark shadow */
 .surface-elevated {
   position: relative;
@@ -474,9 +486,32 @@ body {
   stroke-dashoffset: var(--draw-length, 1000);
 }
 
-/* Fallback pre-animation state so GSAP has clean start values.
-   When JS is off or motion is reduced, content must remain visible. */
-[data-animate] {
+/* Pre-paint entrance guard — see the inline script in Layout.astro. The `.anim`
+   class is added synchronously (only when motion is allowed) and removed once
+   GSAP has applied its own inline start states, so the elements that animate in
+   don't flash visible and then jump on first paint (the mobile "stutter").
+   When JS is off or motion is reduced, `.anim` is never set, so content stays
+   visible. Mirrors the GSAP from-states in animations.ts. */
+html.anim [data-animate="hero"] [data-hero="eyebrow"],
+html.anim [data-animate="hero"] [data-hero="tag"],
+html.anim [data-animate="hero"] [data-hero="subtext"],
+html.anim [data-animate="hero"] [data-hero="cta"],
+html.anim [data-animate="hero"] [data-hero="visual"],
+html.anim [data-animate="hero"] [data-hero="timeline"],
+html.anim [data-animate="fade-up"],
+html.anim [data-animate="stagger"] > * {
+  opacity: 0;
+}
+html.anim [data-animate="hero"] [data-hero="headline"] .line-inner {
+  transform: translateY(118%);
+}
+
+/* Only the hero's entrance elements get a permanent compositor hint — the few
+   that animate immediately on load. (The old blanket `will-change` on every
+   [data-animate] promoted dozens of elements to their own layers for the life
+   of the page, which pressures phone GPUs.) */
+[data-animate="hero"] [data-hero],
+[data-animate="hero"] .line-inner {
   will-change: opacity, transform;
 }
 
