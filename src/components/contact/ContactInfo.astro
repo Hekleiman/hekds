@@ -62,16 +62,16 @@ const displaySocials = [
         </div>
         <div class="min-w-0 flex-1">
           <span class="text-caption text-text-muted">{emailLabel}</span>
-          <div class="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-2">
+          <div class="mt-1.5 flex items-center gap-2">
             <a
               href={`mailto:${email}`}
-              class="email-address text-metallic-bronze font-semibold tracking-tight break-all"
+              class="email-address text-metallic-bronze font-semibold tracking-tight min-w-0"
             >
               {email}
             </a>
             <button
               type="button"
-              class="copy-email inline-flex items-center justify-center shrink-0 w-9 h-9 rounded-full border border-border-secondary text-text-secondary hover:text-white hover:border-accent-bronze-bright/60 transition-colors duration-200"
+              class="copy-email inline-flex items-center justify-center shrink-0 ml-auto w-8 h-8 rounded-full border border-border-secondary text-text-secondary hover:text-white hover:border-accent-bronze-bright/60 transition-colors duration-200"
               data-email={email}
               aria-label={`Copy email address ${email}`}
               title="Copy email address"
@@ -240,9 +240,14 @@ const displaySocials = [
     stroke-linecap: round;
   }
 
+  /* Sized to fit on one line alongside the copy button, even for a long address
+     on the narrowest phones; scales up on wider cards. */
   .email-address {
-    font-size: clamp(1.05rem, 0.95rem + 0.7vw, 1.4rem);
-    line-height: 1.2;
+    font-size: clamp(0.875rem, 0.72rem + 0.62vw, 1.2rem);
+    line-height: 1.25;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   /* Icon-only copy button: show the clipboard by default, swap to a check on
