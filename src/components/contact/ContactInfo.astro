@@ -33,20 +33,13 @@ const {
   class: className,
 } = Astro.props;
 
-// Build social links array from object
-const socials: Array<{ name: string; url: string }> = [];
-if (socialLinks?.instagram) socials.push({ name: 'Instagram', url: socialLinks.instagram });
-if (socialLinks?.linkedin) socials.push({ name: 'LinkedIn', url: socialLinks.linkedin });
-if (socialLinks?.tiktok) socials.push({ name: 'TikTok', url: socialLinks.tiktok });
-
-// Default social links if none provided (overridden by Sanity CMS data)
-const defaultSocials = [
-  { name: 'Instagram', url: 'https://www.instagram.com/hekdesignstudio' },
-  { name: 'LinkedIn', url: 'https://www.linkedin.com/company/hekdesigns' },
-  { name: 'TikTok', url: 'https://www.tiktok.com/@hekdesignstudio' },
+// The studio is two people, so "Follow us" links straight to Harrison and Erik
+// on LinkedIn rather than a generic company handle. (Sanity's socialLinks schema
+// models one handle per platform, so these two founder profiles live here.)
+const displaySocials = [
+  { name: 'Harrison', url: 'https://www.linkedin.com/in/harrison-kipper/' },
+  { name: 'Erik', url: 'https://www.linkedin.com/in/henry-erik-kleiman-85aa99288/' },
 ];
-
-const displaySocials = socials.length > 0 ? socials : defaultSocials;
 ---
 
 <div class:list={['flex flex-col gap-5', className]} data-animate="stagger">
