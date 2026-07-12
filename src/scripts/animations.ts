@@ -76,10 +76,9 @@ function initHeroAnimations() {
   // Set initial state (tag keeps its own CSS rotate transform, so fade only)
   gsap.set([eyebrow, subtext, cta, visual].filter(Boolean), { opacity: 0, y: 24 });
   if (tag) gsap.set(tag, { opacity: 0 });
-  // Explicit x/y:0 so GSAP doesn't inherit the CSS entrance-guard's
-  // translateY(118%) as a fixed px baseline — that inherited y would survive the
-  // yPercent→0 tween and leave the headline stuck below its overflow clip.
-  if (lines.length) gsap.set(lines, { yPercent: 118, y: 0, x: 0 });
+  // The headline is not pre-guarded in CSS (see global.css), so GSAP fully owns
+  // its transform here — the clip-reveal lands cleanly at yPercent:0.
+  if (lines.length) gsap.set(lines, { yPercent: 118 });
 
   const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 

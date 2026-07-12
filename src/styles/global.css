@@ -502,9 +502,11 @@ html.anim [data-animate="fade-up"],
 html.anim [data-animate="stagger"] > * {
   opacity: 0;
 }
-html.anim [data-animate="hero"] [data-hero="headline"] .line-inner {
-  transform: translateY(118%);
-}
+/* NOTE: the headline is deliberately NOT guarded here. Its lines animate via
+   GSAP's `yPercent` (a transform), and any CSS transform on the same element is
+   parsed by GSAP as a fixed baseline that survives the tween — which left the
+   headline stuck below its clip on real touch devices. It keeps its original
+   clip-reveal, which needs no pre-paint guard. */
 
 /* Only the hero's entrance elements get a permanent compositor hint — the few
    that animate immediately on load. (The old blanket `will-change` on every
