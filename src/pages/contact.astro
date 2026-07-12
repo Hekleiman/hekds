@@ -42,7 +42,10 @@ try {
     subtext={content?.heroSubtext}
   />
 
-  <Section>
+  <!-- Top padding zeroed inline (the unlayered .section-padding rule outranks a
+       Tailwind pt-0 utility): the breathing room below the hero comes from the
+       hero's own bottom padding, so it isn't stacked into an oversized gap. -->
+  <Section style="padding-top: 0">
     <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 items-start">
       <!-- Form Column (wider) — the unmistakable center of gravity -->
       <div class="lg:col-span-3">
