@@ -33,57 +33,95 @@ const {
   class: className,
 } = Astro.props;
 
-// Build social links array from object
-const socials: Array<{ name: string; url: string }> = [];
-if (socialLinks?.instagram) socials.push({ name: 'Instagram', url: socialLinks.instagram });
-if (socialLinks?.linkedin) socials.push({ name: 'LinkedIn', url: socialLinks.linkedin });
-if (socialLinks?.tiktok) socials.push({ name: 'TikTok', url: socialLinks.tiktok });
-
-// Default social links if none provided (overridden by Sanity CMS data)
-const defaultSocials = [
-  { name: 'Instagram', url: 'https://www.instagram.com/hekdesignstudio' },
-  { name: 'LinkedIn', url: 'https://www.linkedin.com/company/hekdesigns' },
-  { name: 'TikTok', url: 'https://www.tiktok.com/@hekdesignstudio' },
+// The studio is two people, so "Follow us" links straight to Harrison and Erik
+// on LinkedIn rather than a generic company handle. (Sanity's socialLinks schema
+// models one handle per platform, so these two founder profiles live here.)
+const displaySocials = [
+  { name: 'Harrison', url: 'https://www.linkedin.com/in/harrison-kipper/' },
+  { name: 'Erik', url: 'https://www.linkedin.com/in/henry-erik-kleiman-85aa99288/' },
+  { name: 'HEK Designs', url: 'https://www.linkedin.com/company/hekdesigns' },
 ];
-
-const displaySocials = socials.length > 0 ? socials : defaultSocials;
 ---
 
 <div class:list={['flex flex-col gap-5', className]} data-animate="stagger">
-  <!-- Email — the hero. Metallic, copyable, with a crafted confirmation. -->
-  <div class="surface-elevated lift p-6 sm:p-7">
-    <div class="flex items-start gap-4">
-      <!-- Envelope mark (blueprint + one bronze send-node) -->
-      <div class="info-mark shrink-0" aria-hidden="true">
-        <svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="0.75" y="0.75" width="54.5" height="54.5" rx="13" class="mk-frame" />
-          <rect x="14" y="18" width="28" height="20" rx="3" class="mk-line" />
-          <path d="M14.5 20 L28 30 L41.5 20" class="mk-line" />
-          <circle cx="41.5" cy="20" r="2.6" class="mk-accent-fill" />
-          <path d="M14 34 L21 28 M42 34 L35 28" class="mk-line faint" />
-        </svg>
+  <!-- Email + Follow us — the two "reach us" cards, paired side by side where
+       there's room (2-up at md; stacked on mobile and the narrow lg rail). -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-5">
+    <!-- Email — metallic, copyable, with a crafted confirmation. -->
+    <div class="surface-elevated lift p-6">
+      <div class="flex items-start gap-4">
+        <!-- Envelope mark (blueprint + one bronze send-node) -->
+        <div class="info-mark shrink-0" aria-hidden="true">
+          <svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0.75" y="0.75" width="54.5" height="54.5" rx="13" class="mk-frame" />
+            <rect x="14" y="18" width="28" height="20" rx="3" class="mk-line" />
+            <path d="M14.5 20 L28 30 L41.5 20" class="mk-line" />
+            <circle cx="41.5" cy="20" r="2.6" class="mk-accent-fill" />
+            <path d="M14 34 L21 28 M42 34 L35 28" class="mk-line faint" />
+          </svg>
+        </div>
+        <div class="min-w-0 flex-1">
+          <span class="text-caption text-text-muted">{emailLabel}</span>
+          <div class="mt-1.5 flex items-center gap-2">
+            <a
+              href={`mailto:${email}`}
+              class="email-address text-metallic-bronze font-semibold tracking-tight min-w-0"
+            >
+              {email}
+            </a>
+            <button
+              type="button"
+              class="copy-email inline-flex items-center justify-center shrink-0 ml-auto w-8 h-8 rounded-full border border-border-secondary text-text-secondary hover:text-white hover:border-accent-bronze-bright/60 transition-colors duration-200"
+              data-email={email}
+              aria-label={`Copy email address ${email}`}
+              title="Copy email address"
+            >
+              <svg class="copy-icon copy-icon--copy" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+                <rect x="4.5" y="4.5" width="8" height="8" rx="2" stroke="currentColor" stroke-width="1.3" />
+                <path d="M9.5 4.5V3a1.5 1.5 0 0 0-1.5-1.5H3A1.5 1.5 0 0 0 1.5 3v5A1.5 1.5 0 0 0 3 9.5h1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
+              </svg>
+              <svg class="copy-icon copy-icon--done" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+                <path d="M2.5 7.5 L5.75 10.75 L11.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </button>
+          </div>
+        </div>
       </div>
-      <div class="min-w-0 flex-1">
-        <span class="text-caption text-text-muted">{emailLabel}</span>
-        <div class="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-2">
-          <a
-            href={`mailto:${email}`}
-            class="email-address text-metallic-bronze font-semibold tracking-tight break-all"
-          >
-            {email}
-          </a>
-          <button
-            type="button"
-            class="copy-email inline-flex items-center gap-1.5 shrink-0 px-2.5 py-1 rounded-full border border-border-secondary text-text-secondary text-caption hover:text-white hover:border-accent-bronze-bright/60 transition-colors duration-200"
-            data-email={email}
-            aria-label={`Copy email address ${email}`}
-          >
-            <svg class="copy-icon" width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
-              <rect x="4.5" y="4.5" width="8" height="8" rx="2" stroke="currentColor" stroke-width="1.3" />
-              <path d="M9.5 4.5V3a1.5 1.5 0 0 0-1.5-1.5H3A1.5 1.5 0 0 0 1.5 3v5A1.5 1.5 0 0 0 3 9.5h1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
-            </svg>
-            <span class="copy-text">Copy</span>
-          </button>
+    </div>
+
+    <!-- Follow us — the studio's two founders + the company, on LinkedIn. -->
+    <div class="surface-elevated lift p-6">
+      <div class="flex items-start gap-4">
+        <div class="info-mark shrink-0" aria-hidden="true">
+          <svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0.75" y="0.75" width="54.5" height="54.5" rx="13" class="mk-frame" />
+            <line x1="22" y1="24" x2="34" y2="19" class="mk-line faint" />
+            <line x1="22" y1="32" x2="34" y2="37" class="mk-line faint" />
+            <circle cx="20" cy="28" r="4" class="mk-accent-stroke" />
+            <circle cx="37" cy="18" r="3.4" class="mk-line" />
+            <circle cx="37" cy="38" r="3.4" class="mk-line" />
+            <circle cx="20" cy="28" r="1.6" class="mk-accent-fill" />
+          </svg>
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <span class="text-caption text-text-muted">{socialLabel}</span>
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+            {displaySocials.map((link, index) => (
+              <>
+                <a
+                  href={link.url}
+                  class="text-body text-text-secondary hover:text-white transition-colors duration-200"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {link.name}
+                </a>
+                {index < displaySocials.length - 1 && (
+                  <span class="text-text-muted" aria-hidden="true">·</span>
+                )}
+              </>
+            ))}
+          </div>
         </div>
       </div>
     </div>
@@ -157,43 +195,6 @@ const displaySocials = socials.length > 0 ? socials : defaultSocials;
     </div>
   </div>
 
-  <!-- Social -->
-  <div class="surface-elevated lift p-6">
-    <div class="flex items-start gap-4">
-      <div class="info-mark shrink-0" aria-hidden="true">
-        <svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="0.75" y="0.75" width="54.5" height="54.5" rx="13" class="mk-frame" />
-          <line x1="22" y1="24" x2="34" y2="19" class="mk-line faint" />
-          <line x1="22" y1="32" x2="34" y2="37" class="mk-line faint" />
-          <circle cx="20" cy="28" r="4" class="mk-accent-stroke" />
-          <circle cx="37" cy="18" r="3.4" class="mk-line" />
-          <circle cx="37" cy="38" r="3.4" class="mk-line" />
-          <circle cx="20" cy="28" r="1.6" class="mk-accent-fill" />
-        </svg>
-      </div>
-      <div class="flex flex-col gap-1.5">
-        <span class="text-caption text-text-muted">{socialLabel}</span>
-        <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
-          {displaySocials.map((link, index) => (
-            <>
-              <a
-                href={link.url}
-                class="text-body text-text-secondary hover:text-white transition-colors duration-200"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {link.name}
-              </a>
-              {index < displaySocials.length - 1 && (
-                <span class="text-text-muted" aria-hidden="true">·</span>
-              )}
-            </>
-          ))}
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- Copy confirmation announcement (SR + visual is handled inline on the button) -->
   <span id="copy-live" class="sr-only" role="status" aria-live="polite"></span>
 </div>
@@ -239,14 +240,30 @@ const displaySocials = socials.length > 0 ? socials : defaultSocials;
     stroke-linecap: round;
   }
 
+  /* Sized to fit on one line alongside the copy button, even for a long address
+     on the narrowest phones; scales up on wider cards. */
   .email-address {
-    font-size: clamp(1.05rem, 0.95rem + 0.7vw, 1.4rem);
-    line-height: 1.2;
+    font-size: clamp(0.875rem, 0.72rem + 0.62vw, 1.2rem);
+    line-height: 1.25;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
+  /* Icon-only copy button: show the clipboard by default, swap to a check on
+     confirmation (JS toggles .is-copied; the label is announced via #copy-live). */
+  .copy-email .copy-icon--done {
+    display: none;
+  }
   .copy-email.is-copied {
     color: var(--color-accent-bronze-bright);
     border-color: rgba(224, 162, 96, 0.6);
+  }
+  .copy-email.is-copied .copy-icon--copy {
+    display: none;
+  }
+  .copy-email.is-copied .copy-icon--done {
+    display: inline;
   }
 
   .sr-only {

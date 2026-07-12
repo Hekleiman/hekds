@@ -152,31 +152,27 @@ if (headline && headline.trim()) {
     line-height: 1.1;
     letter-spacing: -0.035em;
   }
+  /* The two parts sit inline on one line at every width — "Get in Touch" is short
+     enough to fit even on the narrowest phones. Each part stays intact (nowrap);
+     a longer headline would simply wrap between the two parts, never overflow. */
   .contact-headline .line {
-    display: block;
+    display: inline-block;
     overflow: hidden;
-    padding-bottom: 0.06em;
+    vertical-align: top;
+    white-space: nowrap;
+    padding-bottom: 0.12em;
   }
   .contact-headline .line-inner {
     display: block;
   }
+  .contact-headline .line + .line {
+    margin-left: 0.28em;
+  }
 
-  /* Desktop/laptop: collapse to a single line. This headline is short (matches
-     the Pricing hero), so it goes one-line from lg (1024px) rather than holding
-     the re-fit to xl like the longer sibling-page headlines. Font capped so the
-     full string always fits the content column without wrapping. */
+  /* Cap the font on desktop so the one-line headline doesn't get oversized. */
   @media (min-width: 1024px) {
     .contact-headline {
       font-size: clamp(2.5rem, 1.1rem + 2.6vw, 3.5rem);
-      white-space: nowrap;
-    }
-    .contact-headline .line {
-      display: inline-block;
-      vertical-align: top;
-      padding-bottom: 0.12em;
-    }
-    .contact-headline .line + .line {
-      margin-left: 0.28em;
     }
   }
 </style>
