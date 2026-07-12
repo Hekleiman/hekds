@@ -33,9 +33,9 @@ const line2 = m ? m[2] : text;
 // The three metals, teased with their honest price floors (decorative preview of
 // the tier row below — not CMS-backed).
 const metals = [
-  { accent: 'bronze' as const, name: 'Bronze', floor: '$500+', text: 'text-metallic-bronze' },
-  { accent: 'silver' as const, name: 'Silver', floor: '$1,500+', text: 'text-metallic-silver' },
-  { accent: 'gold' as const, name: 'Gold', floor: '$3,000+', text: 'text-metallic-gold' },
+  { accent: 'bronze' as const, name: 'Bronze', floor: '$500+', text: 'text-metallic-bronze', glow: 'rgba(224,162,96,0.16)' },
+  { accent: 'silver' as const, name: 'Silver', floor: '$1,500+', text: 'text-metallic-silver', glow: 'rgba(214,214,220,0.14)' },
+  { accent: 'gold' as const, name: 'Gold', floor: '$3,000+', text: 'text-metallic-gold', glow: 'rgba(255,232,154,0.24)' },
 ];
 ---
 
@@ -130,9 +130,14 @@ const metals = [
     <div class="w-full max-w-[560px]" data-hero="visual">
       <div class="grid grid-cols-3 gap-4 sm:gap-8">
         {metals.map((metal) => (
-          <div class="flex flex-col items-center">
-            <div class="w-14 h-14 sm:w-[72px] sm:h-[72px] mb-3">
-              <TierMedallion accent={metal.accent} class="w-full h-full" />
+          <div class="group flex flex-col items-center">
+            <div class="relative w-14 h-14 sm:w-[72px] sm:h-[72px] mb-3 transition-transform duration-500 ease-out group-hover:scale-[1.06]">
+              <span
+                class="absolute -inset-2.5 rounded-full pointer-events-none"
+                style={`background:radial-gradient(circle, ${metal.glow} 0%, transparent 70%);`}
+                aria-hidden="true"
+              ></span>
+              <TierMedallion accent={metal.accent} class="relative w-full h-full" />
             </div>
             <span class="text-caption text-text-secondary">{metal.name}</span>
             <span class:list={['text-body-lg font-semibold tabular-nums', metal.text]}>{metal.floor}</span>

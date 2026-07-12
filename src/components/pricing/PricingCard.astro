@@ -63,9 +63,16 @@ const metal = {
   gold: { text: 'text-metallic-gold', check: '#ffe89a', gradient: 'var(--gradient-gold)' },
 }[accentColor];
 
-// Gold reads as the top tier through its metal — a shimmering gold edge — while
-// every card keeps the same height and structure (no pill, no offset).
+// Escalating materiality: the metal edge and the soft glow behind the medallion
+// both step up bronze → silver → gold, so the row reads as three grades of one
+// material. Every card keeps the same height and structure (no pill, no offset);
+// Gold alone adds a slow shimmer on its edge.
 const isGold = accentColor === 'gold';
+const material = {
+  bronze: { edge: 0.26, glow: 'rgba(224,162,96,0.16)' },
+  silver: { edge: 0.42, glow: 'rgba(214,214,220,0.14)' },
+  gold: { edge: 0.66, glow: 'rgba(255,232,154,0.24)' },
+}[accentColor];
 ---
 
 <article
@@ -76,11 +83,22 @@ const isGold = accentColor === 'gold';
   style={`--tier-gradient:${metal.gradient}`}
   data-tier={accentColor}
 >
-  {isGold && <span class="tier-edge metallic-shimmer" aria-hidden="true"></span>}
+  <!-- Metal edge — present on every card, graded by tier; Gold shimmers. -->
+  <span
+    class:list={['tier-edge', isGold && 'metallic-shimmer']}
+    style={`--tier-edge-opacity:${material.edge}`}
+    aria-hidden="true"
+  ></span>
 
-  <!-- Medallion -->
-  <div class="relative z-10 w-14 h-14 sm:w-16 sm:h-16 mb-6">
-    <TierMedallion accent={accentColor} class="w-full h-full" />
+  <!-- Medallion — a soft tier-metal glow sits behind it (graded), and it lifts
+       slightly when the card is hovered. -->
+  <div class="relative z-10 w-14 h-14 sm:w-16 sm:h-16 mb-6 transition-transform duration-500 ease-out group-hover:scale-[1.08]">
+    <span
+      class="absolute -inset-2.5 rounded-full pointer-events-none"
+      style={`background:radial-gradient(circle, ${material.glow} 0%, transparent 70%);`}
+      aria-hidden="true"
+    ></span>
+    <TierMedallion accent={accentColor} class="relative w-full h-full" />
   </div>
 
   <!-- Tier name -->

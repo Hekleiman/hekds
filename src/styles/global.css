@@ -367,7 +367,7 @@ body {
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
-  opacity: 0.6;
+  opacity: var(--tier-edge-opacity, 0.6);
 }
 
 /* One-shot sheen that sweeps a tier card's own metal on hover (reuses the
