@@ -73,6 +73,16 @@
   /* Warmer, more legible bronze for text/accents on dark */
   --color-accent-bronze-bright: #e0a260;
 
+  /* Form/validation feedback — a warm, desaturated danger that sits with the
+     bronze palette instead of a raw signal-red. */
+  --color-danger: #e0715f;
+  --color-danger-soft: rgba(224, 113, 95, 0.12);
+
+  /* Form controls (fluid scale + focus ring; consumed by ui/Input.astro so the
+     site's only form scales like every other element and never hardcodes 50px). */
+  --control-height: clamp(3rem, 2.85rem + 0.6vw, 3.375rem); /* 48 → 54px */
+  --focus-ring: 0 0 0 3px rgba(224, 162, 96, 0.16), 0 0 22px rgba(224, 162, 96, 0.13);
+
   /* Metallic gradients (deliberate hierarchy accents) */
   /* Warmer + lower-contrast than a bright gold/silver so it reads refined, not flashy */
   --gradient-metallic: linear-gradient(120deg, #c98f52 0%, #e2c69c 34%, #b1a794 58%, #c98f52 100%);
@@ -138,6 +148,9 @@
   --color-accent-silver: #c0c0c0;
   --color-accent-gold: #ffd700;
   --color-accent-bronze-bright: #e0a260;
+
+  /* Form/validation feedback (warm danger, on-palette) */
+  --color-danger: #e0715f;
 
   /* Font Family */
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;

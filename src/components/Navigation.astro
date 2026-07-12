@@ -13,12 +13,13 @@ const { currentPath, class: className } = Astro.props;
 const normalizedPath = currentPath?.replace(/\/$/, '') || '';
 const isContactPage = normalizedPath === '/contact';
 
+// Contact is intentionally omitted — the "Start a Project" CTA links to /contact,
+// so a separate nav item would be redundant.
 const navLinks = [
   { href: '/work', label: 'Work' },
   { href: '/services', label: 'Services' },
   { href: '/about', label: 'About' },
   { href: '/pricing', label: 'Pricing' },
-  { href: '/contact', label: 'Contact' },
 ];
 ---
 

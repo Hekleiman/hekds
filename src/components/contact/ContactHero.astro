@@ -1,27 +1,182 @@
 ---
-import Section from '../ui/Section.astro';
-
+// Contact hero — a sibling of the Home / Services / Pricing heroes: the same
+// layered vocabulary (aura glow, parallax blueprint contours drawing in on load,
+// cursor spotlight with a masked blueprint-detail easter egg, clip-reveal
+// headline with a metallic focal word, and the xl: single-line re-fit). Sized as
+// a page header rather than a full viewport so the form sits within one easy
+// scroll. This is where the site-wide blueprint arrives and becomes a
+// conversation — a faint spine drops from here toward the form.
 interface Props {
+  eyebrow?: string;
+  eyebrowShort?: string;
   headline?: string;
+  headlineLine1?: string;
+  headlineLine2?: string;
   subtext?: string;
   class?: string;
 }
 
 const {
-  headline = "Let's start a conversation",
-  subtext = "Have a project in mind? We'd love to hear about it. Fill out the form below or reach out directly.",
+  eyebrow = 'Start a project — no handoffs, straight to us',
+  eyebrowShort = 'Start a project',
+  headline,
+  headlineLine1 = "Let's start a",
+  headlineLine2 = 'conversation.',
+  subtext = "Tell us what you're building. The two of us read every message and reply within a day — no forms into the void, no account managers.",
   class: className,
 } = Astro.props;
+
+// A CMS-provided single-string headline overrides the two-line default: the
+// final word takes the metallic focal treatment (matches Home / Services / CTA).
+let line1 = headlineLine1;
+let line2 = headlineLine2;
+if (headline && headline.trim()) {
+  const m = headline.trim().match(/^([\s\S]*\S)\s+(\S+[.!?…]*)$/);
+  if (m) {
+    line1 = m[1];
+    line2 = m[2];
+  } else {
+    line1 = '';
+    line2 = headline.trim();
+  }
+}
 ---
 
-<Section class:list={[className]}>
-  <div class="flex flex-col items-start" data-animate="fade-up">
-    <h1 class="text-h1 mb-6">
-      {headline}
+<section
+  class:list={['contact-hero relative overflow-hidden -mt-36 pt-32 sm:pt-40 md:pt-44', className]}
+  data-animate="hero"
+  data-spotlight
+>
+  <!-- Depth glow -->
+  <div class="aura w-[620px] h-[420px] top-[4%] left-1/2 -translate-x-1/2 bg-accent-bronze/[0.10]"></div>
+
+  <!-- Living-blueprint contour layer (parallax + draw-in on load) -->
+  <div
+    class="absolute inset-0 pointer-events-none opacity-[0.45]"
+    aria-hidden="true"
+    data-parallax
+    data-parallax-speed="-0.1"
+  >
+    <svg class="w-full h-full" viewBox="0 0 1440 620" fill="none" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <path d="M-40 250 C 260 190, 460 310, 720 250 S 1140 150, 1500 230" stroke="var(--color-border-secondary)" stroke-width="1" data-draw="hero" />
+      <path d="M-40 330 C 300 270, 500 390, 780 320 S 1180 210, 1500 300" stroke="var(--color-border-primary)" stroke-width="1" data-draw="hero" />
+      <path d="M-40 180 C 240 140, 520 230, 760 180 S 1120 90, 1500 160" stroke="var(--color-border-primary)" stroke-width="1" data-draw="hero" />
+    </svg>
+  </div>
+
+  <!-- Easter egg: blueprint annotations that reveal only under the cursor
+       spotlight (masked to the pointer), anchored to exact points on the contour
+       curves above. Includes a two-node "H · E" tie — the honest two-person nod
+       hidden in the blueprint for anyone who explores with their cursor. -->
+  <div class="blueprint-detail absolute inset-0 pointer-events-none" aria-hidden="true">
+    <svg class="w-full h-full" viewBox="0 0 1440 620" fill="none" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <g class="bd-ink">
+        <!-- Two-person tie: two nodes on the top contour joined by a measured
+             span — the studio is two people, plotted precisely. -->
+        <circle cx="470" cy="268" r="4" fill="currentColor" stroke="none" />
+        <circle cx="690" cy="256" r="4" fill="currentColor" stroke="none" />
+        <path d="M470 268 L690 256" />
+        <path d="M470 260 v16 M690 248 v16" />
+        <rect x="548" y="248" width="18" height="9" rx="2" fill="currentColor" stroke="none" opacity="0.42" />
+
+        <!-- Right: an annotated callout on a contour node (1020,214). -->
+        <circle cx="1020" cy="214" r="4.5" fill="currentColor" stroke="none" />
+        <circle cx="1020" cy="214" r="15" stroke-dasharray="3 5" />
+        <path d="M1020 190 v-11 M1020 238 v11 M996 214 h-11 M1044 214 h11" />
+        <path d="M1032 205 L1096 180" />
+        <rect x="1100" y="170" width="72" height="10" rx="2" fill="currentColor" stroke="none" opacity="0.5" />
+
+        <!-- Left: registration target on a contour node (250,204). -->
+        <circle cx="250" cy="204" r="10" stroke-dasharray="2 4" />
+        <path d="M250 188 v-9 M250 220 v9 M234 204 h-9 M266 204 h9" />
+        <circle cx="250" cy="204" r="2" fill="currentColor" stroke="none" />
+      </g>
+    </svg>
+  </div>
+
+  <!-- Cursor spotlight -->
+  <div
+    class="absolute w-[600px] h-[600px] rounded-full opacity-0 pointer-events-none mix-blend-screen -ml-[300px] -mt-[300px]"
+    style="background: radial-gradient(circle, rgba(224,162,96,0.12) 0%, rgba(224,162,96,0.05) 35%, transparent 70%);"
+    aria-hidden="true"
+    data-spotlight-light
+  >
+  </div>
+
+  <!-- Content -->
+  <div class="relative z-10 container-main flex flex-col items-center text-center">
+    <!-- Eyebrow pill -->
+    <div
+      class="inline-flex items-center gap-2 mb-8 px-4 py-1.5 rounded-full border border-border-primary bg-background-secondary/60 backdrop-blur-sm"
+      data-hero="eyebrow"
+    >
+      <span class="w-1.5 h-1.5 shrink-0 rounded-full bg-accent-bronze-bright"></span>
+      <span class="text-caption text-text-secondary tracking-wide whitespace-nowrap">
+        <span class="sm:hidden">{eyebrowShort}</span>
+        <span class="hidden sm:inline">{eyebrow}</span>
+      </span>
+    </div>
+
+    <!-- Clip-reveal headline; second line metallic. Collapses to one line on xl. -->
+    <h1 class="contact-headline mb-7" data-hero="headline">
+      {line1 && <span class="line"><span class="line-inner text-white">{line1}</span></span>}<span class="line"><span class="line-inner text-metallic metallic-shimmer">{line2}</span></span>
     </h1>
 
-    <p class="text-body-lg text-text-secondary max-w-[600px]">
+    <!-- Subtext -->
+    <p class="text-body-lg text-text-secondary max-w-[620px]" data-hero="subtext">
       {subtext}
     </p>
   </div>
-</Section>
+</section>
+
+<style>
+  /* Blueprint-detail easter egg: only the disc under the cursor is unmasked.
+     --spot-x/--spot-y are published by initSpotlight (animations.ts). */
+  .blueprint-detail {
+    color: var(--color-accent-bronze-bright);
+    -webkit-mask: radial-gradient(circle 130px at var(--spot-x, -999px) var(--spot-y, -999px), #000 0%, #000 32%, transparent 70%);
+    mask: radial-gradient(circle 130px at var(--spot-x, -999px) var(--spot-y, -999px), #000 0%, #000 32%, transparent 70%);
+  }
+  .blueprint-detail .bd-ink {
+    stroke: currentColor;
+    stroke-width: 1.5;
+    fill: none;
+  }
+  @media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
+    .blueprint-detail { display: none; }
+  }
+
+  .contact-headline {
+    font-weight: 600;
+    font-size: clamp(2rem, 1.0rem + 4.2vw, 4rem);
+    line-height: 1.1;
+    letter-spacing: -0.035em;
+  }
+  .contact-headline .line {
+    display: block;
+    overflow: hidden;
+    padding-bottom: 0.06em;
+  }
+  .contact-headline .line-inner {
+    display: block;
+  }
+
+  /* Desktop/laptop: collapse to a single line. This headline is short (matches
+     the Pricing hero), so it goes one-line from lg (1024px) rather than holding
+     the re-fit to xl like the longer sibling-page headlines. Font capped so the
+     full string always fits the content column without wrapping. */
+  @media (min-width: 1024px) {
+    .contact-headline {
+      font-size: clamp(2.5rem, 1.1rem + 2.6vw, 3.5rem);
+      white-space: nowrap;
+    }
+    .contact-headline .line {
+      display: inline-block;
+      vertical-align: top;
+      padding-bottom: 0.12em;
+    }
+    .contact-headline .line + .line {
+      margin-left: 0.28em;
+    }
+  }
+</style>

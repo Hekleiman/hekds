@@ -6,49 +6,69 @@ interface Props {
   successHeadline?: string;
   successMessage?: string;
   errorMessage?: string;
+  contactEmail?: string;
   class?: string;
 }
 
 const {
-  successHeadline = 'Message sent!',
-  successMessage = "Thanks for reaching out. We'll review your project details and get back to you within 24 hours.",
-  errorMessage = 'Something went wrong. Please try again or email us directly.',
+  successHeadline = 'Message on its way.',
+  successMessage = "Thanks for reaching out — the two of us read every message. We'll review your project and get back to you within a day.",
+  errorMessage = 'Something went wrong sending that. Please try again, or email us directly at',
+  contactEmail = 'harry@hekdesigns.com',
   class: className,
 } = Astro.props;
 
+// Plain-language project types, aligned with the Services page. Stable value
+// slugs kept where they already existed (development / other) so Formspree data
+// stays comparable; the rest were reconciled with the shipped funnel.
 const projectTypeOptions = [
-  { value: '', label: 'Select a service...' },
-  { value: 'brand-identity', label: 'Brand Identity' },
-  { value: 'web-design', label: 'Web Design' },
-  { value: 'development', label: 'Development' },
-  { value: 'creative-direction', label: 'Creative Direction' },
-  { value: 'other', label: 'Other / Not Sure' },
+  { value: '', label: 'Select a service…' },
+  { value: 'new-website', label: 'New website' },
+  { value: 'redesign', label: 'Redesign' },
+  { value: 'development', label: 'Web app or development' },
+  { value: 'branding', label: 'Branding & design' },
+  { value: 'other', label: 'Something else' },
 ];
 
+// Budget mirrors the shipped Bronze / Silver / Gold pricing tiers so a visitor
+// arriving from /pricing sees a coherent range (the old set started above the
+// entry tier).
 const budgetOptions = [
-  { value: '', label: 'Select budget range...' },
-  { value: 'under-2500', label: 'Under $2,500' },
-  { value: '2500-5000', label: '$2,500 - $5,000' },
-  { value: '5000-10000', label: '$5,000 - $10,000' },
-  { value: 'over-10000', label: '$10,000+' },
+  { value: '', label: 'Select a range…' },
+  { value: 'bronze', label: 'Under $1,000 (Bronze)' },
+  { value: 'silver', label: '$1,500–$3,000 (Silver)' },
+  { value: 'gold', label: '$3,000+ (Gold)' },
+  { value: 'unsure', label: 'Not sure yet' },
 ];
 
 const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xkozljaq';
 ---
 
 <div class:list={['relative', className]} data-animate="fade-up">
-  <!-- Contact Form -->
-  <div id="form-container" class="bg-background-secondary border border-border-primary rounded-card p-8">
+  <!-- Elevated form panel — floats forward, machined fields, reacts faintly to
+       the cursor spotlight. -->
+  <div
+    id="form-container"
+    class="form-panel surface-elevated relative overflow-hidden p-6 sm:p-8 md:p-10"
+    data-spotlight
+  >
+    <!-- Faint blueprint grid + a spotlight glow that warms the panel under the
+         cursor. Purely decorative. -->
+    <div class="form-grid absolute inset-0 pointer-events-none" aria-hidden="true"></div>
+    <div class="form-spot absolute w-[420px] h-[420px] rounded-full opacity-0 pointer-events-none -ml-[210px] -mt-[210px]" aria-hidden="true" data-spotlight-light></div>
+
     <!-- Error Message -->
     <div
       id="form-error"
-      class="hidden mb-6 p-4 border-l-4 border-red-500 bg-red-500/10 rounded-r-lg"
+      class="hidden mb-6 p-4 border-l-2 rounded-r-lg"
+      style="border-color: var(--color-danger); background: var(--color-danger-soft);"
       role="alert"
-      aria-live="polite"
+      aria-live="assertive"
       data-error-message={errorMessage}
+      data-error-email={contactEmail}
     >
-      <p class="text-red-400 text-sm">
-        {errorMessage} <a href="mailto:hello@hekdesign.studio" class="underline hover:text-red-300">hello@hekdesign.studio</a>
+      <p class="text-caption" style="color: var(--color-danger);">
+        {errorMessage} <a href={`mailto:${contactEmail}`} class="underline underline-offset-2 font-medium hover:opacity-80">{contactEmail}</a>
       </p>
     </div>
 
@@ -56,93 +76,102 @@ const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xkozljaq';
       id="contact-form"
       action={FORMSPREE_ENDPOINT}
       method="POST"
-      class="flex flex-col gap-6"
+      class="relative z-10 flex flex-col gap-6"
       data-contact-form
     >
       <!-- Hidden Formspree fields -->
       <input type="hidden" name="_subject" value="New inquiry from HEK website" />
-      <!-- Honeypot spam protection - must stay hidden -->
-      <input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off" />
+      <!-- Honeypot spam protection — must stay hidden + untabbable -->
+      <input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true" />
 
       <!-- Name + Email Row -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Input
-          type="text"
-          name="name"
-          label="Your Name"
-          placeholder="John Doe"
-          required
-        />
-        <Input
-          type="email"
-          name="email"
-          label="Email Address"
-          placeholder="john@example.com"
-          required
-        />
+        <Input type="text" name="name" label="Your name" placeholder="Jane Doe" autocomplete="name" required />
+        <Input type="email" name="email" label="Email address" placeholder="jane@example.com" autocomplete="email" required />
       </div>
 
       <!-- Company + Project Type Row -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Input
-          type="text"
-          name="company"
-          label="Company"
-          placeholder="Acme Inc."
-        />
-        <Input
-          type="select"
-          name="project-type"
-          label="What do you need?"
-          options={projectTypeOptions}
-          required
-        />
+        <Input type="text" name="company" label="Company" placeholder="Acme Inc. (optional)" autocomplete="organization" />
+        <Input type="select" name="project-type" label="What do you need?" options={projectTypeOptions} required />
       </div>
 
       <!-- Budget -->
-      <Input
-        type="select"
-        name="budget"
-        label="Budget Range"
-        options={budgetOptions}
-      />
+      <Input type="select" name="budget" label="Budget range" options={budgetOptions} />
 
       <!-- Message -->
       <Input
         type="textarea"
         name="message"
         label="Tell us about your project"
-        placeholder="Describe your project, goals, and timeline..."
+        placeholder="What are you building, who's it for, and roughly when do you need it?"
         rows={6}
         required
       />
 
-      <!-- Submit Button -->
-      <Button type="submit" variant="primary" class="w-full md:w-auto">
-        Send Message
-      </Button>
+      <!-- Submit — ambient bronze→gold warmth grows as required fields fill. -->
+      <div class="flex flex-col-reverse sm:flex-row sm:items-center gap-4 sm:justify-between">
+        <p class="text-caption text-text-muted">No spam, ever. Just a real reply from Harrison or Erik.</p>
+        <Button type="submit" variant="primary" id="contact-submit" class="w-full sm:w-auto">
+          Send message
+        </Button>
+      </div>
     </form>
   </div>
 
-  <!-- Success Message -->
+  <!-- Success panel — the send moment. A bespoke gold confirmation mark (same
+       blueprint/metallic family as TierMedallion) resolves as the message lands.
+       Focusable + announced so screen-reader users know it worked. -->
   <div
     id="form-success"
-    class="hidden bg-background-secondary border border-border-primary rounded-card p-8"
+    class="hidden form-panel surface-elevated relative overflow-hidden p-8 md:p-12"
     role="alert"
-    aria-live="polite"
+    aria-live="assertive"
+    tabindex="-1"
     data-success-headline={successHeadline}
     data-success-message={successMessage}
   >
-    <div class="flex flex-col items-center text-center py-8">
-      <!-- Success Icon -->
-      <div class="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center mb-6">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M5 13l4 4L19 7" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+    <div class="form-grid absolute inset-0 pointer-events-none" aria-hidden="true"></div>
+    <div class="relative z-10 flex flex-col items-center text-center">
+      <!-- Gold confirmation mark -->
+      <div class="success-mark w-20 h-20 sm:w-24 sm:h-24 mb-7" aria-hidden="true">
+        <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+          <defs>
+            <linearGradient id="successGold" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#c9a227" />
+              <stop offset="0.5" stop-color="#ffe89a" />
+              <stop offset="1" stop-color="#c9a227" />
+            </linearGradient>
+            <pattern id="successGrid" width="12" height="12" patternUnits="userSpaceOnUse">
+              <path d="M12 0H0V12" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1" />
+            </pattern>
+            <clipPath id="successClip"><circle cx="60" cy="60" r="46" /></clipPath>
+          </defs>
+
+          <g clip-path="url(#successClip)">
+            <rect x="0" y="0" width="120" height="120" fill="url(#successGrid)" />
+            <line x1="60" y1="16" x2="60" y2="104" stroke="rgba(255,255,255,0.06)" stroke-width="1" />
+            <line x1="16" y1="60" x2="104" y2="60" stroke="rgba(255,255,255,0.06)" stroke-width="1" />
+          </g>
+
+          <!-- inner guide ring -->
+          <circle cx="60" cy="60" r="34" stroke="rgba(255,255,255,0.12)" stroke-width="1" fill="none" />
+
+          <!-- gold assay ring (draws in) -->
+          <circle class="sm-ring" cx="60" cy="60" r="46" stroke="url(#successGold)" stroke-width="2.5" fill="none" stroke-linecap="round" />
+
+          <!-- perimeter facet nodes (gold-tier arrangement) -->
+          <circle class="sm-node sm-node--focal" cx="60" cy="14" r="3.5" fill="url(#successGold)" />
+          <circle class="sm-node" cx="99.8" cy="83" r="3" fill="url(#successGold)" />
+          <circle class="sm-node" cx="20.2" cy="83" r="3" fill="url(#successGold)" />
+
+          <!-- the check draws in last -->
+          <path class="sm-check" d="M45 61 L55 71 L76 49" stroke="url(#successGold)" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
       </div>
 
-      <h3 class="text-h3 text-white mb-3">{successHeadline}</h3>
-      <p class="text-text-secondary mb-8 max-w-md">
+      <h2 class="text-h3-lg text-white mb-3">{successHeadline}</h2>
+      <p class="text-body-lg text-text-secondary mb-8 max-w-[440px]">
         {successMessage}
       </p>
 
@@ -153,18 +182,141 @@ const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xkozljaq';
   </div>
 </div>
 
+<style>
+  /* Faint blueprint grid inside the panels (matches the illustration language). */
+  .form-grid {
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+    background-size: 28px 28px;
+    -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 0%, #000 0%, transparent 75%);
+    mask-image: radial-gradient(ellipse 80% 70% at 50% 0%, #000 0%, transparent 75%);
+  }
+
+  /* Cursor glow inside the form panel — very soft, never washes the fields. */
+  .form-spot {
+    background: radial-gradient(circle, rgba(224, 162, 96, 0.10) 0%, rgba(224, 162, 96, 0.04) 35%, transparent 70%);
+    mix-blend-mode: screen;
+  }
+  @media (hover: none), (pointer: coarse) {
+    .form-spot { display: none; }
+  }
+
+  /* Ambient "quiet progress" — the send button warms bronze→gold as the required
+     fields fill. Never a scored bar; just materiality responding to completion.
+     Uses ::before (the .btn shine sweep already owns ::after). */
+  :global(#contact-submit) {
+    --fill: 0;
+  }
+  :global(#contact-submit)::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: linear-gradient(180deg, rgba(224, 162, 96, 0.20) 0%, rgba(255, 215, 0, 0.12) 100%);
+    opacity: var(--fill, 0);
+    transition: opacity 0.5s var(--ease-out-soft);
+  }
+  :global(#contact-submit.is-ready) {
+    border-color: rgba(224, 162, 96, 0.6);
+    box-shadow: var(--shadow-elevated), var(--glow-bronze), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  /* ── Send moment ─────────────────────────────────────────────────────────
+     Assay ring draws, facet nodes settle, check strokes in — one earned beat.
+     Reduced motion / no-JS: the mark is simply present and complete. */
+  .success-mark .sm-ring {
+    stroke-dasharray: 289;
+    stroke-dashoffset: 289;
+  }
+  .success-mark .sm-check {
+    stroke-dasharray: 52;
+    stroke-dashoffset: 52;
+  }
+  .success-mark .sm-node {
+    opacity: 0;
+    transform: scale(0.4);
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  #form-success.is-revealed .sm-ring {
+    animation: sm-draw 0.75s var(--ease-out-expo) forwards;
+  }
+  #form-success.is-revealed .sm-check {
+    animation: sm-draw-check 0.5s var(--ease-out-soft) 0.55s forwards;
+  }
+  #form-success.is-revealed .sm-node {
+    animation: sm-pop 0.45s var(--ease-out-expo) forwards;
+  }
+  #form-success.is-revealed .sm-node--focal { animation-delay: 0.5s; }
+  #form-success.is-revealed .sm-node:nth-of-type(2) { animation-delay: 0.62s; }
+  #form-success.is-revealed .sm-node:nth-of-type(3) { animation-delay: 0.74s; }
+  #form-success.is-revealed .success-mark { animation: sm-glow 0.9s var(--ease-out-soft) 0.6s; }
+
+  @keyframes sm-draw { to { stroke-dashoffset: 0; } }
+  @keyframes sm-draw-check { to { stroke-dashoffset: 0; } }
+  @keyframes sm-pop { to { opacity: 1; transform: scale(1); } }
+  @keyframes sm-glow {
+    0% { filter: drop-shadow(0 0 0 rgba(255, 215, 0, 0)); }
+    45% { filter: drop-shadow(0 0 14px rgba(255, 215, 0, 0.45)); }
+    100% { filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.15)); }
+  }
+
+  /* No-JS / reduced motion: present the completed mark, no animation. */
+  @media (prefers-reduced-motion: reduce), (scripting: none) {
+    .success-mark .sm-ring,
+    .success-mark .sm-check { stroke-dashoffset: 0; }
+    .success-mark .sm-node { opacity: 1; transform: none; }
+    #form-success.is-revealed .sm-ring,
+    #form-success.is-revealed .sm-check,
+    #form-success.is-revealed .sm-node,
+    #form-success.is-revealed .success-mark { animation: none; }
+  }
+</style>
+
 <script>
   function initContactForm() {
     const form = document.getElementById('contact-form') as HTMLFormElement | null;
     const formContainer = document.getElementById('form-container');
-    const submitBtn = form?.querySelector('button[type="submit"]') as HTMLButtonElement | null;
+    const submitBtn = document.getElementById('contact-submit') as HTMLButtonElement | null;
     const successDiv = document.getElementById('form-success');
     const errorDiv = document.getElementById('form-error');
     const resetBtn = document.getElementById('reset-form');
 
     if (!form || !submitBtn) return;
 
-    const originalBtnText = submitBtn.textContent || 'Send Message';
+    const originalBtnText = submitBtn.textContent || 'Send message';
+
+    // ── Auto-growing textarea: height tracks content, no layout thrash on submit.
+    const autogrow = form.querySelector<HTMLTextAreaElement>('textarea[data-autogrow]');
+    const grow = (el: HTMLTextAreaElement) => {
+      el.style.height = 'auto';
+      el.style.height = `${el.scrollHeight}px`;
+    };
+    if (autogrow) {
+      autogrow.addEventListener('input', () => grow(autogrow));
+    }
+
+    // ── Ambient progress: warm the send button as required fields complete.
+    const requiredFields = Array.from(
+      form.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(
+        '[required]'
+      )
+    );
+    const updateProgress = () => {
+      if (!requiredFields.length) return;
+      const filled = requiredFields.filter((f) => f.value.trim() !== '').length;
+      const ratio = filled / requiredFields.length;
+      submitBtn.style.setProperty('--fill', String(ratio));
+      submitBtn.classList.toggle('is-ready', ratio >= 1);
+    };
+    requiredFields.forEach((f) => {
+      f.addEventListener('input', updateProgress);
+      f.addEventListener('change', updateProgress);
+    });
+    updateProgress();
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -173,7 +325,7 @@ const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xkozljaq';
       errorDiv?.classList.add('hidden');
 
       // Set loading state
-      submitBtn.textContent = 'Sending...';
+      submitBtn.textContent = 'Sending…';
       submitBtn.setAttribute('disabled', 'true');
       submitBtn.classList.add('opacity-70', 'cursor-not-allowed');
 
@@ -183,15 +335,20 @@ const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xkozljaq';
           method: 'POST',
           body: formData,
           headers: {
-            'Accept': 'application/json'
-          }
+            'Accept': 'application/json',
+          },
         });
 
         if (response.ok) {
-          // Success - hide form, show success message
+          // Success — hide form, reveal the success panel + its send moment.
           formContainer?.classList.add('hidden');
           successDiv?.classList.remove('hidden');
+          successDiv?.classList.add('is-revealed');
+          // Move focus so screen-reader users land on the confirmation.
+          (successDiv as HTMLElement | null)?.focus();
           form.reset();
+          if (autogrow) grow(autogrow);
+          updateProgress();
         } else {
           // Server returned an error
           const data = await response.json().catch(() => ({}));
@@ -200,7 +357,6 @@ const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xkozljaq';
       } catch (error) {
         // Show error message
         errorDiv?.classList.remove('hidden');
-        // Scroll error into view
         errorDiv?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       } finally {
         // Reset button state
@@ -213,9 +369,11 @@ const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xkozljaq';
     // Reset form handler
     resetBtn?.addEventListener('click', () => {
       successDiv?.classList.add('hidden');
+      successDiv?.classList.remove('is-revealed');
       formContainer?.classList.remove('hidden');
-      // Focus first input for better UX
-      const firstInput = form.querySelector('input:not([type="hidden"])') as HTMLInputElement | null;
+      updateProgress();
+      // Focus first field for better UX
+      const firstInput = form.querySelector<HTMLInputElement>('input:not([type="hidden"]):not([name="_gotcha"])');
       firstInput?.focus();
     });
   }
