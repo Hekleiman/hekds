@@ -161,10 +161,13 @@ if (headline && headline.trim()) {
     display: block;
   }
 
-  /* Wide desktop: single line, capped so the full string fits the content column. */
-  @media (min-width: 1280px) {
+  /* Desktop/laptop: collapse to a single line. This headline is short (matches
+     the Pricing hero), so it goes one-line from lg (1024px) rather than holding
+     the re-fit to xl like the longer sibling-page headlines. Font capped so the
+     full string always fits the content column without wrapping. */
+  @media (min-width: 1024px) {
     .contact-headline {
-      font-size: clamp(2.75rem, 1.6rem + 1.9vw, 3.5rem);
+      font-size: clamp(2.5rem, 1.1rem + 2.6vw, 3.5rem);
       white-space: nowrap;
     }
     .contact-headline .line {
