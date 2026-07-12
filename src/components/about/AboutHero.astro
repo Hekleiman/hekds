@@ -30,9 +30,9 @@ const {
   headlineLine2 = 'one continuous line.',
   subtext = 'HEK is a boutique studio of two: a designer and a developer working shoulder to shoulder. No account managers, no handoffs — just the people making your project, start to finish.',
   stats = [
-    { value: '8', countTo: 8, suffix: '+', label: 'Years in design' },
-    { value: '10', countTo: 10, suffix: '+', label: 'Years in development' },
-    { value: '18', countTo: 18, suffix: '', label: 'Years combined' },
+    { value: '2', countTo: 2, suffix: '', label: 'Person studio' },
+    { value: '6', countTo: 6, suffix: '+', label: 'Industries served' },
+    { value: '100', countTo: 100, suffix: '%', label: 'In-house' },
     { value: '0', countTo: 0, suffix: '', label: 'Handoffs' },
   ],
   class: className,
@@ -54,13 +54,15 @@ if (headline && headline.trim()) {
 }
 ---
 
+<!-- Full-viewport hero: -mt-36 cancels the global nav offset, min-h-[100svh]
+     fills the screen, and the content is vertically centred within it. -->
 <section
-  class:list={['about-hero relative overflow-hidden -mt-12 sm:mt-0', className]}
+  class:list={['about-hero relative -mt-36 min-h-[100svh] flex flex-col overflow-hidden', className]}
   data-animate="hero"
   data-spotlight
 >
-  <!-- Depth glow -->
-  <div class="aura w-[620px] h-[440px] top-[-6%] left-1/2 -translate-x-1/2 bg-accent-bronze/[0.10]"></div>
+  <!-- Depth glow (centred behind the content) -->
+  <div class="aura w-[620px] h-[440px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-accent-bronze/[0.10]"></div>
 
   <!-- Living-blueprint contour layer (parallax + draw-in on load) -->
   <div
@@ -85,8 +87,9 @@ if (headline && headline.trim()) {
   >
   </div>
 
-  <!-- Content -->
-  <div class="relative z-10 container-main flex flex-col items-center text-center pt-4 pb-6 sm:pt-16 md:pt-24">
+  <!-- Content — vertically centred within the full-height hero. pt-28 keeps it
+       clear of the fixed nav on short viewports. -->
+  <div class="relative z-10 flex-1 flex flex-col items-center justify-center text-center w-full container-main pt-28 pb-10">
     <!-- Eyebrow pill -->
     <div
       class="inline-flex items-center gap-2 mb-8 px-4 py-1.5 rounded-full border border-border-primary bg-background-secondary/60 backdrop-blur-sm"
@@ -131,6 +134,9 @@ if (headline && headline.trim()) {
 </section>
 
 <style>
+  /* The headline chunks flow inline at every breakpoint so a short headline
+     ("Who are we?") sits on one line — including mobile — and only wraps between
+     chunks if it genuinely doesn't fit. */
   .about-headline {
     font-weight: 600;
     font-size: clamp(2rem, 1.0rem + 4.2vw, 4rem);
@@ -138,27 +144,23 @@ if (headline && headline.trim()) {
     letter-spacing: -0.035em;
   }
   .about-headline .line {
-    display: block;
+    display: inline-block;
+    vertical-align: top;
     overflow: hidden;
-    padding-bottom: 0.06em;
+    padding-bottom: 0.12em;
   }
   .about-headline .line-inner {
     display: block;
   }
+  .about-headline .line + .line {
+    margin-left: 0.28em;
+  }
 
-  /* Wide desktop: single line, capped so the full string fits the content column. */
+  /* Wide desktop: cap the size and hard-hold a single line. */
   @media (min-width: 1280px) {
     .about-headline {
       font-size: clamp(2.75rem, 1.6rem + 1.9vw, 3.5rem);
       white-space: nowrap;
-    }
-    .about-headline .line {
-      display: inline-block;
-      vertical-align: top;
-      padding-bottom: 0.12em;
-    }
-    .about-headline .line + .line {
-      margin-left: 0.28em;
     }
   }
 </style>

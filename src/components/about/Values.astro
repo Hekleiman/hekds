@@ -34,14 +34,17 @@ const wmudPunct = wmudMatch ? wmudMatch[3] : '';
 // attention, no handoffs"). Not CMS-backed; component-level defaults.
 const points = [
   {
+    icon: 'collaboration',
     title: 'Direct collaboration',
     description: 'You work with the people doing the work — no account managers or middlemen relaying messages.',
   },
   {
+    icon: 'sync',
     title: 'No handoffs',
     description: 'Design and development happen in tandem, so nothing gets lost in translation between teams.',
   },
   {
+    icon: 'spark',
     title: 'Small & senior',
     description: 'A deliberately tiny studio means senior attention on every detail, from first call to launch.',
   },
@@ -57,10 +60,13 @@ const principles = howWeWorkParagraphs.map((paragraph, index) => ({
 }));
 ---
 
-<div class:list={['space-y-24 lg:space-y-32', className]}>
-  <!-- What makes us different? -->
+<div class:list={[className]}>
+  <!-- What makes us different? — full-width divided list (distinct from the
+       numbered How-We-Work grid below): each differentiator is a row that spans
+       the width, with an icon + title on the left and the copy filling to the
+       right margin. -->
   <Section>
-    <div class="max-w-[760px]" data-animate="fade-up">
+    <div class="max-w-[1000px]" data-animate="fade-up">
       <span class="text-caption uppercase tracking-[0.2em] text-accent-bronze-bright/80">Our difference</span>
       <h2 class="text-h2 mt-3 mb-5">
         {wmudLead && <>{wmudLead}{' '}</>}<span class="text-metallic-bronze">{wmudAccent}</span>{wmudPunct}
@@ -68,19 +74,38 @@ const principles = howWeWorkParagraphs.map((paragraph, index) => ({
       <p class="text-body-lg text-text-secondary">{whatMakesUsDifferentText}</p>
     </div>
 
-    <!-- Differentiator points -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12" data-animate="stagger">
+    <!-- Differentiators as a divided list. The last row ends "soft" (no trailing
+         padding or divider) so the section bottom matches the top rhythm, like
+         the home/services sections. -->
+    <div class="mt-14 border-t border-border-primary" data-animate="stagger">
       {points.map((point, i) => (
-        <div class="group relative flex flex-col pt-8">
-          <!-- Hairline that brightens on hover -->
-          <span class="absolute top-0 left-0 h-px w-full bg-border-primary overflow-hidden">
-            <span class="block h-full w-full origin-left scale-x-0 bg-gradient-to-r from-accent-bronze-bright to-transparent transition-transform duration-500 ease-out group-hover:scale-x-100"></span>
-          </span>
-          <span class="text-metallic block text-[40px] leading-none font-semibold tabular-nums mb-4">
-            {String(i + 1).padStart(2, '0')}
-          </span>
-          <h3 class="text-h3 font-medium text-white mb-2">{point.title}</h3>
-          <p class="text-body text-text-secondary">{point.description}</p>
+        <div class:list={['group grid grid-cols-1 gap-y-3 pt-8 md:grid-cols-[minmax(0,320px)_1fr] md:gap-x-10 lg:gap-x-16 md:items-baseline', i < points.length - 1 ? 'pb-8 border-b border-border-primary' : 'pb-0']}>
+          <!-- Icon + title -->
+          <div class="flex items-center gap-4">
+            <span class="shrink-0 w-11 h-11 rounded-full bg-background-primary border border-border-secondary flex items-center justify-center text-accent-bronze-bright transition-colors duration-500 group-hover:border-accent-bronze-bright/60">
+              {point.icon === 'collaboration' && (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" />
+                  <circle cx="17" cy="7" r="3" />
+                  <path d="M21 21v-2a3 3 0 0 0-3-3h-1" />
+                </svg>
+              )}
+              {point.icon === 'sync' && (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 12a9 9 0 0 1-9 9m9-9a9 9 0 0 0-9-9m9 9h-4m-5 9a9 9 0 0 1-9-9m9 9v-4m-9-5a9 9 0 0 1 9-9m-9 9h4m5-9v4" />
+                </svg>
+              )}
+              {point.icon === 'spark' && (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z" />
+                </svg>
+              )}
+            </span>
+            <h3 class="text-h3-lg font-medium text-white">{point.title}</h3>
+          </div>
+          <!-- Description (fills to the right margin) -->
+          <p class="text-body-lg text-text-secondary md:pt-1">{point.description}</p>
         </div>
       ))}
     </div>

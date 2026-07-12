@@ -19,11 +19,21 @@ interface Props {
   class?: string;
 }
 
+// Curated tile bios (adapted from each person's LinkedIn, length-matched so the
+// two cards balance). Used as the authoritative short bio for the tiles — they
+// override any longer CMS bio so the cards always stay compact and even.
+const curatedBios: Record<string, string> = {
+  'Harrison Kipper':
+    'Product designer with a background in project and implementation management. He turns complex workflows into intuitive, scalable experiences from concept to launch.',
+  'Erik Kleiman':
+    'Full-stack engineer focused on React, Next.js, and TypeScript. He builds reliable, maintainable apps — from HIPAA-compliant sites to CMS platforms and CI pipelines.',
+};
+
 const defaultMembers: TeamMemberData[] = [
   {
     name: 'Harrison Kipper',
     role: 'Design Lead · 8+ years',
-    bio: 'Harrison brings over 8 years of experience in digital design, specializing in user experience and visual systems. He believes great design is invisible—it just works. His approach combines strategic thinking with meticulous attention to detail.',
+    bio: curatedBios['Harrison Kipper'],
     areasOfFocus: [
       'User experience design',
       'Visual design systems',
@@ -35,7 +45,7 @@ const defaultMembers: TeamMemberData[] = [
   {
     name: 'Erik Kleiman',
     role: 'Development Lead · 10+ years',
-    bio: 'Erik has been building for the web for over a decade. He is passionate about clean code, performance, and accessibility. His development philosophy centers on creating maintainable, scalable solutions that last.',
+    bio: curatedBios['Erik Kleiman'],
     areasOfFocus: [
       'Frontend development',
       'System architecture',
@@ -65,6 +75,7 @@ const headlinePunct = headlineMatch ? headlineMatch[3] : '';
 // Disciplines drive the "design ↔ development" connector story.
 const withMeta = members.map((member, index) => ({
   ...member,
+  bio: curatedBios[member.name] ?? member.bio,
   number: String(index + 1).padStart(2, '0'),
   discipline: index === 0 ? 'Design' : index === 1 ? 'Development' : undefined,
 }));
