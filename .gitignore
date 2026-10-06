@@ -28,3 +28,8 @@ pnpm-debug.log*
 
 # sanity dependencies
 sanity/node_modules/
+
+# Internal audit docs and agent tooling (kept locally, not published)
+LAUNCH_AUDIT.md
+SANITY_AUDIT.md
+.claude/
